@@ -25,13 +25,16 @@
   "scripts": {
     "dev": "pnpm run build:ci -- --watch src",
     "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
-    "build": "pnpm run build:ci -- --dts --sourcemap"
-  },
-  "engines": {
-    "pnpm": "^6.7.0",
-    "yarn": "forbidden, use pnpm",
-    "npm": "forbidden, use pnpm",
-    "node": "^12.20 || ^14.13.1 || >= 16"
+    "build": "pnpm run build:ci -- --dts --sourcemap",
+    "test": "TODO run uvu",
+    "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,md}'",
+    "lint:fix": "pnpm run lint -- --fix",
+    "format": "prettier --ignore-path .gitignore '**/*.{js,ts,md}' --check",
+    "format:fix": "pnpm run format -- --write",
+    "fixup": "run-s lint:fix format:fix",
+    "update-deps": "ncu -u && ncu -f \"/^@sveltejs\\/(?:kit|adapter)/\" --target=greatest -u",
+    "release": "pnpm run build && pnpx --no changeset publish",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -45,9 +48,38 @@
     "url": "https://github.com/dominikg/tsconfck/issues"
   },
   "homepage": "https://github.com/dominikg/tsconfck/tree/main/#readme",
+  "dependencies": {
+    "strip-bom": "^5.0.0",
+    "strip-json-comments": "^3.1.1"
+  },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-markdown": "^2.2.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^7.0.1",
+    "lint-staged": "^11.1.2",
+    "npm-check-updates": "^11.8.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "tsup": "^4.13.1",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "uvu": "^0.5.1"
+  },
+  "lint-staged": {
+    "*.{js,ts,md}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "pnpm": "^6.7.0",
+    "yarn": "forbidden, use pnpm",
+    "npm": "forbidden, use pnpm",
+    "node": "^12.20 || ^14.13.1 || >= 16"
   }
 }
