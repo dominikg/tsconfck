@@ -26,7 +26,7 @@
     "dev": "pnpm run build:ci -- --watch src",
     "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
     "build": "pnpm run build:ci -- --dts --sourcemap",
-    "test": "TODO run uvu",
+    "test": "uvu -r esbuild-register tests",
     "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,md}'",
     "lint:fix": "pnpm run lint -- --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{js,ts,md}' --check",
@@ -44,7 +44,8 @@
   },
   "keywords": [
     "typescript",
-    "tsconfig"
+    "tsconfig",
+    "tsconfig.json"
   ],
   "bugs": {
     "url": "https://github.com/dominikg/tsconfck/issues"
@@ -63,6 +64,7 @@
     "conventional-changelog-cli": "^2.1.1",
     "enquirer": "^2.3.6",
     "esbuild": "^0.12.19",
+    "esbuild-register": "^2.6.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-markdown": "^2.2.0",

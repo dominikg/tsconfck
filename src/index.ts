@@ -1,1 +1,1 @@
-// nothing to see here, just a placeholder
+export { find } from './find-tsconfig';
