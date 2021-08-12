@@ -1,0 +1,91 @@
+# build and test on linux, windows, mac with node 12, 14, 16
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # "checks" job runs on linux + node14 only and checks that install, build, lint and audit work
+  # it also primes the pnpm store cache for linux, important for downstream tests
+  checks:
+    timeout-minutes: 5
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # pseudo-matrix for convenience, NEVER use more than a single combination
+        node: [14]
+        os: [ubuntu-latest]
+    outputs:
+      build_successful: ${{ steps.build.outcome == 'success' }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm i -g pnpm@6
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
+      - name: install
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+          node node_modules/esbuild/install.js
+      - name: build
+        id: build
+        run: pnpm run build
+      - name: lint
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm run lint
+      - name: format
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm run format
+      - name: audit
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm audit
+
+# tests disabled for now as they are not implemented
+#  # this is the test matrix, it runs with node14 on linux,windows,macos + node12,16 on linux
+#  # it is skipped if the build step of the checks job wasn't successful (still runs if lint or audit fail)
+#  test:
+#    needs: checks
+#    if: (${{ success() }} || ${{ failure() }}) && (${{ needs.checks.output.build_successful }})
+#    timeout-minutes: 10
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        node: [14]
+#        os: [ubuntu-latest, macos-latest, windows-latest]
+#        include:
+#          - node: 12
+#            os: ubuntu-latest
+#          - node: 16
+#            os: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: ${{ matrix.node }}
+#      - run: npm i -g pnpm@6
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: ${{ matrix.node }}
+#          cache: 'pnpm'
+#          cache-dependency-path: '**/pnpm-lock.yaml'
+#      - name: install
+#        run: |
+#          pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+#          node node_modules/esbuild/install.js
+#      - name: build
+#        run: pnpm run build:ci
+#      - name: run tests
+#        run: pnpm test:ci
+
+
