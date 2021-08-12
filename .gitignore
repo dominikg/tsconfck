@@ -1,0 +1,28 @@
+# logs and temp
+*.log
+*.cpuprofile
+temp
+*.tmp
+
+# build and dist
+build
+dist
+
+# env and local
+*.local
+.env
+
+#node_modules and pnpm
+node_modules
+# only workspace root has a lock
+**/pnpm-lock.yaml
+!./pnpm-lock.yaml
+.pnpm-store
+
+#ide
+.idea
+.vscode
+
+# macos
+.DS_Store
+._.DS_Store

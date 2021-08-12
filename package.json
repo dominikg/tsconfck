@@ -1,0 +1,53 @@
+{
+  "name": "tsconfck",
+  "version": "0.0.1",
+  "description": "A utility to work with tsconfig.json without typescript",
+  "license": "MIT",
+  "author": "dominikg",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "pnpm run build:ci -- --watch src",
+    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
+    "build": "pnpm run build:ci -- --dts --sourcemap"
+  },
+  "engines": {
+    "pnpm": "^6.7.0",
+    "yarn": "forbidden, use pnpm",
+    "npm": "forbidden, use pnpm",
+    "node": "^12.20 || ^14.13.1 || >= 16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dominikg/tsconfck.git"
+  },
+  "keywords": [
+    "typescript",
+    "tsconfig"
+  ],
+  "bugs": {
+    "url": "https://github.com/dominikg/tsconfck/issues"
+  },
+  "homepage": "https://github.com/dominikg/tsconfck/tree/main/#readme",
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "tsup": "^4.13.1",
+    "typescript": "^4.3.5"
+  }
+}
