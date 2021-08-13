@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@commitlint/cli': ^13.1.0
   '@commitlint/config-conventional': ^13.1.0
+  '@types/node': ^16.6.1
   '@typescript-eslint/eslint-plugin': ^4.29.1
   '@typescript-eslint/parser': ^4.29.1
   chalk: ^4.1.2
@@ -38,6 +39,7 @@ dependencies:
 devDependencies:
   '@commitlint/cli': 13.1.0
   '@commitlint/config-conventional': 13.1.0
+  '@types/node': 16.6.1
   '@typescript-eslint/eslint-plugin': 4.29.1_d4376362794b743c19f4cba25c7fc6f5
   '@typescript-eslint/parser': 4.29.1_eslint@7.32.0+typescript@4.3.5
   chalk: 4.1.2
@@ -369,6 +371,10 @@ packages:
 
   /@types/minimist/1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+    dev: true
+
+  /@types/node/16.6.1:
+    resolution: {integrity: sha512-Sr7BhXEAer9xyGuCN3Ek9eg9xPviCF2gfu9kTfuU2HkTVAMYSDeX40fvpmo72n5nansg3nsBjuQBrsS28r+NUw==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:

@@ -1,1 +1,1 @@
-export { find } from './find-tsconfig';
+export { findTSConfig } from './find-tsconfig';
