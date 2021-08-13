@@ -25,14 +25,10 @@ module.exports = {
 				tryExtensions: ['.ts', '.js', '.jsx', '.tsx']
 			}
 		],
-		'node/no-extraneous-import': [
-			'error'
-		],
-		'node/no-deprecated-api': 'off',
+		'node/no-extraneous-import': ['error'],
+		'node/no-deprecated-api': ['warn'],
 		'node/no-unpublished-import': 'off',
-		'node/no-unpublished-require': 'off',
-		'node/no-unsupported-features/es-syntax': 'off',
-		'no-process-exit': 'off'
+		'node/no-unsupported-features/es-syntax': 'off'
 	},
 	overrides: [
 		{

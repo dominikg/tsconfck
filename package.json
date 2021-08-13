@@ -26,10 +26,11 @@
     "dev": "pnpm run build:ci -- --watch src",
     "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
     "build": "pnpm run build:ci -- --dts --sourcemap",
-    "test": "uvu -r esbuild-register tests",
-    "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,md}'",
+    "test": "uvu -r esbuild-register tests --ignore fixtures",
+    "test:watch": "watchlist tests dist -- pnpm test",
+    "lint": "eslint --ignore-path .gitignore '**/*.{cjs,js,ts,md}'",
     "lint:fix": "pnpm run lint -- --fix",
-    "format": "prettier --ignore-path .gitignore '**/*.{js,ts,md}' --check",
+    "format": "prettier --ignore-path .gitignore '**/*.{cjs,js,ts,md}' --check",
     "format:fix": "pnpm run format -- --write",
     "fixup": "run-s lint:fix format:fix",
     "update-deps": "pnpx --no-install ncu -u",
@@ -63,8 +64,8 @@
     "chalk": "^4.1.2",
     "conventional-changelog-cli": "^2.1.1",
     "enquirer": "^2.3.6",
-    "esbuild": "^0.12.19",
-    "esbuild-register": "^2.6.0",
+    "esbuild": "^0.12.20",
+    "esbuild-register": "^3.0.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-markdown": "^2.2.0",
@@ -81,10 +82,11 @@
     "semver": "^7.3.5",
     "tsup": "^4.13.1",
     "typescript": "^4.3.5",
-    "uvu": "^0.5.1"
+    "uvu": "^0.5.1",
+    "watchlist": "^0.2.3"
   },
   "lint-staged": {
-    "*.{js,ts,md}": [
+    "*.{cjs,js,ts,md}": [
       "eslint --fix",
       "prettier --write"
     ]

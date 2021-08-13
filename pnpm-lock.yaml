@@ -8,8 +8,8 @@ specifiers:
   chalk: ^4.1.2
   conventional-changelog-cli: ^2.1.1
   enquirer: ^2.3.6
-  esbuild: ^0.12.19
-  esbuild-register: ^2.6.0
+  esbuild: ^0.12.20
+  esbuild-register: ^3.0.0
   eslint: ^7.32.0
   eslint-config-prettier: ^8.3.0
   eslint-plugin-markdown: ^2.2.0
@@ -29,6 +29,7 @@ specifiers:
   tsup: ^4.13.1
   typescript: ^4.3.5
   uvu: ^0.5.1
+  watchlist: ^0.2.3
 
 dependencies:
   strip-bom: 5.0.0
@@ -42,8 +43,8 @@ devDependencies:
   chalk: 4.1.2
   conventional-changelog-cli: 2.1.1
   enquirer: 2.3.6
-  esbuild: 0.12.19
-  esbuild-register: 2.6.0
+  esbuild: 0.12.20
+  esbuild-register: 3.0.0_esbuild@0.12.20
   eslint: 7.32.0
   eslint-config-prettier: 8.3.0_eslint@7.32.0
   eslint-plugin-markdown: 2.2.0_eslint@7.32.0
@@ -61,6 +62,7 @@ devDependencies:
   tsup: 4.13.1_typescript@4.3.5
   typescript: 4.3.5
   uvu: 0.5.1
+  watchlist: 0.2.3
 
 packages:
 
@@ -1392,21 +1394,17 @@ packages:
       is-symbol: 1.0.4
     dev: true
 
-  /esbuild-register/2.6.0:
-    resolution: {integrity: sha512-2u4AtnCXP5nivtIxZryiZOUcEQkOzFS7UhAqibUEmaTAThJ48gDLYTBF/Fsz+5r0hbV1jrFE6PQvPDUrKZNt/Q==}
+  /esbuild-register/3.0.0_esbuild@0.12.20:
+    resolution: {integrity: sha512-No7U3ZUd6gPrrC6gqdb3XFcf2lNqzn8nvQXcgcyOl8szMVuN6YUvOplnmakxWyogI9d8SiJMl0uzBzJck+Aoxw==}
+    peerDependencies:
+      esbuild: ^0.12.20
     dependencies:
-      esbuild: 0.12.18
+      esbuild: 0.12.20
       jsonc-parser: 3.0.0
     dev: true
 
-  /esbuild/0.12.18:
-    resolution: {integrity: sha512-arWhBQSy+oiBAp8VRRCFvAU+3jyf0gGacABLO3haMHboXCDjzq4WUqyQklst2XRuFS8MXgap+9uvODqj9Iygpg==}
-    hasBin: true
-    requiresBuild: true
-    dev: true
-
-  /esbuild/0.12.19:
-    resolution: {integrity: sha512-5NuT1G6THW7l3fsSCDkcPepn24R0XtyPjKoqKHD8LfhqMXzCdz0mrS9HgO6hIhzVT7zt0T+JGbzCqF5AH8hS9w==}
+  /esbuild/0.12.20:
+    resolution: {integrity: sha512-u7+0qTo9Z64MD9PhooEngCmzyEYJ6ovFhPp8PLNh3UasR5Ihjv6HWVXqm8uHmasdQlpsAf0IsY4U0YVUfCpt4Q==}
     hasBin: true
     requiresBuild: true
     dev: true
@@ -4319,7 +4317,7 @@ packages:
       chalk: 4.1.2
       chokidar: 3.5.2
       debug: 4.3.2
-      esbuild: 0.12.18
+      esbuild: 0.12.20
       execa: 5.1.1
       globby: 11.0.4
       joycon: 3.0.1
@@ -4528,6 +4526,14 @@ packages:
       assert-plus: 1.0.0
       core-util-is: 1.0.2
       extsprintf: 1.3.0
+    dev: true
+
+  /watchlist/0.2.3:
+    resolution: {integrity: sha512-xStuPg489QXZbRirnmIMo7OaKFnGkvTQn7tCUC/sVmVVEvDQQnnVl/k9D5yg3nXgpebgPHpfApBLHMpEbAqvSQ==}
+    engines: {node: '>=8'}
+    hasBin: true
+    dependencies:
+      mri: 1.1.6
     dev: true
 
   /which-boxed-primitive/1.0.2:
