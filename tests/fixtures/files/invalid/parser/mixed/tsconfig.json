@@ -1,0 +1,17 @@
+/*
+multi
+line
+*/
+{
+  "extends": "", // trailing single line comment
+  "compilerOptions": {
+    "types": /* inline comment */ [
+      "//keep this",
+      "/*",
+      // extra line single comment
+      "*/",
+      "/* this too */" , //<-dangling
+    ] /* dangling->*/, 
+    // still dangling ^
+  } x
+}

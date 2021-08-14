@@ -30,7 +30,7 @@ test('should throw for invalid tsconfigJson arg', () => {
 });
 
 test('should convert tsconfig.json to regular json', async () => {
-	const samples = (await glob('tests/fixtures/to-json/**/tsconfig.json')).map((file) =>
+	const samples = (await glob('tests/fixtures/files/valid/**/tsconfig.json')).map((file) =>
 		path.resolve(file)
 	);
 	for (const filename of samples) {
