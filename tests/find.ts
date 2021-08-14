@@ -5,37 +5,37 @@ import * as assert from 'uvu/assert';
 import * as dist from '../dist/index.cjs';
 import * as path from 'path';
 import * as os from 'os';
-const { findTSConfig } = dist;
-const test = suite('findTSConfig');
+const { find } = dist;
+const test = suite('find');
 
 test('should be a function', () => {
-	assert.type(findTSConfig, 'function');
-});
-
-test('should validate filename arg as string', async () => {
-	// TODO rewrite to assert.rejects once https://github.com/lukeed/uvu/pull/132 landed
-	for (const filename of [{}, [], 0, null, undefined]) {
-		const result = await findTSConfig(filename).then(
-			(x: any) => x,
-			(x: any) => x
-		);
-		assert.instance(result, TypeError, `filename type: ${typeof filename}`);
-	}
-	const notSetResult = await findTSConfig().then(
-		(x: any) => x,
-		(x: any) => x
-	);
-	assert.instance(notSetResult, TypeError, `filename not set`);
-
-	const strResult = await findTSConfig('str').then(
-		(x: any) => x,
-		(x: any) => x
-	);
-	assert.not.instance(strResult, TypeError, `filename type: string`);
+	assert.type(find, 'function');
 });
 
 test('should return a Promise', () => {
-	assert.instance(findTSConfig('str'), Promise);
+	assert.instance(find('str'), Promise);
+});
+
+test('should reject for invalid filename arg', async () => {
+	// TODO rewrite to assert.rejects once https://github.com/lukeed/uvu/pull/132 landed
+	for (const filename of [{}, [], 0, null, undefined]) {
+		const result = await find(filename).then(
+			() => 'resolved',
+			() => 'rejected'
+		);
+		assert.is(result, 'rejected', `filename type: ${typeof filename}`);
+	}
+	const notSetResult = await find().then(
+		() => 'resolved',
+		() => 'rejected'
+	);
+	assert.is(notSetResult, 'rejected', `filename not set`);
+
+	const strResult = await find('str').then(
+		() => 'resolved',
+		() => 'rejected'
+	);
+	assert.is(strResult, 'resolved', `filename type: string`);
 });
 
 test('should find tsconfig in same directory', async () => {
@@ -46,7 +46,7 @@ test('should find tsconfig in same directory', async () => {
 		path.resolve('tests', 'fixtures', 'find-tsconfig', 'a', 'foo.ts')
 	];
 	for (const input of inputs) {
-		const tsconfig = await findTSConfig(input);
+		const tsconfig = await find(input);
 		assert.is(tsconfig, expected, `input: ${input}`);
 	}
 });
@@ -59,14 +59,14 @@ test('should find tsconfig in parent directory', async () => {
 		path.resolve('tests', 'fixtures', 'find-tsconfig', 'a', 'b', 'bar.ts')
 	];
 	for (const input of inputs) {
-		const tsconfig = await findTSConfig(input);
+		const tsconfig = await find(input);
 		assert.is(tsconfig, expected, `input: ${input}`);
 	}
 });
 
 test('should not find tsconfig when missing', async () => {
 	const input = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
-	const tsconfig = await findTSConfig(input);
+	const tsconfig = await find(input);
 	assert.is(tsconfig, null, `input: ${input}`);
 });
 

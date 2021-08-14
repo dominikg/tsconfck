@@ -3,15 +3,11 @@ import * as fs from 'fs/promises';
 
 /**
  * find the closest tsconfig.json file
+ *
  * @param {string} filename - path to file to find tsconfig for (absolute or relative to cwd)
  * @returns {Promise<string|null>} absolute path to closest tsconfig.json or null if not found
  */
-export async function findTSConfig(filename: string) {
-	if (typeof filename !== 'string') {
-		throw new TypeError(
-			`Expected argument \`filename\` to be a \`string\`, got \`${typeof filename}\``
-		);
-	}
+export async function find(filename: string) {
 	let dir = path.dirname(path.resolve(filename));
 	while (dir) {
 		const tsconfig = await tsconfigInDir(dir);
