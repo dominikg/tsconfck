@@ -1,14 +1,60 @@
-/*
-this file contains code heavily based on strip-bom and strip-json-comments by Sindre Sorhus
+import stripBom from 'strip-bom';
+import stripJsonComments from 'strip-json-comments';
 
-LICENSE
-MIT License
-
-Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/**
+ * convert content of tsconfig.json to regular json
+ *
+ * @param {string} tsconfigJson - content of tsconfig.json
+ * @returns {string} content as regular json, comments and dangling commas have been replaced with whitespace
  */
+export function toJson(tsconfigJson: string): string {
+	return stripDanglingComma(stripJsonComments(stripBom(tsconfigJson)));
+}
+
+/**
+ * replace dangling commas from pseudo-json string with single space
+ * implementation heavily inspired by strip-json-comments
+ */
+function stripDanglingComma(pseudoJson: string) {
+	function isEscaped(jsonString: string, quotePosition: number) {
+		let index = quotePosition - 1;
+		let backslashCount = 0;
+		while (jsonString[index] === '\\') {
+			index -= 1;
+			backslashCount += 1;
+		}
+		return backslashCount % 2 === 1;
+	}
+
+	let insideString = false;
+	let offset = 0;
+	let result = '';
+	let danglingCommaPos = null;
+	for (let i = 0; i < pseudoJson.length; i++) {
+		const currentCharacter = pseudoJson[i];
+		if (currentCharacter === '"') {
+			const escaped = isEscaped(pseudoJson, i);
+			if (!escaped) {
+				insideString = !insideString;
+			}
+		}
+		if (insideString) {
+			danglingCommaPos = null;
+			continue;
+		}
+		if (currentCharacter === ',') {
+			danglingCommaPos = i;
+			continue;
+		}
+		if (danglingCommaPos) {
+			if (currentCharacter === '}' || currentCharacter === ']') {
+				result += pseudoJson.slice(offset, danglingCommaPos) + ' ';
+				offset = danglingCommaPos + 1;
+				danglingCommaPos = null;
+			} else if (!currentCharacter.match(/\s/)) {
+				danglingCommaPos = null;
+			}
+		}
+	}
+	return result + pseudoJson.substring(offset);
+}

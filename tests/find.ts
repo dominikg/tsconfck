@@ -1,10 +1,10 @@
 import { suite } from 'uvu';
-import * as assert from 'uvu/assert';
+import assert from 'uvu/assert';
 // @ts-ignore
 // eslint-disable-next-line node/no-missing-import
-import * as dist from '../dist/index.cjs';
-import * as path from 'path';
-import * as os from 'os';
+import dist from '../dist/index.cjs';
+import path from 'path';
+import os from 'os';
 const { find } = dist;
 const test = suite('find');
 
@@ -39,11 +39,11 @@ test('should reject for invalid filename arg', async () => {
 });
 
 test('should find tsconfig in same directory', async () => {
-	const expected = path.resolve('tests', 'fixtures', 'find-tsconfig', 'a', 'tsconfig.json');
+	const expected = path.resolve('tests', 'fixtures', 'find', 'a', 'tsconfig.json');
 	const inputs = [
-		path.join('tests', 'fixtures', 'find-tsconfig', 'a', 'foo.ts'),
-		path.join('.', 'tests', 'fixtures', 'find-tsconfig', 'a', 'foo.ts'),
-		path.resolve('tests', 'fixtures', 'find-tsconfig', 'a', 'foo.ts')
+		path.join('tests', 'fixtures', 'find', 'a', 'foo.ts'),
+		path.join('.', 'tests', 'fixtures', 'find', 'a', 'foo.ts'),
+		path.resolve('tests', 'fixtures', 'find', 'a', 'foo.ts')
 	];
 	for (const input of inputs) {
 		const tsconfig = await find(input);
@@ -52,11 +52,11 @@ test('should find tsconfig in same directory', async () => {
 });
 
 test('should find tsconfig in parent directory', async () => {
-	const expected = path.resolve('tests', 'fixtures', 'find-tsconfig', 'a', 'tsconfig.json');
+	const expected = path.resolve('tests', 'fixtures', 'find', 'a', 'tsconfig.json');
 	const inputs = [
-		path.join('tests', 'fixtures', 'find-tsconfig', 'a', 'b', 'bar.ts'),
-		path.join('.', 'tests', 'fixtures', 'find-tsconfig', 'a', 'b', 'bar.ts'),
-		path.resolve('tests', 'fixtures', 'find-tsconfig', 'a', 'b', 'bar.ts')
+		path.join('tests', 'fixtures', 'find', 'a', 'b', 'bar.ts'),
+		path.join('.', 'tests', 'fixtures', 'find', 'a', 'b', 'bar.ts'),
+		path.resolve('tests', 'fixtures', 'find', 'a', 'b', 'bar.ts')
 	];
 	for (const input of inputs) {
 		const tsconfig = await find(input);

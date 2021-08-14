@@ -20,6 +20,12 @@ module.exports = {
 				useTabs: false,
 				tabWidth: 2
 			}
+		},
+		{
+			files: '**/fixtures/**/*.json',
+			options: {
+				requirePragma: true
+			}
 		}
 	]
 };

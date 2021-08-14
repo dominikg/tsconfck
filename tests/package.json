@@ -2,7 +2,8 @@
   "//": "helper file to transpile tests to cjs",
   "type": "commonjs",
   "devDependencies": {
-    "//": "uvu added here to prevent extraneous import error from eslint",
-    "uvu": "^0.5.1"
+    "//": "packages added here to prevent extraneous import error from eslint",
+    "uvu": "^0.5.1",
+    "tiny-glob": "^0.2.9"
   }
 }

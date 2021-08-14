@@ -6,8 +6,9 @@
 		"noImplicitAny": true,
 		"moduleResolution": "node",
 		"forceConsistentCasingInFileNames": true,
-		"strict": true
-	},
+		"strict": true,
+    "allowSyntheticDefaultImports": true
+  },
 	"include": [
 		"@types/**/*",
 		"src/**/*"
