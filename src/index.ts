@@ -1,3 +1,3 @@
-export { find } from './find';
-export { toJson } from './to-json';
-export { parse } from './parse';
+export { find } from './find.js';
+export { toJson } from './to-json.js';
+export { parse } from './parse.js';

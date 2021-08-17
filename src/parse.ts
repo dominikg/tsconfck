@@ -1,6 +1,6 @@
-import { find } from './find';
+import { find } from './find.js';
 import fs from 'fs/promises';
-import { toJson } from './to-json';
+import { toJson } from './to-json.js';
 
 /**
  * parse the closest tsconfig.json file

@@ -18,13 +18,7 @@ module.exports = {
 	},
 	rules: {
 		'no-debugger': ['error'],
-		'node/no-missing-import': [
-			'error',
-			{
-				allowModules: ['types', 'estree', 'testUtils'],
-				tryExtensions: ['.ts', '.js', '.jsx', '.tsx']
-			}
-		],
+		'node/no-missing-import': 'off', // doesn't work with typescript's "import from 'src/foo.js'" for src/foo.ts
 		'node/no-extraneous-import': ['error'],
 		'node/no-deprecated-api': ['warn'],
 		'node/no-unpublished-import': 'off',

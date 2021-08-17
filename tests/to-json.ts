@@ -1,12 +1,9 @@
 import { suite } from 'uvu';
-import assert from 'uvu/assert';
-// @ts-ignore
-// eslint-disable-next-line node/no-missing-import
-import dist from '../dist/index.cjs';
+import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import fs from 'fs/promises';
 import path from 'path';
-const { toJson } = dist;
+import { toJson } from '../src/to-json.js';
 const test = suite('toJson');
 
 test('should be a function', () => {
@@ -20,11 +17,13 @@ test('should return a String', () => {
 test('should throw for invalid tsconfigJson arg', () => {
 	for (const tsconfigJson of [{}, [], 0, null, undefined]) {
 		assert.throws(
+			// @ts-ignore
 			() => toJson(tsconfigJson),
 			TypeError,
 			`tsconfigJson type: ${typeof tsconfigJson}`
 		);
 	}
+	// @ts-ignore
 	assert.throws(() => toJson(), TypeError, 'tsConfigJson not set');
 	assert.not.throws(() => toJson('str'));
 });

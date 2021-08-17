@@ -1,12 +1,9 @@
 import { suite } from 'uvu';
-import assert from 'uvu/assert';
-// @ts-ignore
-// eslint-disable-next-line node/no-missing-import
-import dist from '../dist/index.cjs';
+import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import fs from 'fs/promises';
 import path from 'path';
-const { parse } = dist;
+import { parse } from '../src/parse.js';
 const test = suite('parse');
 
 test('should be a function', () => {
@@ -20,12 +17,14 @@ test('should return a Promise', () => {
 test('should reject for invalid filename arg', async () => {
 	// TODO rewrite to assert.rejects once https://github.com/lukeed/uvu/pull/132 landed
 	for (const filename of [{}, [], 0, null, undefined]) {
+		// @ts-ignore
 		const result = await parse(filename).then(
 			() => 'resolved',
 			() => 'rejected'
 		);
 		assert.is(result, 'rejected', `filename type: ${typeof filename}`);
 	}
+	// @ts-ignore
 	const notSetResult = await parse().then(
 		() => 'resolved',
 		() => 'rejected'

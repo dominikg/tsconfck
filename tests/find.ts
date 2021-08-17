@@ -1,11 +1,8 @@
 import { suite } from 'uvu';
-import assert from 'uvu/assert';
-// @ts-ignore
-// eslint-disable-next-line node/no-missing-import
-import dist from '../dist/index.cjs';
+import * as assert from 'uvu/assert';
 import path from 'path';
 import os from 'os';
-const { find } = dist;
+import { find } from '../src/find.js';
 const test = suite('find');
 
 test('should be a function', () => {
@@ -19,12 +16,14 @@ test('should return a Promise', () => {
 test('should reject for invalid filename arg', async () => {
 	// TODO rewrite to assert.rejects once https://github.com/lukeed/uvu/pull/132 landed
 	for (const filename of [{}, [], 0, null, undefined]) {
+		// @ts-ignore
 		const result = await find(filename).then(
 			() => 'resolved',
 			() => 'rejected'
 		);
 		assert.is(result, 'rejected', `filename type: ${typeof filename}`);
 	}
+	// @ts-ignore
 	const notSetResult = await find().then(
 		() => 'resolved',
 		() => 'rejected'
