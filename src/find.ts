@@ -5,7 +5,7 @@ import * as fs from 'fs/promises';
  * find the closest tsconfig.json file
  *
  * @param {string} filename - path to file to find tsconfig for (absolute or relative to cwd)
- * @returns {Promise<string|null>} absolute path to closest tsconfig.json or null if not found
+ * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
 export async function find(filename: string) {
 	let dir = path.dirname(path.resolve(filename));
@@ -22,7 +22,7 @@ export async function find(filename: string) {
 			}
 		}
 	}
-	return null;
+	throw new Error(`no tsconfig file found for ${filename}`);
 }
 
 async function tsconfigInDir(dir: string): Promise<string | void> {

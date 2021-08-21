@@ -63,10 +63,16 @@ test('should find tsconfig in parent directory', async () => {
 	}
 });
 
-test('should not find tsconfig when missing', async () => {
+test('should reject when no tsconfig file was found', async () => {
 	const input = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
-	const tsconfig = await find(input);
-	assert.is(tsconfig, null, `input: ${input}`);
+	try {
+		await find(input);
+		assert.unreachable(`unexpectedly found tsconfig for ${input}`);
+	} catch (e) {
+		if (e.code === 'ERR_ASSERTION') {
+			throw e;
+		}
+	}
 });
 
 test.run();

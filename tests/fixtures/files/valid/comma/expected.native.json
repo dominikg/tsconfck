@@ -1,0 +1,9 @@
+{
+  "extends": "",
+  "compilerOptions": {
+    "types": [
+      "foo"
+    ]
+  },
+  "compileOnSave": false
+}
