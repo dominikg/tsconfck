@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
 
