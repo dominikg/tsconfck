@@ -1,7 +1,7 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 import path from 'path';
 import { toJson } from '../src/to-json.js';
 const test = suite('toJson');
