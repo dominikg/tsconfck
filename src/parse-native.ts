@@ -1,4 +1,3 @@
-import { find } from './find.js';
 import path from 'path';
 
 /**
@@ -10,8 +9,6 @@ import path from 'path';
  * @returns {Promise<object|void>} tsconfig parsed as object
  */
 export async function parseNative(filename: string): Promise<ParseNativeResult> {
-	const tsconfigFile = await find(filename);
-
 	let ts;
 	try {
 		ts = (await import('typescript')).default;
@@ -19,8 +16,11 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 		console.error('typescript must be installed to use parseNative');
 		throw e;
 	}
-	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
-
+	const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = ts;
+	const tsconfigFile = findConfigFile(path.dirname(path.resolve(filename)), sys.fileExists);
+	if (!tsconfigFile) {
+		throw new Error(`no tsconfig file found for ${filename}`);
+	}
 	const { config, error } = readConfigFile(tsconfigFile, sys.readFile);
 	if (error) {
 		throw error;
