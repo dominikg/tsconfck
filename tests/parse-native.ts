@@ -51,7 +51,7 @@ test('should resolve with expected for valid tsconfig.json', async () => {
 		}
 		try {
 			actual = await parseNative(filename);
-			assert.equal(actual.result.raw, expected, `testfile: ${filename}`);
+			assert.equal(actual.tsconfig, expected, `testfile: ${filename}`);
 			assert.equal(actual.filename, path.resolve(filename));
 		} catch (e) {
 			if (e.code === 'ERR_ASSERTION') {
@@ -80,11 +80,16 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 				throw e;
 			}
 			if (e.messageText == null || e.start == null) {
-				console.error(`no messageText on error:\n ${JSON.stringify(e, null, 2)}`);
+				console.error(
+					`unexpected error without messageText or start properties:\n ${JSON.stringify(
+						e,
+						null,
+						2
+					)}`
+				);
 				throw e;
 			}
 			const actual = { start: e.start, message: e.messageText };
-
 			assert.equal(actual, expected, `filename: ${filename}`);
 		}
 	}

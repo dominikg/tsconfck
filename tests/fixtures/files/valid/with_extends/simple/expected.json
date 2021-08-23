@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.parent.json",
+  "compilerOptions": {
+    "types": ["foo"],
+    "strictNullChecks": true
+  },
+  "include": ["src/**"]
+}

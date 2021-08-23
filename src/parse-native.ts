@@ -33,19 +33,38 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 		readFile: sys.readFile
 	};
 
-	const result = parseJsonConfigFileContent(config, host, path.basename(tsconfigFile));
-
+	const result = parseJsonConfigFileContent(
+		config,
+		host,
+		path.dirname(tsconfigFile),
+		undefined,
+		tsconfigFile
+	);
+	// for some reason the extended compilerOptions are in result.options but NOT in result.raw config
+	// and contain an extra field 'configFilePath'. Use everything but that field
+	if (Object.keys(result.options).filter((x) => x !== 'configFilePath').length > 0) {
+		const extendedCompilerOptions = {
+			...result.options
+		};
+		delete extendedCompilerOptions['configFilePath'];
+		config.compilerOptions = extendedCompilerOptions;
+	}
 	return {
 		// findConfigFile returns posix path separator on windows, restore platform native
-		filename:
-			path.posix.sep !== path.sep
-				? tsconfigFile.split(path.posix.sep).join(path.sep)
-				: tsconfigFile,
-		result
+		filename: posix2native(tsconfigFile),
+		tsconfig: config,
+		nativeResult: result
 	};
+}
+
+function posix2native(filename: string) {
+	return path.posix.sep !== path.sep && filename.includes(path.posix.sep)
+		? filename.split(path.posix.sep).join(path.sep)
+		: filename;
 }
 
 export interface ParseNativeResult {
 	filename: string;
-	result: any;
+	tsconfig: object;
+	nativeResult: any;
 }

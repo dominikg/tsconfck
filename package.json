@@ -27,7 +27,7 @@
     "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
     "build": "pnpm run build:ci -- --dts --sourcemap",
     "test": "node --experimental-loader ts-node/esm node_modules/uvu/bin.js tests -i fixtures",
-    "test:watch": "pnpm test && watchlist tests src -- pnpm test",
+    "test:watch": "pnpm test; watchlist tests src -- pnpm test",
     "lint": "eslint --ignore-path .gitignore '**/*.{cjs,js,ts,md}'",
     "lint:fix": "pnpm run lint -- --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{cjs,js,ts,md}' --check",

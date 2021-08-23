@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.parent.json",
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "types": ["foo"],
+    "noImplicitAny": true
+  },
+  "include": ["src/**"],
+  "exclude": ["../**/foo/*"],
+  "compileOnSave": false
+}

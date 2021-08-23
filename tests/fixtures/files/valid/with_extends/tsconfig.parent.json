@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "types": ["bar"],
+    "strictNullChecks": false,
+    "noImplicitAny": true
+  },
+  "exclude": ["**/foo/*"]
+}
