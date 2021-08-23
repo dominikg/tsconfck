@@ -38,7 +38,9 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 	return {
 		// findConfigFile returns posix path separator on windows, restore platform native
 		filename:
-			path.posix.sep !== path.sep ? tsconfigFile.replace(path.posix.sep, path.sep) : tsconfigFile,
+			path.posix.sep !== path.sep
+				? tsconfigFile.split(path.posix.sep).join(path.sep)
+				: tsconfigFile,
 		result
 	};
 }
