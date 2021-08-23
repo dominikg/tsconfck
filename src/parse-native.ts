@@ -36,7 +36,9 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 	const result = parseJsonConfigFileContent(config, host, path.basename(tsconfigFile));
 
 	return {
-		filename: tsconfigFile,
+		// findConfigFile returns posix path separator on windows, restore platform native
+		filename:
+			path.posix.sep !== path.sep ? tsconfigFile.replace(path.posix.sep, path.sep) : tsconfigFile,
 		result
 	};
 }
