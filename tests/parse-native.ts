@@ -79,10 +79,12 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 			if (e.code === 'ERR_ASSERTION') {
 				throw e;
 			}
-			const actual = { start: e.start, message: e.messageText };
-			if (!actual.message) {
-				console.log('no messageText on error', JSON.stringify(e, null, 2));
+			if (e.messageText == null || e.start == null) {
+				console.error(`no messageText on error:\n ${JSON.stringify(e, null, 2)}`);
+				throw e;
 			}
+			const actual = { start: e.start, message: e.messageText };
+
 			assert.equal(actual, expected, `filename: ${filename}`);
 		}
 	}
