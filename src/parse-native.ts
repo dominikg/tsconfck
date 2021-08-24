@@ -6,7 +6,7 @@ import path from 'path';
  * You need to have `typescript` installed to use this
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @returns {Promise<object|void>} tsconfig parsed as object
+ * @returns {Promise<ParseNativeResult>}
  */
 export async function parseNative(filename: string): Promise<ParseNativeResult> {
 	let ts;
@@ -40,7 +40,8 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 		undefined,
 		tsconfigFile
 	);
-	// for some reason the extended compilerOptions are in result.options but NOT in result.raw config
+
+	// for some reason the extended compilerOptions are in result.options but NOT in result.raw or config
 	// and contain an extra field 'configFilePath'. Use everything but that field
 	if (Object.keys(result.options).filter((x) => x !== 'configFilePath').length > 0) {
 		const extendedCompilerOptions = {
@@ -53,7 +54,7 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 		// findConfigFile returns posix path separator on windows, restore platform native
 		filename: posix2native(tsconfigFile),
 		tsconfig: config,
-		nativeResult: result
+		result
 	};
 }
 
@@ -64,7 +65,16 @@ function posix2native(filename: string) {
 }
 
 export interface ParseNativeResult {
+	/**
+	 * absolute path to parsed tsconfig.json
+	 */
 	filename: string;
-	tsconfig: object;
-	nativeResult: any;
+	/**
+	 * parsed result, including merged values from extended
+	 */
+	tsconfig: any;
+	/**
+	 * full output of ts.parseJsonConfigFileContent
+	 */
+	result: any;
 }

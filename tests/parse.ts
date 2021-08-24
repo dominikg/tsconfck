@@ -41,7 +41,7 @@ test('should reject for invalid filename arg', async () => {
 test('should resolve with expected for valid tsconfig.json', async () => {
 	const samples = await glob('tests/fixtures/files/valid/**/tsconfig.json');
 	for (const filename of samples) {
-		const expectedFilename = filename.replace(/tsconfig.json$/, 'expected.json');
+		const expectedFilename = filename.replace(/tsconfig.json$/, 'expected.native.json');
 		let actual: ParseResult;
 		let expected;
 		try {
