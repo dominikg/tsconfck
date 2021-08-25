@@ -62,7 +62,31 @@ test('should resolve with expected for valid tsconfig.json', async () => {
 	}
 });
 
-test('should reject with correct error position for invalid tsconfig.json', async () => {
+test('should resolve with the same result when reparsing output', async () => {
+	const samples = await glob('tests/fixtures/files/valid/**/tsconfig.native.json');
+	for (const filename of samples) {
+		const expectedFilename = filename;
+		let actual: ParseResult;
+		let expected;
+		try {
+			expected = JSON.parse(await fs.readFile(path.resolve(expectedFilename), 'utf-8'));
+		} catch (e) {
+			assert.unreachable(`unexpected exception parsing ${expectedFilename}: ${e}`);
+		}
+		try {
+			actual = await parse(filename);
+			assert.equal(actual.tsconfig, expected, `testfile: ${filename}`);
+			assert.equal(actual.filename, path.resolve(filename));
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`parsing ${filename} failed: ${e}`);
+		}
+	}
+});
+
+test('should reject with correct error for invalid tsconfig.json', async () => {
 	const samples = await glob('tests/fixtures/files/invalid/parser/**/tsconfig.json');
 	for (const filename of samples) {
 		const expected = await fs.readFile(filename.replace(/tsconfig.json$/, 'expected.txt'), 'utf-8');
@@ -74,7 +98,11 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 				throw e;
 			}
 			const actual = e.message;
-			assert.equal(actual, expected, `filename: ${filename}`);
+			assert.match(
+				actual,
+				expected,
+				`expected "${expected}" for filename: ${filename}, got actual "${actual}"`
+			);
 		}
 	}
 });

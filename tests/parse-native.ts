@@ -62,6 +62,30 @@ test('should resolve with expected for valid tsconfig.json', async () => {
 	}
 });
 
+test('should resolve with the same result when reparsing output', async () => {
+	const samples = await glob('tests/fixtures/files/valid/**/tsconfig.native.json');
+	for (const filename of samples) {
+		const expectedFilename = filename;
+		let actual: ParseNativeResult;
+		let expected;
+		try {
+			expected = JSON.parse(await fs.readFile(path.resolve(expectedFilename), 'utf-8'));
+		} catch (e) {
+			assert.unreachable(`unexpected exception parsing ${expectedFilename}: ${e}`);
+		}
+		try {
+			actual = await parseNative(filename);
+			assert.equal(actual.tsconfig, expected, `testfile: ${filename}`);
+			assert.equal(actual.filename, path.resolve(filename));
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`parsing ${filename} failed: ${e}`);
+		}
+	}
+});
+
 test('should reject with correct error position for invalid tsconfig.json', async () => {
 	const samples = await glob('tests/fixtures/files/invalid/parser/**/tsconfig.json');
 	for (const filename of samples) {
@@ -75,22 +99,20 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 		try {
 			await parseNative(filename);
 			assert.unreachable(`${filename} did not reject`);
-		} catch (e) {
-			if (e.code === 'ERR_ASSERTION') {
-				throw e;
+		} catch (err) {
+			if (err.code === 'ERR_ASSERTION') {
+				throw err;
 			}
-			if (e.messageText == null || e.start == null) {
-				console.error(
-					`unexpected error without messageText or start properties:\n ${JSON.stringify(
-						e,
-						null,
-						2
-					)}`
-				);
-				throw e;
+
+			assert.equal(err.code, expected.code, `filename: ${filename}`);
+			if (expected.start != null) {
+				assert.equal(err.start, expected.start, `filename: ${filename}`);
 			}
-			const actual = { start: e.start, message: e.messageText };
-			assert.equal(actual, expected, `filename: ${filename}`);
+			assert.match(
+				err.message,
+				expected.message,
+				`expected "${expected.message}" for filename: ${filename}, got "${err.message}"`
+			);
 		}
 	}
 });

@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.parent.json",
+  "extends": "./tsconfig.circular.json",
   "compilerOptions": {
     "types": ["foo"],
     "strictNullChecks": true

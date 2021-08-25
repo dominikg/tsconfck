@@ -12,12 +12,14 @@ import { createRequire } from 'module';
  */
 export async function parse(filename: string): Promise<ParseResult> {
 	const tsconfigFile = await find(filename);
-	const result = await parseFile(tsconfigFile);
-	if (!Object.prototype.hasOwnProperty.call(result.tsconfig, 'compileOnSave')) {
+	const parseResult = await parseFile(tsconfigFile);
+	if (!Object.prototype.hasOwnProperty.call(parseResult.tsconfig, 'compileOnSave')) {
 		// ts.parseJsonConfigFileContent returns compileOnSave even if it is not set explicitly so add it if it wasn't
-		result.tsconfig.compileOnSave = false;
+		parseResult.tsconfig.compileOnSave = false;
 	}
-	return parseExtends(result);
+	const result = await parseExtends(parseResult);
+	deleteInvalidKeys(result.tsconfig);
+	return result;
 }
 
 async function parseFile(tsconfigFile: string): Promise<ParseResult> {
@@ -27,6 +29,26 @@ async function parseFile(tsconfigFile: string): Promise<ParseResult> {
 		filename: tsconfigFile,
 		tsconfig: JSON.parse(json)
 	};
+}
+
+const VALID_KEYS = [
+	'extends',
+	'compilerOptions',
+	'files',
+	'include',
+	'exclude',
+	'watchOptions',
+	'references',
+	'compileOnSave',
+	'typeAcquisition'
+];
+function deleteInvalidKeys(tsconfig: any) {
+	for (const key of Object.keys(tsconfig)) {
+		if (!VALID_KEYS.includes(key)) {
+			delete tsconfig[key];
+		}
+	}
+	return tsconfig;
 }
 
 async function parseExtends(result: ParseResult): Promise<ParseResult> {
@@ -43,9 +65,11 @@ async function parseExtends(result: ParseResult): Promise<ParseResult> {
 		const extending = extended[extended.length - 1];
 		const extendedTSConfigFile = resolveExtends(extending.tsconfig.extends, extending.filename);
 		if (extended.some((x) => x.filename === extendedTSConfigFile)) {
-			throw new Error(
-				`Circular dependency in "extends" of ${result.filename} via ${extending.tsconfig.extends} in ${extending.filename}`
-			);
+			const circle = extended
+				.concat({ filename: extendedTSConfigFile, tsconfig: null })
+				.map((e) => e.filename)
+				.join(' -> ');
+			throw new Error(`Circular dependency in "extends": ${circle}`);
 		}
 		extended.push(await parseFile(extendedTSConfigFile));
 	}
@@ -57,7 +81,7 @@ function resolveExtends(extended: string, from: string): string {
 	try {
 		return createRequire(from).resolve(extended);
 	} catch (e) {
-		throw new Error(`failed to resolve extended tsconfig ${extended} for ${from}`);
+		throw new Error(`failed to resolve "extends":"${extended}" in ${from}`);
 	}
 }
 
@@ -69,8 +93,8 @@ function mergeExtended(result: ParseResult): any {
 	return result;
 }
 
-// references
-const NOT_EXTENDED = ['references', 'extends'];
+// references is never inherited according to docs
+const NEVER_INHERITED = ['references', 'extends'];
 function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 	const extendingConfig = extending.tsconfig;
 	const extendedConfig = extended.tsconfig;
@@ -78,7 +102,7 @@ function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 		path.dirname(extending.filename),
 		path.dirname(extended.filename)
 	);
-	for (const key of Object.keys(extendedConfig).filter((key) => !NOT_EXTENDED.includes(key))) {
+	for (const key of Object.keys(extendedConfig).filter((key) => !NEVER_INHERITED.includes(key))) {
 		if (key === 'compilerOptions') {
 			for (const option of Object.keys(extendedConfig.compilerOptions)) {
 				if (Object.prototype.hasOwnProperty.call(extendingConfig.compilerOptions, option)) {
@@ -91,7 +115,18 @@ function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 				);
 			}
 		} else if (extendingConfig[key] === undefined) {
-			extendingConfig[key] = rebaseRelative(key, extendedConfig[key], relativePath);
+			if (key === 'watchOptions') {
+				extendingConfig.watchOptions = {};
+				for (const option of Object.keys(extendedConfig.watchOptions)) {
+					extendingConfig.watchOptions[option] = rebaseRelative(
+						option,
+						extendedConfig.compilerOptions[option],
+						relativePath
+					);
+				}
+			} else {
+				extendingConfig[key] = rebaseRelative(key, extendedConfig[key], relativePath);
+			}
 		}
 	}
 }

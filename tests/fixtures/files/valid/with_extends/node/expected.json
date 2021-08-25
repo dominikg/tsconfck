@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.parent.json",
+  "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
     "types": ["foo"],
     "strictNullChecks": true

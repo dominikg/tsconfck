@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.parent.json",
+  "extends": "../tsconfig.doesnotexist.json",
   "compilerOptions": {
     "types": ["foo"],
     "strictNullChecks": true

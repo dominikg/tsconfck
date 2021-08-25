@@ -1,4 +1,5 @@
 {
   "start": 15,
-  "message": "',' expected."
+  "message": "',' expected.",
+  "code": "TS 1005"
 }

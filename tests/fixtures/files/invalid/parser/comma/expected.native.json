@@ -1,4 +1,5 @@
 {
   "start": 69,
-  "message": "Property assignment expected."
+  "message": "Property assignment expected.",
+  "code": "TS 1136"
 }
