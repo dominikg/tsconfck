@@ -51,6 +51,12 @@ module.exports = {
 				'import/no-unresolved': 'off',
 				'node/no-missing-require': 'off'
 			}
+		},
+		{
+			files: ['tests/fixtures/**/*'],
+			rules: {
+				'no-unused-vars': 'off'
+			}
 		}
 	]
 };

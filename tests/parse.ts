@@ -7,6 +7,8 @@ import { parse, ParseResult } from '../src/parse.js';
 import os from 'os';
 import { copyFixtures } from './util/copy-fixtures.js';
 const test = suite('parse');
+import { transform as esbuildTransform } from 'esbuild';
+import ts from 'typescript';
 
 test('should be a function', () => {
 	assert.type(parse, 'function');
@@ -54,7 +56,7 @@ test('should reject when filename is a tsconfig.json that does not exist', async
 });
 
 test('should resolve with expected for valid tsconfig.json', async () => {
-	const samples = await glob('tests/fixtures/files/valid/**/tsconfig.json');
+	const samples = await glob('tests/fixtures/parse/valid/**/tsconfig.json');
 	for (const filename of samples) {
 		const expectedFilename = filename.replace(/tsconfig.json$/, 'expected.native.json');
 		let actual: ParseResult;
@@ -79,7 +81,7 @@ test('should resolve with expected for valid tsconfig.json', async () => {
 
 test('should resolve with tsconfig that is isomorphic', async () => {
 	const tempDir = await copyFixtures(
-		'files/valid',
+		'parse/valid',
 		'parse-isomorphic',
 		(x) => x.isDirectory() || x.name.startsWith('tsconfig')
 	);
@@ -93,8 +95,44 @@ test('should resolve with tsconfig that is isomorphic', async () => {
 	}
 });
 
+test('should resolve with tsconfig that works when transpiling', async () => {
+	const samples = await glob('tests/fixtures/transpile/**/tsconfig.json');
+	for (const filename of samples) {
+		try {
+			const { tsconfig } = await parse(filename);
+			const inputFiles = await glob(filename.replace('tsconfig.json', '**/input.ts'));
+			for (const inputFile of inputFiles) {
+				const input = await fs.readFile(inputFile, 'utf-8');
+				const esbuildExpectedFile = inputFile.replace('input.ts', 'expected.esbuild.txt');
+				const esbuildExpected = await fs.readFile(esbuildExpectedFile, 'utf-8');
+				const esbuildResult = (
+					await esbuildTransform(input, { loader: 'ts', tsconfigRaw: tsconfig })
+				).code;
+				assert.fixture(
+					esbuildResult,
+					esbuildExpected,
+					`esbuild result with config: ${filename} and input ${inputFile}`
+				);
+				const tsExpectedFile = inputFile.replace('input.ts', 'expected.typescript.txt');
+				const tsExpected = await fs.readFile(tsExpectedFile, 'utf-8');
+				const tsResult = ts.transpile(input, tsconfig.compilerOptions);
+				assert.fixture(
+					tsResult,
+					tsExpected,
+					`typescript result with config: ${filename} and input ${inputFile}`
+				);
+			}
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`compiling parse result of ${filename} failed: ${e}`);
+		}
+	}
+});
+
 test('should reject with correct error for invalid tsconfig.json', async () => {
-	const samples = await glob('tests/fixtures/files/invalid/parser/**/tsconfig.json');
+	const samples = await glob('tests/fixtures/parse/invalid/**/tsconfig.json');
 	for (const filename of samples) {
 		const expected = await fs.readFile(filename.replace(/tsconfig.json$/, 'expected.txt'), 'utf-8');
 		try {
