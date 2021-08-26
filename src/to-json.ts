@@ -8,7 +8,13 @@ import stripJsonComments from 'strip-json-comments';
  * @returns {string} content as regular json, comments and dangling commas have been replaced with whitespace
  */
 export function toJson(tsconfigJson: string): string {
-	return stripDanglingComma(stripJsonComments(stripBom(tsconfigJson)));
+	const stripped = stripDanglingComma(stripJsonComments(stripBom(tsconfigJson)));
+	if (stripped.trim() === '') {
+		// only whitespace left after stripping, return empty object
+		return '{}\n';
+	} else {
+		return stripped;
+	}
 }
 
 /**
