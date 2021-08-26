@@ -29,3 +29,35 @@ export async function resolveTSConfig(filename: string): Promise<string | void> 
 	}
 	throw new Error(`no tsconfig file found for ${filename}`);
 }
+
+/**
+ * convert posix separator to native separator
+ *
+ * eg.
+ * windows: C:/foo/bar -> c:\foo\bar
+ * linux: /foo/bar -> /foo/bar
+ *
+ * @param filename {string} filename with posix separators
+ * @returns {string} filename with native separators
+ */
+export function posix2native(filename: string) {
+	return path.posix.sep !== path.sep && filename.includes(path.posix.sep)
+		? filename.split(path.posix.sep).join(path.sep)
+		: filename;
+}
+
+/**
+ * convert native separator to posix separator
+ *
+ * eg.
+ * windows: C:\foo\bar -> c:/foo/bar
+ * linux: /foo/bar -> /foo/bar
+ *
+ * @param filename {string} filename with native separators
+ * @returns {string} filename with posix separators
+ */
+export function native2posix(filename: string) {
+	return path.posix.sep !== path.sep && filename.includes(path.sep)
+		? filename.split(path.sep).join(path.posix.sep)
+		: filename;
+}

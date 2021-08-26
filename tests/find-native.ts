@@ -3,6 +3,7 @@ import * as assert from 'uvu/assert';
 import path from 'path';
 import os from 'os';
 import { findNative } from '../src/find-native.js';
+import { native2posix } from '../src/util.js';
 const test = suite('findNative');
 
 test('should be a function', () => {
@@ -38,7 +39,7 @@ test('should reject for invalid filename arg', async () => {
 });
 
 test('should find tsconfig in same directory', async () => {
-	const expected = path.resolve('tests', 'fixtures', 'find', 'a', 'tsconfig.json');
+	const expected = native2posix(path.resolve('tests', 'fixtures', 'find', 'a', 'tsconfig.json'));
 	const inputs = [
 		path.join('tests', 'fixtures', 'find', 'a', 'foo.ts'),
 		path.join('.', 'tests', 'fixtures', 'find', 'a', 'foo.ts'),
@@ -51,7 +52,7 @@ test('should find tsconfig in same directory', async () => {
 });
 
 test('should find tsconfig in parent directory', async () => {
-	const expected = path.resolve('tests', 'fixtures', 'find', 'a', 'tsconfig.json');
+	const expected = native2posix(path.resolve('tests', 'fixtures', 'find', 'a', 'tsconfig.json'));
 	const inputs = [
 		path.join('tests', 'fixtures', 'find', 'a', 'b', 'bar.ts'),
 		path.join('.', 'tests', 'fixtures', 'find', 'a', 'b', 'bar.ts'),

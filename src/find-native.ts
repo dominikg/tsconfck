@@ -9,7 +9,7 @@ import { loadTS } from './util.js';
  * @param {string} filename - path to file to find tsconfig for (absolute or relative to cwd)
  * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
-export async function findNative(filename: string) {
+export async function findNative(filename: string): Promise<string> {
 	const ts = await loadTS();
 	const { findConfigFile, sys } = ts;
 	const tsconfigFile = findConfigFile(path.dirname(path.resolve(filename)), sys.fileExists);

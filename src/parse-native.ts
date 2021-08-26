@@ -1,5 +1,5 @@
 import path from 'path';
-import { loadTS, resolveTSConfig } from './util.js';
+import { loadTS, native2posix, posix2native, resolveTSConfig } from './util.js';
 import { findNative } from './find-native.js';
 
 /**
@@ -11,7 +11,13 @@ import { findNative } from './find-native.js';
  * @returns {Promise<ParseNativeResult>}
  */
 export async function parseNative(filename: string): Promise<ParseNativeResult> {
-	const tsconfigFile = (await resolveTSConfig(filename)) || (await findNative(filename));
+	let tsconfigFile = await resolveTSConfig(filename);
+	if (tsconfigFile) {
+		tsconfigFile = native2posix(tsconfigFile);
+	} else {
+		tsconfigFile = await findNative(filename);
+	}
+
 	const ts = await loadTS();
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
 	const { config, error } = readConfigFile(tsconfigFile, sys.readFile);
@@ -134,22 +140,6 @@ function result2tsconfig(result: any, ts: any) {
 		}
 	}
 	return tsconfig;
-}
-
-/**
- * convert posix separator to native separator
- *
- * eg.
- * windows: C:/foo/bar -> c:\foo\bar
- * linux: /foo/bar -> /foo/bar
- *
- * @param filename {string} filename with posix separators
- * @returns {string} filename with native separators
- */
-function posix2native(filename: string) {
-	return path.posix.sep !== path.sep && filename.includes(path.posix.sep)
-		? filename.split(path.posix.sep).join(path.sep)
-		: filename;
 }
 
 export interface ParseNativeResult {
