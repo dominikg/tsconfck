@@ -1,8 +1,9 @@
 import path from 'path';
 import { promises as fs } from 'fs';
+import { createRequire } from 'module';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
-import { createRequire } from 'module';
+import { resolveTSConfig } from './util.js';
 
 /**
  * parse the closest tsconfig.json file
@@ -11,7 +12,7 @@ import { createRequire } from 'module';
  * @returns {Promise<object|void>} tsconfig parsed as object
  */
 export async function parse(filename: string): Promise<ParseResult> {
-	const tsconfigFile = await find(filename);
+	const tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
 	const parseResult = await parseFile(tsconfigFile);
 	if (!Object.prototype.hasOwnProperty.call(parseResult.tsconfig, 'compileOnSave')) {
 		// ts.parseJsonConfigFileContent returns compileOnSave even if it is not set explicitly so add it if it wasn't

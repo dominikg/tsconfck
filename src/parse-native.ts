@@ -1,5 +1,5 @@
 import path from 'path';
-import { loadTS } from './load-ts.js';
+import { loadTS, resolveTSConfig } from './util.js';
 import { findNative } from './find-native.js';
 
 /**
@@ -11,7 +11,7 @@ import { findNative } from './find-native.js';
  * @returns {Promise<ParseNativeResult>}
  */
 export async function parseNative(filename: string): Promise<ParseNativeResult> {
-	const tsconfigFile = await findNative(filename);
+	const tsconfigFile = (await resolveTSConfig(filename)) || (await findNative(filename));
 	const ts = await loadTS();
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
 	const { config, error } = readConfigFile(tsconfigFile, sys.readFile);
