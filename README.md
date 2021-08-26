@@ -37,6 +37,10 @@ const {
 } = await parseNative('foo/bar.ts');
 ```
 
+## API
+
+see [API-DOCS](docs/api.md)
+
 ## Advanced
 
 ### caching
