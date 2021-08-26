@@ -5,7 +5,11 @@ import path from 'path';
 export async function copyFixtures(from: string, to: string, filter?: (x: Dirent) => boolean) {
 	const src = path.join('tests', 'fixtures', from);
 	const dest = path.join('tests', 'temp', to);
-	await fs.rm(dest, { recursive: true, force: true });
+	try {
+		await fs.rmdir(dest, { recursive: true });
+	} catch (e) {
+		// ignore
+	}
 	await copy(src, dest, filter);
 	return dest;
 }
