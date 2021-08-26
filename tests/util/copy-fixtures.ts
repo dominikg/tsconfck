@@ -24,7 +24,7 @@ async function copy(src: string, dest: string, filter?: (x: Dirent) => boolean) 
 	await Promise.all(
 		entries.map((entry) => {
 			if (filter && !filter(entry)) {
-				return Promise.resolve();
+				return;
 			}
 			const srcPath = path.join(src, entry.name);
 			const destPath = path.join(dest, entry.name);
