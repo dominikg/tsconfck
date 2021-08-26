@@ -110,21 +110,15 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 			if (err.code === 'ERR_ASSERTION') {
 				throw err;
 			}
-			if (!err.code?.startsWith('TS ')) {
-				throw err;
-			}
-			assert.equal(err.code, expected.code, `filename: ${filename}, err: ${JSON.stringify(err)}`);
+
+			assert.equal(err.code, expected.code, `filename: ${filename}, err: ${err}`);
 			if (expected.start != null) {
-				assert.equal(
-					err.start,
-					expected.start,
-					`filename: ${filename}, err: ${JSON.stringify(err)}`
-				);
+				assert.equal(err.start, expected.start, `filename: ${filename}, err: ${err}`);
 			}
 			assert.match(
 				err.message,
 				expected.message,
-				`expected "${expected.message}" for filename: ${filename}, got "${err.message}"`
+				`expected "${expected.message}" for filename: ${filename}, got "${err.message}", err: ${err}`
 			);
 		}
 	}
