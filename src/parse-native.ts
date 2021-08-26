@@ -13,6 +13,7 @@ import { findNative } from './find-native.js';
 export async function parseNative(filename: string): Promise<ParseNativeResult> {
 	let tsconfigFile = await resolveTSConfig(filename);
 	if (tsconfigFile) {
+		// convert to C:/foo/bar on windows as ts.readConfigFile expects it that way
 		tsconfigFile = native2posix(tsconfigFile);
 	} else {
 		tsconfigFile = await findNative(filename);
