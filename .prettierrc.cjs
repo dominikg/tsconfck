@@ -9,7 +9,7 @@ module.exports = {
 			options: { parser: 'typescript' }
 		},
 		{
-			files: '**/CHANGELOG.md',
+			files: ['**/CHANGELOG.md', '**/docs/api.md'],
 			options: {
 				requirePragma: true
 			}

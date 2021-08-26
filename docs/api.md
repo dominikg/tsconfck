@@ -1,6 +1,5 @@
 <!-- generated, do not modify -->
-
-## API
+## API 
 
 ### find
 
@@ -37,20 +36,20 @@ declare function toJson(tsconfigJson: string): string;
  */
 declare function parse(filename: string): Promise<ParseResult>;
 interface ParseResult {
-	/**
-	 * absolute path to parsed tsconfig.json
-	 */
-	filename: string;
-	/**
-	 * parsed result, including merged values from extended
-	 */
-	tsconfig: any;
-	/**
-	 * ParseResult for all tsconfig files
-	 *
-	 * [a,b,c] where a extends b and b extends c
-	 */
-	extended?: Omit<ParseResult, 'extended'>[];
+    /**
+     * absolute path to parsed tsconfig.json
+     */
+    filename: string;
+    /**
+     * parsed result, including merged values from extended
+     */
+    tsconfig: any;
+    /**
+     * ParseResult for all tsconfig files
+     *
+     * [a,b,c] where a extends b and b extends c
+     */
+    extended?: Omit<ParseResult, 'extended'>[];
 }
 ```
 
@@ -81,17 +80,17 @@ declare function findNative(filename: string): Promise<string>;
  */
 declare function parseNative(filename: string): Promise<ParseNativeResult>;
 interface ParseNativeResult {
-	/**
-	 * absolute path to parsed tsconfig.json
-	 */
-	filename: string;
-	/**
-	 * parsed result, including merged values from extended
-	 */
-	tsconfig: any;
-	/**
-	 * full output of ts.parseJsonConfigFileContent
-	 */
-	result: any;
+    /**
+     * absolute path to parsed tsconfig.json
+     */
+    filename: string;
+    /**
+     * parsed result, including merged values from extended
+     */
+    tsconfig: any;
+    /**
+     * full output of ts.parseJsonConfigFileContent
+     */
+    result: any;
 }
 ```
