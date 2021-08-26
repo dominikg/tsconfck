@@ -1,28 +1,6 @@
 # 1.0.0-0 (2021-08-26)
 
-
-### Bug Fixes
-
-* add tsconfig to ParseNativeResult with merged compilerOptions. Include a simple testcase ([0b7efdb](https://github.com/dominikg/tsconfck/commit/0b7efdbcd1d2f1003d8f529e4777767ae1c692c6))
-* convert found filename to native path separator in parseNative ([21ebd8e](https://github.com/dominikg/tsconfck/commit/21ebd8eb22f5dfb8751cef4b7e1df5138b296009))
-* convert found filename to native path separator in parseNative ([671eca8](https://github.com/dominikg/tsconfck/commit/671eca8b4cbb4f2f6f5f91dad79d38bbe3201c3b))
-* convert output of ts parser to be parsable again, improve error handling, more tests ([e9b28a2](https://github.com/dominikg/tsconfck/commit/e9b28a2bbc27db7ae48cf44b6d7d0f9e7e2f27bc))
-* convert windows path separators correctly for native ts functions ([504158b](https://github.com/dominikg/tsconfck/commit/504158ba8efbe00758b0d07b022894352b2ff4bd))
-* don't call posix2native in findNative ([8d2b125](https://github.com/dominikg/tsconfck/commit/8d2b125eb5b2ebf9c9cc8dbc203d0d7c77cda296))
-* don't use find if parse is called with a tsconfig.json; refactor tests for isomorphic result ([ff34eb5](https://github.com/dominikg/tsconfck/commit/ff34eb5697a84b4a52b01774cf39accb0544b92b))
-* use native find function in parseNative ([041dd8e](https://github.com/dominikg/tsconfck/commit/041dd8eabf2d99188628ab046a8b28c13fd31453))
-* use node12 compatible rmdir ([a464db0](https://github.com/dominikg/tsconfck/commit/a464db0d95481fde6bf685e29a6757fefb597f21))
-* use node12 compatible way to import fs/promises ([433092d](https://github.com/dominikg/tsconfck/commit/433092d019a57d495f6711be4e8852bedf6ab742))
-
-
-### Features
-
-* advanced parse with extends ([bf0db8e](https://github.com/dominikg/tsconfck/commit/bf0db8e80ef15b7bcd80c9ad584eda80fdce2a01))
-* implement findTSConfig ([6d57501](https://github.com/dominikg/tsconfck/commit/6d575015b43d6408b7e04427a33b1dbec183781e))
-* implement native parse with optional peer dependency on typescript ([5ade70b](https://github.com/dominikg/tsconfck/commit/5ade70bdbafddb0666496537cf135d7fadd7a6d8))
-* implement simple parse ([2715b45](https://github.com/dominikg/tsconfck/commit/2715b45e64331a9390f29041d39e5dc23deee129))
-* implement toJson ([96d3bfc](https://github.com/dominikg/tsconfck/commit/96d3bfc90c837a970e6ab08d3896ffe1978aaa34))
-* separate findNative function ([4000586](https://github.com/dominikg/tsconfck/commit/40005863e9c68db3284c62bca6dd5155ec439cf6))
+Initial release
 
 
 
