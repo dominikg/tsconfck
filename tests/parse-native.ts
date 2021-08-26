@@ -111,9 +111,9 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 				throw err;
 			}
 
-			assert.equal(err.code, expected.code, `filename: ${filename}`);
+			assert.equal(err.code, expected.code, `filename: ${filename}, ${JSON.stringify(err)}`);
 			if (expected.start != null) {
-				assert.equal(err.start, expected.start, `filename: ${filename}`);
+				assert.equal(err.start, expected.start, `filename: ${filename}, ${JSON.stringify(err)}`);
 			}
 			assert.match(
 				err.message,
