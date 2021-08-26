@@ -1,9 +1,13 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 
+// hide dynamic import from ts transform to prevent it turning into a require
+// see https://github.com/microsoft/TypeScript/issues/43329#issuecomment-811606238
+const dynamicImportDefault = new Function('path', 'return import(path).then(m => m.default)');
+
 export async function loadTS(): Promise<any> {
 	try {
-		return (await import('typescript')).default;
+		return dynamicImportDefault('typescript');
 	} catch (e) {
 		console.error('typescript must be installed to use "native" functions');
 		throw e;
