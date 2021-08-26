@@ -1,6 +1,6 @@
 # tsconfck
 
-A utility to work with tsconfig files without depending on typescript
+A utility to find and parse tsconfig files without depending on typescript
 
 # Why
 
@@ -10,9 +10,8 @@ Because no simple official api exists and tsconfig.json isn't actual json.
 
 - [x] find closest tsconfig.json
 - [x] convert tsconfig.json to actual json and parse it
-- [ ] resolve "extends"
-- [ ] validate via json schema
-- [x] optional native parse
+- [x] resolve "extends"
+- [x] optional findNative and parseNative function to use ts api with typescript installed
 
 # Develop
 

@@ -1,4 +1,6 @@
 import path from 'path';
+import { loadTS } from './load-ts.js';
+import { findNative } from './find-native.js';
 
 /**
  * parse the closest tsconfig.json file with typescript native functions
@@ -9,18 +11,9 @@ import path from 'path';
  * @returns {Promise<ParseNativeResult>}
  */
 export async function parseNative(filename: string): Promise<ParseNativeResult> {
-	let ts;
-	try {
-		ts = (await import('typescript')).default;
-	} catch (e) {
-		console.error('typescript must be installed to use parseNative');
-		throw e;
-	}
-	const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = ts;
-	const tsconfigFile = findConfigFile(path.dirname(path.resolve(filename)), sys.fileExists);
-	if (!tsconfigFile) {
-		throw new Error(`no tsconfig file found for ${filename}`);
-	}
+	const tsconfigFile = await findNative(filename);
+	const ts = await loadTS();
+	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
 	const { config, error } = readConfigFile(tsconfigFile, sys.readFile);
 	if (error) {
 		throw toError(error);
@@ -43,8 +36,7 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 	checkErrors(result.errors);
 
 	return {
-		// findConfigFile returns posix path separator on windows, restore platform native
-		filename: posix2native(tsconfigFile),
+		filename: tsconfigFile,
 		tsconfig: result2tsconfig(result, ts),
 		result: result
 	};
@@ -57,7 +49,7 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
  * and do not affect the config itself
  *
  * @param errors errors to check
- * @throws
+ * @throws {message: string, code: string, start?: number} for critical error
  */
 function checkErrors(errors: { code: number; category: number }[]) {
 	const ignoredErrorCodes = [
@@ -79,22 +71,6 @@ function toError(tsError: any) {
 		code: `TS ${tsError.code}`,
 		start: tsError.start
 	};
-}
-
-/**
- * convert posix separator to native separator
- *
- * eg.
- * windows: C:/foo/bar -> c:\foo\bar
- * linux: /foo/bar -> /foo/bar
- *
- * @param filename {string} filename with posix separators
- * @returns {string} filename with native separators
- */
-function posix2native(filename: string) {
-	return path.posix.sep !== path.sep && filename.includes(path.posix.sep)
-		? filename.split(path.posix.sep).join(path.sep)
-		: filename;
 }
 
 /**
