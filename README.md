@@ -61,6 +61,34 @@ const cachedParse = async (filename) => {
 };
 ```
 
+### cli
+
+A simple cli wrapper is included, you can use it like this
+
+#### find
+
+```shell
+# prints /path/to/tsconfig.json on stdout
+tsconfck find src/index.ts
+```
+
+#### parse
+
+```shell
+# print content of ParseResult.tsconfig on stdout
+tsconfck parse src/index.ts
+
+# print to file
+tsconfck parse src/index.ts > output.json
+```
+
+#### help
+
+```shell
+# print usage
+tsconfck -h # or --help, -?, help
+```
+
 # Links
 
 - [changelog](CHANGELOG.md)

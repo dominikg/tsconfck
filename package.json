@@ -6,6 +6,7 @@
   "author": "dominikg",
   "files": [
     "dist",
+    "bin",
     "src",
     "README.md",
     "LICENSE",
@@ -14,6 +15,7 @@
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
+  "bin": "bin/tsconfck.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
