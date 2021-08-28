@@ -52,10 +52,6 @@
     "url": "https://github.com/dominikg/tsconfck/issues"
   },
   "homepage": "https://github.com/dominikg/tsconfck/tree/main/#readme",
-  "dependencies": {
-    "strip-bom": "^5.0.0",
-    "strip-json-comments": "^4.0.0"
-  },
   "peerDependencies": {
     "typescript": "^4.3.5"
   },
