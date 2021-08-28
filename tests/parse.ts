@@ -79,6 +79,29 @@ test('should resolve with expected for valid tsconfig.json', async () => {
 	}
 });
 
+test('should resolve with expected tsconfig.json for ts file that is part of a solution', async () => {
+	const samples = await glob('tests/fixtures/parse/solution/**/*.ts');
+	for (const filename of samples) {
+		const expectedFilename = `${filename}.expected.json`;
+		let actual: ParseResult;
+		let expected;
+		try {
+			expected = JSON.parse(await fs.readFile(path.resolve(expectedFilename), 'utf-8'));
+		} catch (e) {
+			assert.unreachable(`unexpected exception parsing ${expectedFilename}: ${e}`);
+		}
+		try {
+			actual = await parse(filename);
+			assert.equal(actual.tsconfig, expected, `testfile: ${filename}`);
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`parsing ${filename} failed: ${e}`);
+		}
+	}
+});
+
 test('should resolve with tsconfig that is isomorphic', async () => {
 	const tempDir = await copyFixtures(
 		'parse/valid',
