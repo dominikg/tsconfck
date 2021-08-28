@@ -1,3 +1,13 @@
+# [1.0.0-2](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-1...tsconfck@1.0.0-2) (2021-08-28)
+
+
+### Bug Fixes
+
+* inline strip-bom and strip-json-comments to get cjs build working ([f64d4c7](https://github.com/dominikg/tsconfck/commit/f64d4c7cdbcb619b46bc9a70bf8ab4f671959f76))
+* prevent dynamic import to require transform in build ([4dfa25c](https://github.com/dominikg/tsconfck/commit/4dfa25c4abf6ba80535f48255a6bfe88b10a775b))
+
+
+
 # 1.0.0-1 (2021-08-26)
 
 
