@@ -3,5 +3,6 @@
 trim_trailing_whitespace = false
 indent_size = unset
 indent_style = unset
+insert_final_newline = unset
 [*.txt]
 insert_final_newline = unset

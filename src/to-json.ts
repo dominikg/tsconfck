@@ -24,7 +24,7 @@ export function toJson(tsconfigJson: string): string {
 	const stripped = stripDanglingComma(stripJsonComments(stripBom(tsconfigJson)));
 	if (stripped.trim() === '') {
 		// only whitespace left after stripping, return empty object so that JSON.parse still works
-		return '{}\n';
+		return '{}';
 	} else {
 		return stripped;
 	}
