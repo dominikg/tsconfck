@@ -1,3 +1,12 @@
+# [1.0.0-3](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-2...tsconfck@1.0.0-3) (2021-08-28)
+
+
+### Features
+
+* cli ([5fa828f](https://github.com/dominikg/tsconfck/commit/5fa828f7994e2feb04589c2728189b183aac26ed))
+
+
+
 # [1.0.0-2](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-1...tsconfck@1.0.0-2) (2021-08-28)
 
 
