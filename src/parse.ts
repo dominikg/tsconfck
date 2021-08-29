@@ -3,7 +3,11 @@ import { promises as fs } from 'fs';
 import { createRequire } from 'module';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
-import { resolveTSConfig } from './util.js';
+import {
+	findTSConfigForFileInSolution,
+	resolveReferencedTSConfigFiles,
+	resolveTSConfig
+} from './util.js';
 
 /**
  * parse the closest tsconfig.json file
@@ -13,13 +17,14 @@ import { resolveTSConfig } from './util.js';
  */
 export async function parse(filename: string): Promise<ParseResult> {
 	const tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
-	const parseResult = await parseFile(tsconfigFile);
-	if (!Object.prototype.hasOwnProperty.call(parseResult.tsconfig, 'compileOnSave')) {
-		// ts.parseJsonConfigFileContent returns compileOnSave even if it is not set explicitly so add it if it wasn't
-		parseResult.tsconfig.compileOnSave = false;
+	const result = await parseFile(tsconfigFile);
+	await Promise.all([parseExtends(result), parseReferences(result)]);
+	if (['.ts', '.tsx'].some((ext) => filename.endsWith(ext))) {
+		const solutionTSConfig = findTSConfigForFileInSolution(filename, result);
+		result.tsconfig = solutionTSConfig.tsconfig;
+		result.filename = solutionTSConfig.filename;
 	}
-	const result = await parseExtends(parseResult);
-	deleteInvalidKeys(result.tsconfig);
+	normalizeTSConfig(result.tsconfig);
 	return result;
 }
 
@@ -43,18 +48,36 @@ const VALID_KEYS = [
 	'compileOnSave',
 	'typeAcquisition'
 ];
-function deleteInvalidKeys(tsconfig: any) {
+
+/**
+ * normalize to match the output of ts.parseJsonConfigFileContent
+ *
+ * @param tsconfig
+ */
+function normalizeTSConfig(tsconfig: any) {
 	for (const key of Object.keys(tsconfig)) {
 		if (!VALID_KEYS.includes(key)) {
 			delete tsconfig[key];
 		}
 	}
-	return tsconfig;
+	if (!Object.prototype.hasOwnProperty.call(tsconfig, 'compileOnSave')) {
+		// ts.parseJsonConfigFileContent returns compileOnSave even if it is not set explicitly so add it if it wasn't
+		tsconfig.compileOnSave = false;
+	}
 }
 
-async function parseExtends(result: ParseResult): Promise<ParseResult> {
+async function parseReferences(result: ParseResult) {
+	if (!result.tsconfig.references) {
+		return;
+	}
+	const referencedFiles = resolveReferencedTSConfigFiles(result);
+	const referenced = await Promise.all(referencedFiles.map((file) => parseFile(file)));
+	result.referenced = referenced;
+}
+
+async function parseExtends(result: ParseResult) {
 	if (!result.tsconfig.extends) {
-		return result;
+		return;
 	}
 	// use result as first element in extended
 	// but dereference tsconfig so that mergeExtended can modify the original without affecting extended[0]
@@ -75,7 +98,10 @@ async function parseExtends(result: ParseResult): Promise<ParseResult> {
 		extended.push(await parseFile(extendedTSConfigFile));
 	}
 	result.extended = extended;
-	return mergeExtended(result);
+	// skip first as it is the original config
+	for (const ext of result.extended!.slice(1)) {
+		extendTSConfig(result, ext);
+	}
 }
 
 function resolveExtends(extended: string, from: string): string {
@@ -84,14 +110,6 @@ function resolveExtends(extended: string, from: string): string {
 	} catch (e) {
 		throw new Error(`failed to resolve "extends":"${extended}" in ${from}`);
 	}
-}
-
-function mergeExtended(result: ParseResult): any {
-	// skip first as it is the original config
-	for (const ext of result.extended!.slice(1)) {
-		extendTSConfig(result, ext);
-	}
-	return result;
 }
 
 // references is never inherited according to docs
@@ -189,9 +207,14 @@ export interface ParseResult {
 	tsconfig: any;
 
 	/**
-	 * ParseResult for all tsconfig files
+	 * ParseResult for all extended tsconfig files
 	 *
 	 * [a,b,c] where a extends b and b extends c
 	 */
-	extended?: Omit<ParseResult, 'extended'>[];
+	extended?: Pick<ParseResult, 'filename' | 'tsconfig'>[];
+
+	/**
+	 * ParseResult for all referenced tsconfig files
+	 */
+	referenced?: Pick<ParseResult, 'filename' | 'tsconfig'>[];
 }

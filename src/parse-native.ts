@@ -152,6 +152,12 @@ export interface ParseNativeResult {
 	 * parsed result, including merged values from extended
 	 */
 	tsconfig: any;
+
+	/**
+	 * ParseResult for all referenced tsconfig files
+	 */
+	referenced?: Pick<ParseNativeResult, 'filename' | 'tsconfig'>[];
+
 	/**
 	 * full output of ts.parseJsonConfigFileContent
 	 */
