@@ -67,16 +67,33 @@ export function native2posix(filename: string) {
 		: filename;
 }
 
+/**
+ * converts params to native separator, resolves path and converts native back to posix
+ *
+ * needed on windows to handle posix paths in tsconfig
+ *
+ * @param dir {string} directory to resolve from
+ * @param filename {string} filename or pattern to resolve
+ */
+export function resolve2posix(dir: string | null, filename: string) {
+	if (path.sep === path.posix.sep) {
+		return dir ? path.resolve(dir, filename) : path.resolve(filename);
+	}
+	return native2posix(
+		dir
+			? path.resolve(posix2native(dir), posix2native(filename))
+			: path.resolve(posix2native(filename))
+	);
+}
+
 export function resolveReferencedTSConfigFiles(result: ParseResult): string[] {
 	if (!result.tsconfig.references) {
 		return [];
 	}
 	const dir = path.dirname(result.filename);
 	return result.tsconfig.references.map((ref: { path: string }) => {
-		const refPath = ref.path.endsWith('.json')
-			? ref.path
-			: path.posix.join(ref.path, 'tsconfig.json');
-		return path.posix.resolve(dir, refPath);
+		const refPath = ref.path.endsWith('.json') ? ref.path : path.join(ref.path, 'tsconfig.json');
+		return resolve2posix(dir, refPath);
 	});
 }
 
@@ -97,13 +114,12 @@ export function resolveSolutionTSConfig(filename: string, result: ParseResult): 
 
 function isIncluded(filename: string, result: ParseResult): boolean {
 	const dir = path.dirname(result.filename);
-	const files = (result.tsconfig.files || []).map((file: string) =>
-		path.posix.resolve(dir, native2posix(file))
-	);
+	const files = (result.tsconfig.files || []).map((file: string) => resolve2posix(dir, file));
+	const absoluteFilename = resolve2posix(null, filename);
 	if (files.includes(filename)) {
 		return true;
 	}
-	const absoluteFilename = path.posix.resolve(native2posix(filename));
+
 	const isIncluded = isMatched(
 		absoluteFilename,
 		dir,
@@ -118,7 +134,7 @@ function isIncluded(filename: string, result: ParseResult): boolean {
 
 function isMatched(filename: string, dir: string, patterns: string[]): boolean {
 	return patterns.some((pattern) => {
-		const resolvedPattern = path.posix.resolve(dir, native2posix(pattern));
+		const resolvedPattern = resolve2posix(dir, pattern);
 		if (pattern.includes('*') || pattern.includes('?')) {
 			let regexp =
 				'^' +
