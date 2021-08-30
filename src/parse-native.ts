@@ -1,5 +1,12 @@
 import path from 'path';
-import { loadTS, native2posix, posix2native, resolveTSConfig } from './util.js';
+import {
+	loadTS,
+	native2posix,
+	posix2native,
+	resolveReferencedTSConfigFiles,
+	resolveSolutionTSConfig,
+	resolveTSConfig
+} from './util.js';
 import { findNative } from './find-native.js';
 
 /**
@@ -20,6 +27,14 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 	}
 
 	const ts = await loadTS();
+	const result = await parseFile(tsconfigFile, ts);
+	await parseReferences(result, ts);
+
+	//@ts-ignore
+	return resolveSolutionTSConfig(filename, result);
+}
+
+async function parseFile(tsconfigFile: string, ts: any) {
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
 	const { config, error } = readConfigFile(tsconfigFile, sys.readFile);
 	if (error) {
@@ -33,20 +48,28 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 		readFile: sys.readFile
 	};
 
-	const result = parseJsonConfigFileContent(
+	const nativeResult = parseJsonConfigFileContent(
 		config,
 		host,
 		path.dirname(tsconfigFile),
 		undefined,
 		tsconfigFile
 	);
-	checkErrors(result.errors);
-
-	return {
+	checkErrors(nativeResult.errors);
+	const result: ParseNativeResult = {
 		filename: posix2native(tsconfigFile),
-		tsconfig: result2tsconfig(result, ts),
-		result: result
+		tsconfig: result2tsconfig(nativeResult, ts),
+		result: nativeResult
 	};
+	return result;
+}
+
+async function parseReferences(result: ParseNativeResult, ts: any) {
+	if (!result.tsconfig.references) {
+		return;
+	}
+	const referencedFiles = resolveReferencedTSConfigFiles(result);
+	result.referenced = await Promise.all(referencedFiles.map((file) => parseFile(file, ts)));
 }
 
 /**
@@ -148,15 +171,21 @@ export interface ParseNativeResult {
 	 * absolute path to parsed tsconfig.json
 	 */
 	filename: string;
+
 	/**
 	 * parsed result, including merged values from extended
 	 */
 	tsconfig: any;
 
 	/**
-	 * ParseResult for all referenced tsconfig files
+	 * ParseResult for parent solution
 	 */
-	referenced?: Pick<ParseNativeResult, 'filename' | 'tsconfig'>[];
+	solution?: ParseNativeResult;
+
+	/**
+	 * ParseNativeResults for all tsconfig files referenced in a solution
+	 */
+	referenced?: ParseNativeResult[];
 
 	/**
 	 * full output of ts.parseJsonConfigFileContent

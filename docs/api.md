@@ -45,11 +45,19 @@ interface ParseResult {
      */
     tsconfig: any;
     /**
+     * ParseResult for parent solution
+     */
+    solution?: ParseResult;
+    /**
+     * ParseResults for all tsconfig files referenced in a solution
+     */
+    referenced?: ParseResult[];
+    /**
      * ParseResult for all tsconfig files
      *
      * [a,b,c] where a extends b and b extends c
      */
-    extended?: Omit<ParseResult, 'extended'>[];
+    extended?: ParseResult[];
 }
 ```
 
@@ -88,6 +96,14 @@ interface ParseNativeResult {
      * parsed result, including merged values from extended
      */
     tsconfig: any;
+    /**
+     * ParseResult for parent solution
+     */
+    solution?: ParseResult;
+    /**
+     * ParseResults for all tsconfig files referenced in a solution
+     */
+    referenced?: ParseResult[];
     /**
      * full output of ts.parseJsonConfigFileContent
      */

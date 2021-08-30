@@ -1,7 +1,6 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import { ParseResult } from './parse';
-import { ParseNativeResult } from './parse-native';
 
 // hide dynamic import from ts transform to prevent it turning into a require
 // see https://github.com/microsoft/TypeScript/issues/43329#issuecomment-811606238
@@ -68,7 +67,7 @@ export function native2posix(filename: string) {
 		: filename;
 }
 
-export function resolveReferencedTSConfigFiles(result: ParseResult | ParseNativeResult): string[] {
+export function resolveReferencedTSConfigFiles(result: ParseResult): string[] {
 	if (!result.tsconfig.references) {
 		return [];
 	}
@@ -81,20 +80,22 @@ export function resolveReferencedTSConfigFiles(result: ParseResult | ParseNative
 	});
 }
 
-export function findTSConfigForFileInSolution(
-	filename: string,
-	solution: ParseResult | ParseNativeResult
-): { filename: string; tsconfig: any } | void {
-	if (isIncluded(filename, solution)) {
-		return {
-			filename: solution.filename,
-			tsconfig: solution.tsconfig
-		};
+export function resolveSolutionTSConfig(filename: string, result: ParseResult): ParseResult {
+	if (['.ts', '.tsx'].some((ext) => filename.endsWith(ext)) && !isIncluded(filename, result)) {
+		const solutionTSConfig = result.referenced?.find((referenced) =>
+			isIncluded(filename, referenced)
+		);
+		if (solutionTSConfig) {
+			return {
+				...solutionTSConfig,
+				solution: result
+			};
+		}
 	}
-	return solution.referenced?.find((referenced) => isIncluded(filename, referenced));
+	return result;
 }
 
-function isIncluded(filename: string, result: ParseResult | ParseNativeResult): boolean {
+function isIncluded(filename: string, result: ParseResult): boolean {
 	const dir = path.dirname(result.filename);
 	const files = (result.tsconfig.files || []).map((file: string) =>
 		path.posix.resolve(dir, native2posix(file))

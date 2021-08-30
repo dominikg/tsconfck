@@ -4,8 +4,8 @@ import { createRequire } from 'module';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
 import {
-	findTSConfigForFileInSolution,
 	resolveReferencedTSConfigFiles,
+	resolveSolutionTSConfig,
 	resolveTSConfig
 } from './util.js';
 
@@ -19,19 +19,7 @@ export async function parse(filename: string): Promise<ParseResult> {
 	const tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
 	const result = await parseFile(tsconfigFile);
 	await Promise.all([parseExtends(result), parseReferences(result)]);
-	if (['.ts', '.tsx'].some((ext) => filename.endsWith(ext))) {
-		const solutionTSConfig = findTSConfigForFileInSolution(filename, result);
-		if (solutionTSConfig) {
-			result.solution = {
-				tsconfig: result.tsconfig,
-				filename: result.filename
-			};
-			result.tsconfig = solutionTSConfig.tsconfig;
-			result.filename = solutionTSConfig.filename;
-		}
-	}
-	normalizeTSConfig(result.tsconfig);
-	return result;
+	return resolveSolutionTSConfig(filename, result);
 }
 
 async function parseFile(tsconfigFile: string): Promise<ParseResult> {
@@ -39,7 +27,7 @@ async function parseFile(tsconfigFile: string): Promise<ParseResult> {
 	const json = toJson(tsconfigJson);
 	return {
 		filename: tsconfigFile,
-		tsconfig: JSON.parse(json)
+		tsconfig: normalizeTSConfig(JSON.parse(json))
 	};
 }
 
@@ -70,6 +58,7 @@ function normalizeTSConfig(tsconfig: any) {
 		// ts.parseJsonConfigFileContent returns compileOnSave even if it is not set explicitly so add it if it wasn't
 		tsconfig.compileOnSave = false;
 	}
+	return tsconfig;
 }
 
 async function parseReferences(result: ParseResult) {
@@ -208,27 +197,26 @@ export interface ParseResult {
 	 * absolute path to parsed tsconfig.json
 	 */
 	filename: string;
+
 	/**
 	 * parsed result, including merged values from extended
-	 * for solutions, the tsconfig applicable to input file is returned if it was a sourcefile
 	 */
 	tsconfig: any;
 
 	/**
-	 * ParseResult for all extended tsconfig files
+	 * ParseResult for parent solution
+	 */
+	solution?: ParseResult;
+
+	/**
+	 * ParseResults for all tsconfig files referenced in a solution
+	 */
+	referenced?: ParseResult[];
+
+	/**
+	 * ParseResult for all tsconfig files
 	 *
 	 * [a,b,c] where a extends b and b extends c
 	 */
-	extended?: { filename: string; tsconfig: any }[];
-
-	/**
-	 * ParseResult for solution tsconfig
-	 */
-
-	solution?: { filename: string; tsconfig: any };
-
-	/**
-	 * ParseResult for all tsconfig files referenced in solution
-	 */
-	referenced?: ParseResult[];
+	extended?: ParseResult[];
 }
