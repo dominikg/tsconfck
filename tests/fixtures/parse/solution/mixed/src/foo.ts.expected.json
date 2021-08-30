@@ -1,5 +1,7 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "./tsconfig.base",
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"],
   "compilerOptions": {
     "composite": true,
     "strict": true,

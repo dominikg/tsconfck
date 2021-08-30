@@ -21,8 +21,14 @@ export async function parse(filename: string): Promise<ParseResult> {
 	await Promise.all([parseExtends(result), parseReferences(result)]);
 	if (['.ts', '.tsx'].some((ext) => filename.endsWith(ext))) {
 		const solutionTSConfig = findTSConfigForFileInSolution(filename, result);
-		result.tsconfig = solutionTSConfig.tsconfig;
-		result.filename = solutionTSConfig.filename;
+		if (solutionTSConfig) {
+			result.solution = {
+				tsconfig: result.tsconfig,
+				filename: result.filename
+			};
+			result.tsconfig = solutionTSConfig.tsconfig;
+			result.filename = solutionTSConfig.filename;
+		}
 	}
 	normalizeTSConfig(result.tsconfig);
 	return result;
@@ -72,6 +78,7 @@ async function parseReferences(result: ParseResult) {
 	}
 	const referencedFiles = resolveReferencedTSConfigFiles(result);
 	const referenced = await Promise.all(referencedFiles.map((file) => parseFile(file)));
+	await Promise.all(referenced.map((ref) => parseExtends(ref)));
 	result.referenced = referenced;
 }
 
@@ -203,6 +210,7 @@ export interface ParseResult {
 	filename: string;
 	/**
 	 * parsed result, including merged values from extended
+	 * for solutions, the tsconfig applicable to input file is returned if it was a sourcefile
 	 */
 	tsconfig: any;
 
@@ -211,10 +219,16 @@ export interface ParseResult {
 	 *
 	 * [a,b,c] where a extends b and b extends c
 	 */
-	extended?: Pick<ParseResult, 'filename' | 'tsconfig'>[];
+	extended?: { filename: string; tsconfig: any }[];
 
 	/**
-	 * ParseResult for all referenced tsconfig files
+	 * ParseResult for solution tsconfig
 	 */
-	referenced?: Pick<ParseResult, 'filename' | 'tsconfig'>[];
+
+	solution?: { filename: string; tsconfig: any };
+
+	/**
+	 * ParseResult for all tsconfig files referenced in solution
+	 */
+	referenced?: ParseResult[];
 }

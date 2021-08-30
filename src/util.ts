@@ -84,9 +84,12 @@ export function resolveReferencedTSConfigFiles(result: ParseResult | ParseNative
 export function findTSConfigForFileInSolution(
 	filename: string,
 	solution: ParseResult | ParseNativeResult
-): any {
+): { filename: string; tsconfig: any } | void {
 	if (isIncluded(filename, solution)) {
-		return solution;
+		return {
+			filename: solution.filename,
+			tsconfig: solution.tsconfig
+		};
 	}
 	return solution.referenced?.find((referenced) => isIncluded(filename, referenced));
 }
@@ -99,13 +102,14 @@ function isIncluded(filename: string, result: ParseResult | ParseNativeResult): 
 	if (files.includes(filename)) {
 		return true;
 	}
+	const absoluteFilename = path.posix.resolve(native2posix(filename));
 	const isIncluded = isMatched(
-		filename,
+		absoluteFilename,
 		dir,
-		result.tsconfig.include || (result.tsconfig.files ? [] : ['*/**'])
+		result.tsconfig.include || (result.tsconfig.files ? [] : ['**/*'])
 	);
 	if (isIncluded) {
-		const isExcluded = isMatched(filename, dir, result.tsconfig.exclude || []);
+		const isExcluded = isMatched(absoluteFilename, dir, result.tsconfig.exclude || []);
 		return !isExcluded;
 	}
 	return false;
@@ -115,15 +119,20 @@ function isMatched(filename: string, dir: string, patterns: string[]): boolean {
 	return patterns.some((pattern) => {
 		const resolvedPattern = path.posix.resolve(dir, native2posix(pattern));
 		if (pattern.includes('*') || pattern.includes('?')) {
-			let regexp = resolvedPattern
-				.replace(/[.+^${}()|[\]\\]/g, '\\$&') // escape all regex chars except * and ?
-				.replace(/\*\*/g, '(?:[^\\/]*\\/*)*') // replace all ** with greedy multiple path segment group
-				.replace(/\*/g, '(?:[^\\/]*)') // replace all * with greedy group path segment
-				.replace(/\?/g, '(?:.)'); // replace ? with single char group
+			let regexp =
+				'^' +
+				resolvedPattern
+					.replace(/[/.+^${}()|[\]\\]/g, '\\$&') // escape all regex chars except * and ?
+					.replace(/\?/g, '[^\\/]') // replace ? with excactly one char excluding /
+					.replace(/(?<!\*)\*(?!\*)/g, '[^\\/]*') // replace * with any number of chars excluding /
+					.replace(/\*\*\\\//g, '(?:[^\\/]*\\/*)*'); // replace **/ with any number of path segments
+
+			// add known file endings if pattern ends on *
 			if (pattern.endsWith('*')) {
-				regexp += '(?:\\.ts|\\.tsx|\\.d\\.ts)';
+				regexp += '\\.(?:ts|tsx|d\\.ts)';
 			}
-			return filename.match(regexp);
+			regexp += '$';
+			return new RegExp(regexp).test(filename);
 		}
 		return resolvedPattern === filename;
 	});
