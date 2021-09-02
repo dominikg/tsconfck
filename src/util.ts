@@ -35,6 +35,7 @@ export async function resolveTSConfig(filename: string): Promise<string | void> 
 	throw new Error(`no tsconfig file found for ${filename}`);
 }
 
+const POSIX_SEP_RE = new RegExp('\\' + path.posix.sep, 'g');
 /**
  * convert posix separator to native separator
  *
@@ -47,10 +48,11 @@ export async function resolveTSConfig(filename: string): Promise<string | void> 
  */
 export function posix2native(filename: string) {
 	return path.posix.sep !== path.sep && filename.includes(path.posix.sep)
-		? filename.split(path.posix.sep).join(path.sep)
+		? filename.replace(POSIX_SEP_RE, path.sep)
 		: filename;
 }
 
+const NATIVE_SEP_RE = new RegExp('\\' + path.sep, 'g');
 /**
  * convert native separator to posix separator
  *
@@ -63,7 +65,7 @@ export function posix2native(filename: string) {
  */
 export function native2posix(filename: string) {
 	return path.posix.sep !== path.sep && filename.includes(path.sep)
-		? filename.split(path.sep).join(path.posix.sep)
+		? filename.replace(NATIVE_SEP_RE, path.posix.sep)
 		: filename;
 }
 
