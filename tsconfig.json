@@ -4,7 +4,9 @@
 		"module": "esnext",
 		"noImplicitAny": true,
 		"moduleResolution": "node",
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+		// see https://devblogs.microsoft.com/typescript/announcing-typescript-4-4-beta/#use-unknown-catch-variables
+		"useUnknownInCatchVariables": false
   },
 	"include": [
 		"@types/**/*",
