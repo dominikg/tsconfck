@@ -125,19 +125,27 @@ function isIncluded(filename: string, result: ParseResult): boolean {
 		return true;
 	}
 
-	const isIncluded = isMatched(
+	const isIncluded = isGlobMatch(
 		absoluteFilename,
 		dir,
 		result.tsconfig.include || (result.tsconfig.files ? [] : [GLOB_ALL_PATTERN])
 	);
 	if (isIncluded) {
-		const isExcluded = isMatched(absoluteFilename, dir, result.tsconfig.exclude || []);
+		const isExcluded = isGlobMatch(absoluteFilename, dir, result.tsconfig.exclude || []);
 		return !isExcluded;
 	}
 	return false;
 }
 
-function isMatched(filename: string, dir: string, patterns: string[]): boolean {
+/**
+ * test filenames agains glob patterns in tsconfig
+ *
+ * @param filename {string} posix style abolute path to filename to test
+ * @param dir {string} absolute path to directory of tsconfig containing patterns
+ * @param patterns {string[]} glob patterns to match against
+ * @returns {boolean} true when at least one pattern matches filename
+ */
+export function isGlobMatch(filename: string, dir: string, patterns: string[]): boolean {
 	return patterns.some((pattern) => {
 		// filename must end with part of pattern that comes after last wildcard
 		const len = pattern.length;
@@ -150,6 +158,8 @@ function isMatched(filename: string, dir: string, patterns: string[]): boolean {
 				break;
 			}
 		}
+
+		// if pattern does not end with wildcard, filename must end with pattern after last wildcard
 		if (lastWildcardIndex < len - 1 && !filename.endsWith(pattern.slice(lastWildcardIndex + 1))) {
 			return false;
 		}
