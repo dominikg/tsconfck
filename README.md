@@ -82,6 +82,16 @@ tsconfck parse src/index.ts
 tsconfck parse src/index.ts > output.json
 ```
 
+#### parse-result
+
+```shell
+# print content of ParseResult on stdout
+tsconfck parse-result src/index.ts
+
+# print to file
+tsconfck parse-result src/index.ts > output.json
+```
+
 #### help
 
 ```shell
