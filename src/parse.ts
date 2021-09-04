@@ -40,7 +40,9 @@ const VALID_KEYS = [
 	'watchOptions',
 	'references',
 	'compileOnSave',
-	'typeAcquisition'
+	'typeAcquisition',
+	'buildOptions',
+	'tsNode'
 ];
 
 /**
