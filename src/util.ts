@@ -218,7 +218,7 @@ function pattern2regex(resolvedPattern: string): RegExp {
 		if (char === '*') {
 			if (resolvedPattern[i + 1] === '*' && resolvedPattern[i + 2] === '/') {
 				i += 2;
-				regexStr += '(?:[^\\/]*\\/*)*'; // zero or more path segments
+				regexStr += '(?:[^\\/]*\\/)*'; // zero or more path segments
 				continue;
 			}
 			regexStr += '[^\\/]*';
