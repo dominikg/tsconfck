@@ -2,7 +2,7 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import path from 'path';
 import os from 'os';
-import { isGlobMatch, resolve2posix } from '../src/util.js';
+import { isGlobMatch, native2posix, resolve2posix } from '../src/util.js';
 const test_isGlobMatch = suite('isGlobMatch');
 
 const GLOBMATCH_TEST_DATA = [
@@ -66,7 +66,7 @@ const GLOBMATCH_TEST_DATA = [
 	}
 ];
 test_isGlobMatch(`should work`, () => {
-	const dir = path.join(os.homedir(), 'foo', 'src');
+	const dir = native2posix(path.join(os.homedir(), 'foo', 'src'));
 	for (const { files, patterns } of GLOBMATCH_TEST_DATA) {
 		for (const { name, expected } of files) {
 			const absName = resolve2posix(dir, name);

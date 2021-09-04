@@ -118,7 +118,7 @@ export function resolveSolutionTSConfig(filename: string, result: ParseResult): 
 }
 
 function isIncluded(filename: string, result: ParseResult): boolean {
-	const dir = path.dirname(result.filename);
+	const dir = native2posix(path.dirname(result.filename));
 	const files = (result.tsconfig.files || []).map((file: string) => resolve2posix(dir, file));
 	const absoluteFilename = resolve2posix(null, filename);
 	if (files.includes(filename)) {
@@ -141,7 +141,7 @@ function isIncluded(filename: string, result: ParseResult): boolean {
  * test filenames agains glob patterns in tsconfig
  *
  * @param filename {string} posix style abolute path to filename to test
- * @param dir {string} absolute path to directory of tsconfig containing patterns
+ * @param dir {string} posix style absolute path to directory of tsconfig containing patterns
  * @param patterns {string[]} glob patterns to match against
  * @returns {boolean} true when at least one pattern matches filename
  */
