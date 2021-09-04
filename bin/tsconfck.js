@@ -5,7 +5,7 @@ import * as process from 'process';
 const HELP_TEXT = `
 Usage: tsconfck <command> <file>
 
-Commands: find, parse
+Commands: find, parse, parse-result
 
 Examples:
 > tsconfck find src/index.ts
@@ -13,14 +13,19 @@ Examples:
 
 > tsconfck parse src/index.ts
 >{
->  ...json...
+>  ... tsconfig json
 >}
 
 > tsconfck parse src/index.ts > parsed.tsconfig.json
+
+> tsconfck parse-result src/index.ts
+>{
+>  ... ParseResult json
+>}
 `;
 
 const HELP_ARGS = ['-h', '--help', '-?', 'help'];
-const COMMANDS = ['find', 'parse'];
+const COMMANDS = ['find', 'parse', 'parse-result'];
 function needsHelp(args) {
 	if (args.some((arg) => HELP_ARGS.includes(arg))) {
 		return HELP_TEXT;
@@ -43,6 +48,8 @@ async function main() {
 		return find(file);
 	} else if (command === 'parse') {
 		return JSON.stringify((await parse(file)).tsconfig, null, 2);
+	} else if (command === 'parse-result') {
+		return JSON.stringify(await parse(file), null, 2);
 	}
 }
 
