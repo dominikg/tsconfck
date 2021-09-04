@@ -99,11 +99,11 @@ interface ParseNativeResult {
     /**
      * ParseResult for parent solution
      */
-    solution?: ParseResult;
+    solution?: ParseNativeResult;
     /**
-     * ParseResults for all tsconfig files referenced in a solution
+     * ParseNativeResults for all tsconfig files referenced in a solution
      */
-    referenced?: ParseResult[];
+    referenced?: ParseNativeResult[];
     /**
      * full output of ts.parseJsonConfigFileContent
      */
