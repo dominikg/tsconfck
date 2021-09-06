@@ -4,6 +4,7 @@ import { createRequire } from 'module';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
 import {
+	resolve2posix,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
 	resolveTSConfig
@@ -27,7 +28,7 @@ async function parseFile(tsconfigFile: string): Promise<ParseResult> {
 	const json = toJson(tsconfigJson);
 	return {
 		filename: tsconfigFile,
-		tsconfig: normalizeTSConfig(JSON.parse(json))
+		tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
 	};
 }
 
@@ -50,7 +51,7 @@ const VALID_KEYS = [
  *
  * @param tsconfig
  */
-function normalizeTSConfig(tsconfig: any) {
+function normalizeTSConfig(tsconfig: any, dir: string) {
 	for (const key of Object.keys(tsconfig)) {
 		if (!VALID_KEYS.includes(key)) {
 			delete tsconfig[key];
@@ -59,6 +60,12 @@ function normalizeTSConfig(tsconfig: any) {
 	if (!Object.prototype.hasOwnProperty.call(tsconfig, 'compileOnSave')) {
 		// ts.parseJsonConfigFileContent returns compileOnSave even if it is not set explicitly so add it if it wasn't
 		tsconfig.compileOnSave = false;
+	}
+	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
+		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
+		if (tsconfig.compilerOptions.paths && !tsconfig.compilerOptions.pathsBasePath) {
+			tsconfig.compilerOptions.pathsBasePath = tsconfig.compilerOptions.baseUrl;
+		}
 	}
 	return tsconfig;
 }
@@ -155,7 +162,6 @@ const REBASE_KEYS = [
 	'exclude',
 	// compilerOptions
 	'baseUrl',
-	'paths',
 	'rootDir',
 	'rootDirs',
 	'typeRoots',
@@ -167,7 +173,7 @@ const REBASE_KEYS = [
 	'excludeFiles'
 ];
 
-type PathValue = string | string[] | { [key: string]: string };
+type PathValue = string | string[] | { [key: string]: string | string[] };
 
 function rebaseRelative(key: string, value: PathValue, prependPath: string): PathValue {
 	if (!REBASE_KEYS.includes(key)) {
@@ -177,9 +183,11 @@ function rebaseRelative(key: string, value: PathValue, prependPath: string): Pat
 		return value.map((x) => rebasePath(x, prependPath));
 	} else if (typeof value === 'object') {
 		return Object.entries(value).reduce((rebasedValue, [k, v]) => {
-			rebasedValue[k] = rebasePath(v, prependPath);
+			rebasedValue[k] = Array.isArray(v)
+				? v.map((x) => rebasePath(x, prependPath))
+				: rebasePath(v, prependPath);
 			return rebasedValue;
-		}, {} as { [key: string]: string });
+		}, {} as { [key: string]: string | string[] });
 	} else {
 		return rebasePath(value as string, prependPath);
 	}

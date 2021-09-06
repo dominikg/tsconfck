@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.parent.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "$lib": ["*","./lib"],
+      "$src": ["./src"]
+    }
+  },
+  "include": ["src/**/*","lib/**/*"]
+}

@@ -173,7 +173,7 @@ export interface ParseNativeResult {
 	filename: string;
 
 	/**
-	 * parsed result, including merged values from extended
+	 * parsed result, including merged values from extended and normalized
 	 */
 	tsconfig: any;
 

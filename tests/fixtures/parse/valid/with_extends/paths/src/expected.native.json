@@ -1,0 +1,25 @@
+{
+  "extends": "../tsconfig.base",
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "types": [
+      "foo"
+    ],
+    "noImplicitAny": true,
+    "baseUrl": "<to-abs>..",
+    "paths": {
+      "$lib": ["*","./lib"],
+      "$src": ["./src"]
+    },
+    "pathsBasePath": "<to-abs>.."
+  },
+  "include": [
+    "../src/**/*",
+    "../lib/**/*"
+  ],
+  "exclude": [
+    "../../**/foo/*"
+  ],
+
+  "compileOnSave": false
+}
