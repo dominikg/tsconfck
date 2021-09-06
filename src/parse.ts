@@ -4,6 +4,7 @@ import { createRequire } from 'module';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
 import {
+	native2posix,
 	resolve2posix,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
@@ -119,9 +120,8 @@ const NEVER_INHERITED = ['references', 'extends'];
 function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 	const extendingConfig = extending.tsconfig;
 	const extendedConfig = extended.tsconfig;
-	const relativePath = path.relative(
-		path.dirname(extending.filename),
-		path.dirname(extended.filename)
+	const relativePath = native2posix(
+		path.relative(path.dirname(extending.filename), path.dirname(extended.filename))
 	);
 	for (const key of Object.keys(extendedConfig).filter((key) => !NEVER_INHERITED.includes(key))) {
 		if (key === 'compilerOptions') {
