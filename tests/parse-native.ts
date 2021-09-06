@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { parseNative } from '../src/parse-native.js';
+import { parseNative, ParseNativeError } from '../src/parse-native.js';
 import os from 'os';
 import { copyFixtures } from './util/copy-fixtures.js';
 import { transform as esbuildTransform } from 'esbuild';
@@ -98,11 +98,18 @@ test('should resolve with tsconfig that is isomorphic', async () => {
 	);
 	const samples = await glob(`${tempDir}/**/tsconfig.json`);
 	for (const filename of samples) {
-		const result = await parseNative(filename);
-		await fs.copyFile(filename, `${filename}.orig`);
-		await fs.writeFile(filename, JSON.stringify(result.tsconfig, null, 2));
-		const result2 = await parseNative(filename);
-		assert.equal(result.tsconfig, result2.tsconfig, `filename: ${filename}`);
+		try {
+			const result = await parseNative(filename);
+			await fs.copyFile(filename, `${filename}.orig`);
+			await fs.writeFile(filename, JSON.stringify(result.tsconfig, null, 2));
+			const result2 = await parseNative(filename);
+			assert.equal(result.tsconfig, result2.tsconfig, `filename: ${filename}`);
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`parsing ${filename} failed: ${e}`);
+		}
 	}
 });
 
@@ -151,10 +158,11 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 			if (err.code === 'ERR_ASSERTION') {
 				throw err;
 			}
+			assert.instance(err, ParseNativeError);
 
 			assert.equal(err.code, expected.code, `filename: ${filename}, err: ${err}`);
 			if (expected.start != null) {
-				assert.equal(err.start, expected.start, `filename: ${filename}, err: ${err}`);
+				assert.equal(err.diagnostic.start, expected.start, `filename: ${filename}, err: ${err}`);
 			}
 			assert.match(
 				err.message,

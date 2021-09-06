@@ -6,7 +6,7 @@ line
   "extends": "", // trailing single line comment
   "compilerOptions": {
     "types": /* inline comment */ [
-      "//keep this",
+      "//keep \"this",
       "/*",
       // extra line single comment
       "*/",

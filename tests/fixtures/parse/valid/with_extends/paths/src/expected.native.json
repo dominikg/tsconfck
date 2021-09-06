@@ -10,8 +10,7 @@
     "paths": {
       "$lib": ["*","./lib"],
       "$src": ["./src"]
-    },
-    "pathsBasePath": "<to-abs>.."
+    }
   },
   "include": [
     "../src/**/*",
@@ -21,5 +20,10 @@
     "../../**/foo/*"
   ],
 
-  "compileOnSave": false
+  "compileOnSave": false,
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority"
+  }
 }

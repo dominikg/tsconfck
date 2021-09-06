@@ -2,7 +2,7 @@
   "extends": "",
   "compilerOptions": {
     "types": [
-      "//keep this",
+      "//keep \"this",
       "/*",
       "*/",
       "/* this too */"

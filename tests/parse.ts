@@ -98,11 +98,18 @@ test('should resolve with tsconfig that is isomorphic', async () => {
 	);
 	const samples = await glob(`${tempDir}/**/tsconfig.json`);
 	for (const filename of samples) {
-		const result = await parse(filename);
-		await fs.copyFile(filename, `${filename}.orig`);
-		await fs.writeFile(filename, JSON.stringify(result.tsconfig, null, 2));
-		const result2 = await parse(filename);
-		assert.equal(result.tsconfig, result2.tsconfig, `filename: ${filename}`);
+		try {
+			const result = await parse(filename);
+			await fs.copyFile(filename, `${filename}.orig`);
+			await fs.writeFile(filename, JSON.stringify(result.tsconfig, null, 2));
+			const result2 = await parse(filename);
+			assert.equal(result.tsconfig, result2.tsconfig, `filename: ${filename}`);
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`parsing ${filename} failed: ${e}`);
+		}
 	}
 });
 

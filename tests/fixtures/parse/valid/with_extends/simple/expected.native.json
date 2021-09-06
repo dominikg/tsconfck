@@ -7,5 +7,10 @@
   },
   "include": ["src/**/*"],
   "exclude": ["../**/foo/*"],
-  "compileOnSave": false
+  "compileOnSave": false,
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority"
+  }
 }

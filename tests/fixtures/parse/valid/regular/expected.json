@@ -1,6 +1,16 @@
 {
-	"extends": "",
-	"compilerOptions": {
-		"types": ["foo"]
-	}
+  "extends": "",
+  "compilerOptions": {
+    "types": ["foo"],
+    "importsNotUsedAsValues": "error",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "newLine": "lf",
+    "target": "es2015"
+  },
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority"
+  }
 }

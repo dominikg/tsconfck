@@ -63,9 +63,6 @@ function normalizeTSConfig(tsconfig: any, dir: string) {
 	}
 	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
 		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
-		if (tsconfig.compilerOptions.paths && !tsconfig.compilerOptions.pathsBasePath) {
-			tsconfig.compilerOptions.pathsBasePath = tsconfig.compilerOptions.baseUrl;
-		}
 	}
 	return tsconfig;
 }
@@ -144,7 +141,7 @@ function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 				for (const option of Object.keys(extendedConfig.watchOptions)) {
 					extendingConfig.watchOptions[option] = rebaseRelative(
 						option,
-						extendedConfig.compilerOptions[option],
+						extendedConfig.watchOptions[option],
 						relativePath
 					);
 				}
@@ -173,7 +170,7 @@ const REBASE_KEYS = [
 	'excludeFiles'
 ];
 
-type PathValue = string | string[] | { [key: string]: string | string[] };
+type PathValue = string | string[];
 
 function rebaseRelative(key: string, value: PathValue, prependPath: string): PathValue {
 	if (!REBASE_KEYS.includes(key)) {
@@ -181,13 +178,6 @@ function rebaseRelative(key: string, value: PathValue, prependPath: string): Pat
 	}
 	if (Array.isArray(value)) {
 		return value.map((x) => rebasePath(x, prependPath));
-	} else if (typeof value === 'object') {
-		return Object.entries(value).reduce((rebasedValue, [k, v]) => {
-			rebasedValue[k] = Array.isArray(v)
-				? v.map((x) => rebasePath(x, prependPath))
-				: rebasePath(v, prependPath);
-			return rebasedValue;
-		}, {} as { [key: string]: string | string[] });
 	} else {
 		return rebasePath(value as string, prependPath);
 	}

@@ -38,7 +38,7 @@ async function parseFile(tsconfigFile: string, ts: any) {
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
 	const { config, error } = readConfigFile(tsconfigFile, sys.readFile);
 	if (error) {
-		throw toError(error);
+		throw new ParseNativeError(error, null);
 	}
 
 	const host = {
@@ -55,7 +55,7 @@ async function parseFile(tsconfigFile: string, ts: any) {
 		undefined,
 		tsconfigFile
 	);
-	checkErrors(nativeResult.errors);
+	checkErrors(nativeResult);
 	const result: ParseNativeResult = {
 		filename: posix2native(tsconfigFile),
 		tsconfig: result2tsconfig(nativeResult, ts),
@@ -78,29 +78,21 @@ async function parseReferences(result: ParseNativeResult, ts: any) {
  * ignores errors related to missing input files as these may happen regularly in programmatic use
  * and do not affect the config itself
  *
- * @param errors errors to check
- * @throws {message: string, code: string, start?: number} for critical error
+ * @param {nativeResult} any - native typescript parse result to check for errors
+ * @throws {ParseNativeError} for critical error
  */
-function checkErrors(errors: { code: number; category: number }[]) {
+function checkErrors(nativeResult: any) {
 	const ignoredErrorCodes = [
 		// see https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
 		18002, // empty files list
 		18003 // no inputs
 	];
-	const criticalError = errors?.find(
-		(error) => error.category === 1 && !ignoredErrorCodes.includes(error.code)
+	const criticalError = nativeResult.errors?.find(
+		(error: TSDiagnosticError) => error.category === 1 && !ignoredErrorCodes.includes(error.code)
 	);
 	if (criticalError) {
-		throw toError(criticalError);
+		throw new ParseNativeError(criticalError, nativeResult);
 	}
-}
-
-function toError(tsError: any) {
-	return {
-		message: tsError.messageText,
-		code: `TS ${tsError.code}`,
-		start: tsError.start
-	};
 }
 
 /**
@@ -118,14 +110,17 @@ function result2tsconfig(result: any, ts: any) {
 	// dereference result.raw so changes below don't modify original
 	const tsconfig = JSON.parse(JSON.stringify(result.raw));
 	// for some reason the extended compilerOptions are not available in result.raw but only in result.options
-	// and contain an extra field 'configFilePath'. Use everything but that field
-	if (Object.keys(result.options).filter((x) => x !== 'configFilePath').length > 0) {
-		const extendedCompilerOptions = {
+	// and contain an extra fields 'configFilePath' and 'pathsBasePath'. Use everything but those 2
+	const ignoredOptions = ['configFilePath', 'pathsBasePath'];
+	if (result.options && Object.keys(result.options).some((o) => !ignoredOptions.includes(o))) {
+		tsconfig.compilerOptions = {
 			...result.options
 		};
-		delete extendedCompilerOptions['configFilePath'];
-		tsconfig.compilerOptions = extendedCompilerOptions;
+		for (const ignored of ignoredOptions) {
+			delete tsconfig.compilerOptions[ignored];
+		}
 	}
+
 	const compilerOptions = tsconfig.compilerOptions;
 	if (compilerOptions) {
 		if (compilerOptions.lib != null) {
@@ -136,17 +131,29 @@ function result2tsconfig(result: any, ts: any) {
 		}
 		const enumProperties = [
 			{ name: 'importsNotUsedAsValues', enumeration: ts.ImportsNotUsedAsValues },
-			{ name: 'jsxEmit', enumeration: ts.JsxEmit },
 			{ name: 'module', enumeration: ts.ModuleKind },
-			{ name: 'moduleResulution', enumeration: ts.ModuleResolutionKind },
-			{ name: 'newLine', enumeration: ts.NewLineKind },
+			{
+				name: 'moduleResolution',
+				enumeration: { 1: 'classic', 2: 'node' } /*ts.ModuleResolutionKind uses different names*/
+			},
+			{
+				name: 'newLine',
+				enumeration: { 0: 'crlf', 1: 'lf' } /*ts.NewLineKind uses different names*/
+			},
 			{ name: 'target', enumeration: ts.ScriptTarget }
 		];
 		for (const prop of enumProperties) {
-			if (compilerOptions[prop.name] != null) {
+			if (compilerOptions[prop.name] != null && typeof compilerOptions[prop.name] === 'number') {
 				compilerOptions[prop.name] = prop.enumeration[compilerOptions[prop.name]].toLowerCase();
 			}
 		}
+	}
+
+	// merged watchOptions
+	if (result.watchOptions) {
+		tsconfig.watchOptions = {
+			...result.watchOptions
+		};
 	}
 
 	const watchOptions = tsconfig.watchOptions;
@@ -157,9 +164,9 @@ function result2tsconfig(result: any, ts: any) {
 			{ name: 'fallbackPolling', enumeration: ts.PollingWatchKind }
 		];
 		for (const prop of enumProperties) {
-			if (compilerOptions[prop.name] != null) {
-				const enumVal = prop.enumeration[compilerOptions[prop.name]];
-				compilerOptions[prop.name] = enumVal.charAt(0).toLowerCase() + enumVal.slice(1);
+			if (watchOptions[prop.name] != null && typeof watchOptions[prop.name] === 'number') {
+				const enumVal = prop.enumeration[watchOptions[prop.name]];
+				watchOptions[prop.name] = enumVal.charAt(0).toLowerCase() + enumVal.slice(1);
 			}
 		}
 	}
@@ -191,4 +198,38 @@ export interface ParseNativeResult {
 	 * full output of ts.parseJsonConfigFileContent
 	 */
 	result: any;
+}
+
+export class ParseNativeError extends Error {
+	constructor(diagnostic: TSDiagnosticError, result?: any) {
+		super(diagnostic.messageText);
+		// Set the prototype explicitly.
+		Object.setPrototypeOf(this, ParseNativeError.prototype);
+		this.name = ParseNativeError.name;
+		this.code = `TS ${diagnostic.code}`;
+		this.diagnostic = diagnostic;
+		this.result = result;
+	}
+
+	/**
+	 * code of typescript diagnostic, prefixed with "TS "
+	 */
+	code: string;
+
+	/**
+	 * full ts diagnostic that caused this error
+	 */
+	diagnostic: any;
+
+	/**
+	 * native result if present, contains all errors in result.errors
+	 */
+	result: any | undefined;
+}
+
+interface TSDiagnosticError {
+	code: number;
+	category: number;
+	messageText: string;
+	start?: number;
 }
