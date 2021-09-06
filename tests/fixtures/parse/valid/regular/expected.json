@@ -1,5 +1,6 @@
 {
   "extends": "",
+  "files": ["foo.ts"],
   "compilerOptions": {
     "types": ["foo"],
     "importsNotUsedAsValues": "error",

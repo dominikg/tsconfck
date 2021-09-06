@@ -4,5 +4,5 @@
     "types": ["foo"],
     "strictNullChecks": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "foo.ts"]
 }

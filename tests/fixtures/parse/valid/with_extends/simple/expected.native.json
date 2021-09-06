@@ -5,7 +5,7 @@
     "types": ["foo"],
     "noImplicitAny": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "foo.ts"],
   "exclude": ["../**/foo/*"],
   "compileOnSave": false,
   "watchOptions": {

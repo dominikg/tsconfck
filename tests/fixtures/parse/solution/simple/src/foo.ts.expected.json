@@ -1,5 +1,6 @@
 {
   "extends": "../tsconfig.base",
+  "include": ["./foo.ts"],
   "compilerOptions": {
     "composite": true,
     "strict": true,

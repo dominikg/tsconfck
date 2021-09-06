@@ -92,9 +92,6 @@ export function resolve2posix(dir: string | null, filename: string) {
 }
 
 export function resolveReferencedTSConfigFiles(result: ParseResult): string[] {
-	if (!result.tsconfig.references) {
-		return [];
-	}
 	const dir = path.dirname(result.filename);
 	return result.tsconfig.references.map((ref: { path: string }) => {
 		const refPath = ref.path.endsWith('.json') ? ref.path : path.join(ref.path, 'tsconfig.json');
@@ -124,7 +121,6 @@ function isIncluded(filename: string, result: ParseResult): boolean {
 	if (files.includes(filename)) {
 		return true;
 	}
-
 	const isIncluded = isGlobMatch(
 		absoluteFilename,
 		dir,
