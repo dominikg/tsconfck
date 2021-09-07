@@ -16,6 +16,7 @@ import { findNative } from './find-native.js';
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
  * @returns {Promise<ParseNativeResult>}
+ * @throws {ParseNativeError}
  */
 export async function parseNative(filename: string): Promise<ParseNativeResult> {
 	let tsconfigFile = await resolveTSConfig(filename);
@@ -29,7 +30,6 @@ export async function parseNative(filename: string): Promise<ParseNativeResult> 
 	const ts = await loadTS();
 	const result = await parseFile(tsconfigFile, ts);
 	await parseReferences(result, ts);
-
 	//@ts-ignore
 	return resolveSolutionTSConfig(filename, result);
 }

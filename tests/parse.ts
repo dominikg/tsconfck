@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { parse } from '../src/parse.js';
+import { parse, ParseError } from '../src/parse.js';
 import os from 'os';
 import { copyFixtures } from './util/copy-fixtures.js';
 import { transform as esbuildTransform } from 'esbuild';
@@ -158,6 +158,7 @@ test('should reject with correct error for invalid tsconfig.json', async () => {
 			if (e.code === 'ERR_ASSERTION') {
 				throw e;
 			}
+			assert.instance(e, ParseError);
 			const actual = e.message;
 			assert.match(
 				actual,

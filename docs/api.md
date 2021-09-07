@@ -32,7 +32,8 @@ declare function toJson(tsconfigJson: string): string;
  * parse the closest tsconfig.json file
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @returns {Promise<object|void>} tsconfig parsed as object
+ * @returns {Promise<ParseResult>}
+ * @throws {ParseError}
  */
 declare function parse(filename: string): Promise<ParseResult>;
 interface ParseResult {
@@ -85,6 +86,7 @@ declare function findNative(filename: string): Promise<string>;
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
  * @returns {Promise<ParseNativeResult>}
+ * @throws {ParseNativeError}
  */
 declare function parseNative(filename: string): Promise<ParseNativeResult>;
 interface ParseNativeResult {
@@ -93,7 +95,7 @@ interface ParseNativeResult {
      */
     filename: string;
     /**
-     * parsed result, including merged values from extended
+     * parsed result, including merged values from extended and normalized
      */
     tsconfig: any;
     /**

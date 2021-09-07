@@ -15,7 +15,8 @@ import {
  * parse the closest tsconfig.json file
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @returns {Promise<object|void>} tsconfig parsed as object
+ * @returns {Promise<ParseResult>}
+ * @throws {ParseError}
  */
 export async function parse(filename: string): Promise<ParseResult> {
 	const tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
@@ -25,12 +26,16 @@ export async function parse(filename: string): Promise<ParseResult> {
 }
 
 async function parseFile(tsconfigFile: string): Promise<ParseResult> {
-	const tsconfigJson = await fs.readFile(tsconfigFile, 'utf-8');
-	const json = toJson(tsconfigJson);
-	return {
-		filename: tsconfigFile,
-		tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
-	};
+	try {
+		const tsconfigJson = await fs.readFile(tsconfigFile, 'utf-8');
+		const json = toJson(tsconfigJson);
+		return {
+			filename: tsconfigFile,
+			tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
+		};
+	} catch (e) {
+		throw new ParseError(`parsing ${tsconfigFile} failed: ${e}`, 'PARSE_FILE', e);
+	}
 }
 
 const VALID_KEYS = [
@@ -96,7 +101,7 @@ async function parseExtends(result: ParseResult) {
 				.concat({ filename: extendedTSConfigFile, tsconfig: null })
 				.map((e) => e.filename)
 				.join(' -> ');
-			throw new Error(`Circular dependency in "extends": ${circle}`);
+			throw new ParseError(`Circular dependency in "extends": ${circle}`, 'EXTENDS_CIRCULAR');
 		}
 		extended.push(await parseFile(extendedTSConfigFile));
 	}
@@ -111,7 +116,11 @@ function resolveExtends(extended: string, from: string): string {
 	try {
 		return createRequire(from).resolve(extended);
 	} catch (e) {
-		throw new Error(`failed to resolve "extends":"${extended}" in ${from}`);
+		throw new ParseError(
+			`failed to resolve "extends":"${extended}" in ${from}`,
+			'EXTENDS_RESOLVE',
+			e
+		);
 	}
 }
 
@@ -219,4 +228,24 @@ export interface ParseResult {
 	 * [a,b,c] where a extends b and b extends c
 	 */
 	extended?: ParseResult[];
+}
+
+export class ParseError extends Error {
+	constructor(message: string, code: string, cause?: Error) {
+		super(message);
+		// Set the prototype explicitly.
+		Object.setPrototypeOf(this, ParseError.prototype);
+		this.name = ParseError.name;
+		this.code = code;
+		this.cause = cause;
+	}
+
+	/**
+	 * error code
+	 */
+	code: string;
+	/**
+	 * code of typescript diagnostic, prefixed with "TS "
+	 */
+	cause: Error | undefined;
 }
