@@ -1,3 +1,12 @@
+# [1.0.0-5](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-4...tsconfck@1.0.0-5) (2021-09-07)
+
+
+### Features
+
+* add option to cache ParseResult ([#6](https://github.com/dominikg/tsconfck/issues/6)) ([ecef987](https://github.com/dominikg/tsconfck/commit/ecef987b3f2196fd896aeb9f193a981490902660))
+
+
+
 # [1.0.0-4](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-3...tsconfck@1.0.0-4) (2021-09-07)
 
 
