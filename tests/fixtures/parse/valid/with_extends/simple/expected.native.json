@@ -7,7 +7,6 @@
   },
   "include": ["src/**/*", "foo.ts"],
   "exclude": ["../**/foo/*"],
-  "compileOnSave": false,
   "watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",

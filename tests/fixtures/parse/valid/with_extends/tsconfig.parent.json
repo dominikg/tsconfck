@@ -9,5 +9,10 @@
     "watchDirectory": "useFsEvents",
     "fallbackPolling": "dynamicPriority"
   },
-  "exclude": ["**/foo/*"]
+  "exclude": ["**/foo/*"],
+  // the following keys should not be inherited by extending
+  "something": "bla",
+  "ts-node": {
+    "skipIgnore": true
+  }
 }

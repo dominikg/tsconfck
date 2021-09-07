@@ -13,6 +13,5 @@
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",
     "fallbackPolling": "dynamicPriority"
-  },
-  "compileOnSave": false
+  }
 }

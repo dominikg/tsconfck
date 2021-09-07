@@ -170,6 +170,11 @@ function result2tsconfig(result: any, ts: any) {
 			}
 		}
 	}
+	if (tsconfig.compileOnSave === false) {
+		// ts adds this property even if it isn't present in the actual config
+		// delete if it is false to match content of tsconfig
+		delete tsconfig.compileOnSave;
+	}
 	return tsconfig;
 }
 

@@ -38,23 +38,13 @@ async function parseFile(tsconfigFile: string): Promise<ParseResult> {
 	}
 }
 
-const REMOVE_KEYS = ['$schema', 'display'];
-
 /**
  * normalize to match the output of ts.parseJsonConfigFileContent
  *
  * @param tsconfig
  */
 function normalizeTSConfig(tsconfig: any, dir: string) {
-	for (const key of Object.keys(tsconfig)) {
-		if (REMOVE_KEYS.includes(key)) {
-			delete tsconfig[key];
-		}
-	}
-	if (!Object.prototype.hasOwnProperty.call(tsconfig, 'compileOnSave')) {
-		// ts.parseJsonConfigFileContent returns compileOnSave even if it is not set explicitly so add it if it wasn't
-		tsconfig.compileOnSave = false;
-	}
+	// set baseUrl to absolute path
 	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
 		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
 	}
@@ -112,15 +102,24 @@ function resolveExtends(extended: string, from: string): string {
 	}
 }
 
-// references is never inherited according to docs
-const NEVER_INHERITED = ['references', 'extends'];
+// references, extends and custom keys are not carried over
+const EXTENDABLE_KEYS = [
+	'compilerOptions',
+	'files',
+	'include',
+	'exclude',
+	'watchOptions',
+	'compileOnSave',
+	'typeAcquisition',
+	'buildOptions'
+];
 function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 	const extendingConfig = extending.tsconfig;
 	const extendedConfig = extended.tsconfig;
 	const relativePath = native2posix(
 		path.relative(path.dirname(extending.filename), path.dirname(extended.filename))
 	);
-	for (const key of Object.keys(extendedConfig).filter((key) => !NEVER_INHERITED.includes(key))) {
+	for (const key of Object.keys(extendedConfig).filter((key) => EXTENDABLE_KEYS.includes(key))) {
 		if (key === 'compilerOptions') {
 			for (const option of Object.keys(extendedConfig.compilerOptions)) {
 				if (Object.prototype.hasOwnProperty.call(extendingConfig.compilerOptions, option)) {
