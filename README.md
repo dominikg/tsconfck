@@ -1,7 +1,7 @@
 # tsconfck
 
 [![npm version](https://img.shields.io/npm/v/tsconfck)](https://www.npmjs.com/package/tsconfck)
-[![CI](https://github.com/dominikg/tsconfck/actions/workflows/test.yml/badge.svg)](https://github.com/sveltejs/vite-plugin-svelte/actions/workflows/test.yml)
+[![CI](https://github.com/dominikg/tsconfck/actions/workflows/test.yml/badge.svg)](https://github.com/dominikg/tsconfck/actions/workflows/test.yml)
 
 A utility to find and parse tsconfig files without depending on typescript
 
@@ -16,6 +16,12 @@ Because no simple official api exists and tsconfig.json isn't actual json.
 - [x] resolve "extends"
 - [x] resolve "references" of solution-style tsconfig
 - [x] optional findNative and parseNative to use official typescript api
+
+# Install
+
+```shell
+npm install --save-dev tsconfck # or pnpm, yarn
+```
 
 # Usage
 
@@ -38,7 +44,7 @@ const {
 import { parseNative } from 'tsconfck';
 const {
 	filename, // full path to found tsconfig
-	tsconfig, // tsconfig object including merged values from extended configs
+	tsconfig, // tsconfig object including merged values from extended configs, normalized
 	result, // output of ts.parseJsonConfigFileContent
 	solution, // solution result if tsconfig is part of a solution
 	referenced // referenced tsconfig results if tsconfig is a solution
