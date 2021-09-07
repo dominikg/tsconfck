@@ -2,7 +2,6 @@ import path from 'path';
 import {
 	loadTS,
 	native2posix,
-	posix2native,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
 	resolveTSConfig
@@ -28,10 +27,7 @@ export async function parseNative(
 		return cache.get(filename)!;
 	}
 	let tsconfigFile = await resolveTSConfig(filename);
-	if (tsconfigFile) {
-		// convert to C:/foo/bar on windows as ts.readConfigFile expects it that way
-		tsconfigFile = native2posix(tsconfigFile);
-	} else {
+	if (!tsconfigFile) {
 		tsconfigFile = await findNative(filename);
 	}
 	let result: ParseNativeResult;
@@ -59,8 +55,9 @@ async function parseFile(
 	if (cache?.has(tsconfigFile)) {
 		return cache.get(tsconfigFile)!;
 	}
+	const posixTSConfigFile = native2posix(tsconfigFile);
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
-	const { config, error } = readConfigFile(tsconfigFile, sys.readFile);
+	const { config, error } = readConfigFile(posixTSConfigFile, sys.readFile);
 	if (error) {
 		throw new ParseNativeError(error, null);
 	}
@@ -75,13 +72,13 @@ async function parseFile(
 	const nativeResult = parseJsonConfigFileContent(
 		config,
 		host,
-		path.dirname(tsconfigFile),
+		path.dirname(posixTSConfigFile),
 		undefined,
-		tsconfigFile
+		posixTSConfigFile
 	);
 	checkErrors(nativeResult);
 	const result: ParseNativeResult = {
-		filename: posix2native(tsconfigFile),
+		filename: tsconfigFile,
 		tsconfig: result2tsconfig(nativeResult, ts),
 		result: nativeResult
 	};
