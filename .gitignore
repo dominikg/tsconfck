@@ -8,6 +8,10 @@ temp
 build
 dist
 
+# test coverage
+/coverage
+*.lcov
+
 # env and local
 *.local
 .env

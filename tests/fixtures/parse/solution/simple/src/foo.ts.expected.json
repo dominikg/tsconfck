@@ -1,9 +1,9 @@
 {
   "extends": "../tsconfig.base",
+  "include": ["./foo.ts"],
   "compilerOptions": {
     "composite": true,
     "strict": true,
     "strictNullChecks": true
-  },
-  "compileOnSave": false
+  }
 }

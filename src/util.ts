@@ -92,9 +92,6 @@ export function resolve2posix(dir: string | null, filename: string) {
 }
 
 export function resolveReferencedTSConfigFiles(result: ParseResult): string[] {
-	if (!result.tsconfig.references) {
-		return [];
-	}
 	const dir = path.dirname(result.filename);
 	return result.tsconfig.references.map((ref: { path: string }) => {
 		const refPath = ref.path.endsWith('.json') ? ref.path : path.join(ref.path, 'tsconfig.json');
@@ -124,7 +121,6 @@ function isIncluded(filename: string, result: ParseResult): boolean {
 	if (files.includes(filename)) {
 		return true;
 	}
-
 	const isIncluded = isGlobMatch(
 		absoluteFilename,
 		dir,
@@ -148,10 +144,9 @@ function isIncluded(filename: string, result: ParseResult): boolean {
 export function isGlobMatch(filename: string, dir: string, patterns: string[]): boolean {
 	return patterns.some((pattern) => {
 		// filename must end with part of pattern that comes after last wildcard
-		const len = pattern.length;
-		let lastWildcardIndex = len;
+		let lastWildcardIndex = pattern.length;
 		let hasWildcard = false;
-		for (let i = len - 1; i > -1; i--) {
+		for (let i = pattern.length - 1; i > -1; i--) {
 			if (pattern[i] === '*' || pattern[i] === '?') {
 				lastWildcardIndex = i;
 				hasWildcard = true;
@@ -160,7 +155,10 @@ export function isGlobMatch(filename: string, dir: string, patterns: string[]): 
 		}
 
 		// if pattern does not end with wildcard, filename must end with pattern after last wildcard
-		if (lastWildcardIndex < len - 1 && !filename.endsWith(pattern.slice(lastWildcardIndex + 1))) {
+		if (
+			lastWildcardIndex < pattern.length - 1 &&
+			!filename.endsWith(pattern.slice(lastWildcardIndex + 1))
+		) {
 			return false;
 		}
 
@@ -178,7 +176,7 @@ export function isGlobMatch(filename: string, dir: string, patterns: string[]): 
 
 		// filename must start with part of pattern that comes before first wildcard
 		let firstWildcardIndex = -1;
-		for (let i = 0; i < len; i++) {
+		for (let i = 0; i < resolvedPattern.length; i++) {
 			if (resolvedPattern[i] === '*' || resolvedPattern[i] === '?') {
 				firstWildcardIndex = i;
 				hasWildcard = true;

@@ -6,6 +6,5 @@
     "composite": true,
     "strict": true,
     "strictNullChecks": true
-  },
-  "compileOnSave": false
+  }
 }

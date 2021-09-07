@@ -11,6 +11,7 @@ Because no simple official api exists and tsconfig.json isn't actual json.
 - [x] find closest tsconfig.json
 - [x] convert tsconfig.json to actual json and parse it
 - [x] resolve "extends"
+- [x] resolve "references" of solution-style tsconfig
 - [x] optional findNative and parseNative to use official typescript api
 
 # Usage
@@ -22,7 +23,9 @@ import { parse } from 'tsconfck';
 const {
 	filename, // full path to found tsconfig
 	tsconfig, // tsconfig object including merged values from extended configs
-	extended // separate unmerged results of all tsconfig files
+	extended, // separate unmerged results of all tsconfig files that contributed to tsconfig
+	solution, // solution result if tsconfig is part of a solution
+	referenced // referenced tsconfig results if tsconfig is a solution
 } = await parse('foo/bar.ts');
 ```
 
@@ -33,7 +36,9 @@ import { parseNative } from 'tsconfck';
 const {
 	filename, // full path to found tsconfig
 	tsconfig, // tsconfig object including merged values from extended configs
-	result // output of ts.parseJsonConfigFileContent
+	result, // output of ts.parseJsonConfigFileContent
+	solution, // solution result if tsconfig is part of a solution
+	referenced // referenced tsconfig results if tsconfig is a solution
 } = await parseNative('foo/bar.ts');
 ```
 

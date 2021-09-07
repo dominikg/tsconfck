@@ -11,6 +11,5 @@
     "types": ["foo"],
     "strictNullChecks": true
   },
-  "include": ["src/**/*"],
-  "compileOnSave": false
+  "include": ["src/**/*"]
 }

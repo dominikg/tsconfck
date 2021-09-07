@@ -4,6 +4,5 @@
     "types": [
       "foo"
     ]
-  },
-  "compileOnSave": false
+  }
 }

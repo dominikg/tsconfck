@@ -3,11 +3,12 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { parseNative, ParseNativeResult } from '../src/parse-native.js';
+import { parseNative, ParseNativeError } from '../src/parse-native.js';
 import os from 'os';
 import { copyFixtures } from './util/copy-fixtures.js';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
+import { loadExpectedJSON, loadExpectedTXT } from './util/load-expected.js';
 const test = suite('parse-native');
 
 test('should be a function', () => {
@@ -58,16 +59,9 @@ test('should reject when filename is a tsconfig.json that does not exist', async
 test('should resolve with expected for valid tsconfig.json', async () => {
 	const samples = await glob('tests/fixtures/parse/valid/**/tsconfig.json');
 	for (const filename of samples) {
-		const expectedFilename = filename.replace(/tsconfig.json$/, 'expected.native.json');
-		let actual: ParseNativeResult;
-		let expected;
+		const expected = await loadExpectedJSON(filename, 'expected.native.json');
 		try {
-			expected = JSON.parse(await fs.readFile(path.resolve(expectedFilename), 'utf-8'));
-		} catch (e) {
-			assert.unreachable(`unexpected exception parsing ${expectedFilename}: ${e}`);
-		}
-		try {
-			actual = await parseNative(filename);
+			const actual = await parseNative(filename);
 			assert.equal(actual.tsconfig, expected, `testfile: ${filename}`);
 			assert.equal(actual.filename, path.resolve(filename));
 		} catch (e) {
@@ -82,16 +76,10 @@ test('should resolve with expected for valid tsconfig.json', async () => {
 test('should resolve with expected tsconfig.json for ts file that is part of a solution', async () => {
 	const samples = await glob('tests/fixtures/parse/solution/**/*.ts');
 	for (const filename of samples) {
-		const expectedFilename = `${filename}.expected.json`;
-		let actual: ParseNativeResult;
-		let expected;
+		const expectedFilename = `${path.basename(filename)}.expected.json`;
+		const expected = await loadExpectedJSON(filename, expectedFilename);
 		try {
-			expected = JSON.parse(await fs.readFile(path.resolve(expectedFilename), 'utf-8'));
-		} catch (e) {
-			assert.unreachable(`unexpected exception parsing ${expectedFilename}: ${e}`);
-		}
-		try {
-			actual = await parseNative(filename);
+			const actual = await parseNative(filename);
 			assert.equal(actual.tsconfig, expected, `testfile: ${filename}`);
 		} catch (e) {
 			if (e.code === 'ERR_ASSERTION') {
@@ -110,11 +98,18 @@ test('should resolve with tsconfig that is isomorphic', async () => {
 	);
 	const samples = await glob(`${tempDir}/**/tsconfig.json`);
 	for (const filename of samples) {
-		const result = await parseNative(filename);
-		await fs.copyFile(filename, `${filename}.orig`);
-		await fs.writeFile(filename, JSON.stringify(result.tsconfig, null, 2));
-		const result2 = await parseNative(filename);
-		assert.equal(result.tsconfig, result2.tsconfig, `filename: ${filename}`);
+		try {
+			const result = await parseNative(filename);
+			await fs.copyFile(filename, `${filename}.orig`);
+			await fs.writeFile(filename, JSON.stringify(result.tsconfig, null, 2));
+			const result2 = await parseNative(filename);
+			assert.equal(result.tsconfig, result2.tsconfig, `filename: ${filename}`);
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`parsing ${filename} failed: ${e}`);
+		}
 	}
 });
 
@@ -126,8 +121,7 @@ test('should resolve with tsconfig that works when transpiling', async () => {
 			const inputFiles = await glob(filename.replace('tsconfig.json', '**/input.ts'));
 			for (const inputFile of inputFiles) {
 				const input = await fs.readFile(inputFile, 'utf-8');
-				const esbuildExpectedFile = inputFile.replace('input.ts', 'expected.esbuild.txt');
-				const esbuildExpected = await fs.readFile(esbuildExpectedFile, 'utf-8');
+				const esbuildExpected = await loadExpectedTXT(inputFile, 'expected.esbuild.txt');
 				const esbuildResult = (
 					await esbuildTransform(input, { loader: 'ts', tsconfigRaw: tsconfig })
 				).code;
@@ -136,8 +130,7 @@ test('should resolve with tsconfig that works when transpiling', async () => {
 					esbuildExpected,
 					`esbuild result with config: ${filename} and input ${inputFile}`
 				);
-				const tsExpectedFile = inputFile.replace('input.ts', 'expected.typescript.txt');
-				const tsExpected = await fs.readFile(tsExpectedFile, 'utf-8');
+				const tsExpected = await loadExpectedTXT(inputFile, 'expected.typescript.txt');
 				const tsResult = ts.transpile(input, tsconfig.compilerOptions);
 				assert.fixture(
 					tsResult,
@@ -157,13 +150,7 @@ test('should resolve with tsconfig that works when transpiling', async () => {
 test('should reject with correct error position for invalid tsconfig.json', async () => {
 	const samples = await glob('tests/fixtures/parse/invalid/**/tsconfig.json');
 	for (const filename of samples) {
-		const expectedFilename = filename.replace(/tsconfig.json$/, 'expected.native.json');
-		let expected;
-		try {
-			expected = JSON.parse(await fs.readFile(path.resolve(expectedFilename), 'utf-8'));
-		} catch (e) {
-			assert.unreachable(`unexpected exception parsing ${expectedFilename}: ${e}`);
-		}
+		const expected = await loadExpectedJSON(filename, 'expected.native.json');
 		try {
 			await parseNative(filename);
 			assert.unreachable(`${filename} did not reject`);
@@ -171,10 +158,11 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 			if (err.code === 'ERR_ASSERTION') {
 				throw err;
 			}
+			assert.instance(err, ParseNativeError);
 
 			assert.equal(err.code, expected.code, `filename: ${filename}, err: ${err}`);
 			if (expected.start != null) {
-				assert.equal(err.start, expected.start, `filename: ${filename}, err: ${err}`);
+				assert.equal(err.diagnostic.start, expected.start, `filename: ${filename}, err: ${err}`);
 			}
 			assert.match(
 				err.message,

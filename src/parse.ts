@@ -4,6 +4,8 @@ import { createRequire } from 'module';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
 import {
+	native2posix,
+	resolve2posix,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
 	resolveTSConfig
@@ -13,7 +15,8 @@ import {
  * parse the closest tsconfig.json file
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @returns {Promise<object|void>} tsconfig parsed as object
+ * @returns {Promise<ParseResult>}
+ * @throws {ParseError}
  */
 export async function parse(filename: string): Promise<ParseResult> {
 	const tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
@@ -23,42 +26,27 @@ export async function parse(filename: string): Promise<ParseResult> {
 }
 
 async function parseFile(tsconfigFile: string): Promise<ParseResult> {
-	const tsconfigJson = await fs.readFile(tsconfigFile, 'utf-8');
-	const json = toJson(tsconfigJson);
-	return {
-		filename: tsconfigFile,
-		tsconfig: normalizeTSConfig(JSON.parse(json))
-	};
+	try {
+		const tsconfigJson = await fs.readFile(tsconfigFile, 'utf-8');
+		const json = toJson(tsconfigJson);
+		return {
+			filename: tsconfigFile,
+			tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
+		};
+	} catch (e) {
+		throw new ParseError(`parsing ${tsconfigFile} failed: ${e}`, 'PARSE_FILE', e);
+	}
 }
-
-const VALID_KEYS = [
-	'extends',
-	'compilerOptions',
-	'files',
-	'include',
-	'exclude',
-	'watchOptions',
-	'references',
-	'compileOnSave',
-	'typeAcquisition',
-	'buildOptions',
-	'tsNode'
-];
 
 /**
  * normalize to match the output of ts.parseJsonConfigFileContent
  *
  * @param tsconfig
  */
-function normalizeTSConfig(tsconfig: any) {
-	for (const key of Object.keys(tsconfig)) {
-		if (!VALID_KEYS.includes(key)) {
-			delete tsconfig[key];
-		}
-	}
-	if (!Object.prototype.hasOwnProperty.call(tsconfig, 'compileOnSave')) {
-		// ts.parseJsonConfigFileContent returns compileOnSave even if it is not set explicitly so add it if it wasn't
-		tsconfig.compileOnSave = false;
+function normalizeTSConfig(tsconfig: any, dir: string) {
+	// set baseUrl to absolute path
+	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
+		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
 	}
 	return tsconfig;
 }
@@ -91,7 +79,7 @@ async function parseExtends(result: ParseResult) {
 				.concat({ filename: extendedTSConfigFile, tsconfig: null })
 				.map((e) => e.filename)
 				.join(' -> ');
-			throw new Error(`Circular dependency in "extends": ${circle}`);
+			throw new ParseError(`Circular dependency in "extends": ${circle}`, 'EXTENDS_CIRCULAR');
 		}
 		extended.push(await parseFile(extendedTSConfigFile));
 	}
@@ -106,20 +94,32 @@ function resolveExtends(extended: string, from: string): string {
 	try {
 		return createRequire(from).resolve(extended);
 	} catch (e) {
-		throw new Error(`failed to resolve "extends":"${extended}" in ${from}`);
+		throw new ParseError(
+			`failed to resolve "extends":"${extended}" in ${from}`,
+			'EXTENDS_RESOLVE',
+			e
+		);
 	}
 }
 
-// references is never inherited according to docs
-const NEVER_INHERITED = ['references', 'extends'];
+// references, extends and custom keys are not carried over
+const EXTENDABLE_KEYS = [
+	'compilerOptions',
+	'files',
+	'include',
+	'exclude',
+	'watchOptions',
+	'compileOnSave',
+	'typeAcquisition',
+	'buildOptions'
+];
 function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 	const extendingConfig = extending.tsconfig;
 	const extendedConfig = extended.tsconfig;
-	const relativePath = path.relative(
-		path.dirname(extending.filename),
-		path.dirname(extended.filename)
+	const relativePath = native2posix(
+		path.relative(path.dirname(extending.filename), path.dirname(extended.filename))
 	);
-	for (const key of Object.keys(extendedConfig).filter((key) => !NEVER_INHERITED.includes(key))) {
+	for (const key of Object.keys(extendedConfig).filter((key) => EXTENDABLE_KEYS.includes(key))) {
 		if (key === 'compilerOptions') {
 			for (const option of Object.keys(extendedConfig.compilerOptions)) {
 				if (Object.prototype.hasOwnProperty.call(extendingConfig.compilerOptions, option)) {
@@ -137,7 +137,7 @@ function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 				for (const option of Object.keys(extendedConfig.watchOptions)) {
 					extendingConfig.watchOptions[option] = rebaseRelative(
 						option,
-						extendedConfig.compilerOptions[option],
+						extendedConfig.watchOptions[option],
 						relativePath
 					);
 				}
@@ -155,7 +155,6 @@ const REBASE_KEYS = [
 	'exclude',
 	// compilerOptions
 	'baseUrl',
-	'paths',
 	'rootDir',
 	'rootDirs',
 	'typeRoots',
@@ -167,7 +166,7 @@ const REBASE_KEYS = [
 	'excludeFiles'
 ];
 
-type PathValue = string | string[] | { [key: string]: string };
+type PathValue = string | string[];
 
 function rebaseRelative(key: string, value: PathValue, prependPath: string): PathValue {
 	if (!REBASE_KEYS.includes(key)) {
@@ -175,11 +174,6 @@ function rebaseRelative(key: string, value: PathValue, prependPath: string): Pat
 	}
 	if (Array.isArray(value)) {
 		return value.map((x) => rebasePath(x, prependPath));
-	} else if (typeof value === 'object') {
-		return Object.entries(value).reduce((rebasedValue, [k, v]) => {
-			rebasedValue[k] = rebasePath(v, prependPath);
-			return rebasedValue;
-		}, {} as { [key: string]: string });
 	} else {
 		return rebasePath(value as string, prependPath);
 	}
@@ -221,4 +215,24 @@ export interface ParseResult {
 	 * [a,b,c] where a extends b and b extends c
 	 */
 	extended?: ParseResult[];
+}
+
+export class ParseError extends Error {
+	constructor(message: string, code: string, cause?: Error) {
+		super(message);
+		// Set the prototype explicitly.
+		Object.setPrototypeOf(this, ParseError.prototype);
+		this.name = ParseError.name;
+		this.code = code;
+		this.cause = cause;
+	}
+
+	/**
+	 * error code
+	 */
+	code: string;
+	/**
+	 * code of typescript diagnostic, prefixed with "TS "
+	 */
+	cause: Error | undefined;
 }
