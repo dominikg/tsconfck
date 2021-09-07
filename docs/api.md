@@ -71,17 +71,6 @@ interface ParseResult {
      */
     extended?: ParseResult[];
 }
-declare class ParseError extends Error {
-    constructor(message: string, code: string, cause?: Error);
-    /**
-     * error code
-     */
-    code: string;
-    /**
-     * the cause of this error
-     */
-    cause: Error | undefined;
-}
 ```
 
 ### findNative
@@ -143,26 +132,5 @@ interface ParseNativeResult {
      * full output of ts.parseJsonConfigFileContent
      */
     result: any;
-}
-declare class ParseNativeError extends Error {
-    constructor(diagnostic: TSDiagnosticError, result?: any);
-    /**
-     * code of typescript diagnostic, prefixed with "TS "
-     */
-    code: string;
-    /**
-     * full ts diagnostic that caused this error
-     */
-    diagnostic: any;
-    /**
-     * native result if present, contains all errors in result.errors
-     */
-    result: any | undefined;
-}
-interface TSDiagnosticError {
-    code: number;
-    category: number;
-    messageText: string;
-    start?: number;
 }
 ```
