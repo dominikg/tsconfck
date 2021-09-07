@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "noLib": false
+  },
+  "compileOnSave": false,
+  "ts-node": {
+    "preferTsExts": true,
+    "compilerOptions": {
+      "noLib": true
+    }
+  },
+  "something": "bla"
+}

@@ -38,19 +38,7 @@ async function parseFile(tsconfigFile: string): Promise<ParseResult> {
 	}
 }
 
-const VALID_KEYS = [
-	'extends',
-	'compilerOptions',
-	'files',
-	'include',
-	'exclude',
-	'watchOptions',
-	'references',
-	'compileOnSave',
-	'typeAcquisition',
-	'buildOptions',
-	'tsNode'
-];
+const REMOVE_KEYS = ['$schema', 'display'];
 
 /**
  * normalize to match the output of ts.parseJsonConfigFileContent
@@ -59,7 +47,7 @@ const VALID_KEYS = [
  */
 function normalizeTSConfig(tsconfig: any, dir: string) {
 	for (const key of Object.keys(tsconfig)) {
-		if (!VALID_KEYS.includes(key)) {
+		if (REMOVE_KEYS.includes(key)) {
 			delete tsconfig[key];
 		}
 	}
