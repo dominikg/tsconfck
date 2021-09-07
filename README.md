@@ -1,5 +1,8 @@
 # tsconfck
 
+[![npm version](https://img.shields.io/npm/v/tsconfck)](https://www.npmjs.com/package/tsconfck)
+[![CI](https://github.com/dominikg/tsconfck/actions/workflows/test.yml/badge.svg)](https://github.com/sveltejs/vite-plugin-svelte/actions/workflows/test.yml)
+
 A utility to find and parse tsconfig files without depending on typescript
 
 # Why
