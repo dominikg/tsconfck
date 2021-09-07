@@ -32,10 +32,21 @@ declare function toJson(tsconfigJson: string): string;
  * parse the closest tsconfig.json file
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param {ParseOptions} options - options
  * @returns {Promise<ParseResult>}
  * @throws {ParseError}
  */
-declare function parse(filename: string): Promise<ParseResult>;
+declare function parse(filename: string, options?: ParseOptions): Promise<ParseResult>;
+interface ParseOptions {
+    /**
+     * optional cache map to speed up repeated parsing with multiple files
+     * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
+     * cache keys are input `filename` and absolute paths to tsconfig.json files
+     *
+     * You must not modify cached values.
+     */
+    cache?: Map<string, ParseResult>;
+}
 interface ParseResult {
     /**
      * absolute path to parsed tsconfig.json
@@ -85,10 +96,21 @@ declare function findNative(filename: string): Promise<string>;
  * You need to have `typescript` installed to use this
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param {ParseNativeOptions} options - options
  * @returns {Promise<ParseNativeResult>}
  * @throws {ParseNativeError}
  */
-declare function parseNative(filename: string): Promise<ParseNativeResult>;
+declare function parseNative(filename: string, options?: ParseNativeOptions): Promise<ParseNativeResult>;
+interface ParseNativeOptions {
+    /**
+     * optional cache map to speed up repeated parsing with multiple files
+     * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
+     * cache keys are input `filename` and absolute paths to tsconfig.json files
+     *
+     * You must not modify cached values.
+     */
+    cache?: Map<string, ParseNativeResult>;
+}
 interface ParseNativeResult {
     /**
      * absolute path to parsed tsconfig.json

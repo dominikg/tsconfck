@@ -2,7 +2,6 @@ import path from 'path';
 import {
 	loadTS,
 	native2posix,
-	posix2native,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
 	resolveTSConfig
@@ -15,28 +14,50 @@ import { findNative } from './find-native.js';
  * You need to have `typescript` installed to use this
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param {ParseNativeOptions} options - options
  * @returns {Promise<ParseNativeResult>}
  * @throws {ParseNativeError}
  */
-export async function parseNative(filename: string): Promise<ParseNativeResult> {
+export async function parseNative(
+	filename: string,
+	options?: ParseNativeOptions
+): Promise<ParseNativeResult> {
+	const cache = options?.cache;
+	if (cache?.has(filename)) {
+		return cache.get(filename)!;
+	}
 	let tsconfigFile = await resolveTSConfig(filename);
-	if (tsconfigFile) {
-		// convert to C:/foo/bar on windows as ts.readConfigFile expects it that way
-		tsconfigFile = native2posix(tsconfigFile);
-	} else {
+	if (!tsconfigFile) {
 		tsconfigFile = await findNative(filename);
 	}
+	let result: ParseNativeResult;
+	if (cache?.has(tsconfigFile)) {
+		result = cache.get(tsconfigFile)!;
+	} else {
+		const ts = await loadTS();
+		result = await parseFile(tsconfigFile, ts, cache);
+		await parseReferences(result, ts, cache);
+		cache?.set(tsconfigFile, result);
+	}
 
-	const ts = await loadTS();
-	const result = await parseFile(tsconfigFile, ts);
-	await parseReferences(result, ts);
 	//@ts-ignore
-	return resolveSolutionTSConfig(filename, result);
+	result = resolveSolutionTSConfig(filename, result);
+	//@ts-ignore
+	cache?.set(filename, result);
+	return result;
 }
 
-async function parseFile(tsconfigFile: string, ts: any) {
+async function parseFile(
+	tsconfigFile: string,
+	ts: any,
+	cache?: Map<string, ParseNativeResult>
+): Promise<ParseNativeResult> {
+	if (cache?.has(tsconfigFile)) {
+		return cache.get(tsconfigFile)!;
+	}
+	const posixTSConfigFile = native2posix(tsconfigFile);
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
-	const { config, error } = readConfigFile(tsconfigFile, sys.readFile);
+	const { config, error } = readConfigFile(posixTSConfigFile, sys.readFile);
 	if (error) {
 		throw new ParseNativeError(error, null);
 	}
@@ -51,25 +72,30 @@ async function parseFile(tsconfigFile: string, ts: any) {
 	const nativeResult = parseJsonConfigFileContent(
 		config,
 		host,
-		path.dirname(tsconfigFile),
+		path.dirname(posixTSConfigFile),
 		undefined,
-		tsconfigFile
+		posixTSConfigFile
 	);
 	checkErrors(nativeResult);
 	const result: ParseNativeResult = {
-		filename: posix2native(tsconfigFile),
+		filename: tsconfigFile,
 		tsconfig: result2tsconfig(nativeResult, ts),
 		result: nativeResult
 	};
+	cache?.set(tsconfigFile, result);
 	return result;
 }
 
-async function parseReferences(result: ParseNativeResult, ts: any) {
+async function parseReferences(
+	result: ParseNativeResult,
+	ts: any,
+	cache?: Map<string, ParseNativeResult>
+) {
 	if (!result.tsconfig.references) {
 		return;
 	}
 	const referencedFiles = resolveReferencedTSConfigFiles(result);
-	result.referenced = await Promise.all(referencedFiles.map((file) => parseFile(file, ts)));
+	result.referenced = await Promise.all(referencedFiles.map((file) => parseFile(file, ts, cache)));
 }
 
 /**
@@ -176,6 +202,17 @@ function result2tsconfig(result: any, ts: any) {
 		delete tsconfig.compileOnSave;
 	}
 	return tsconfig;
+}
+
+export interface ParseNativeOptions {
+	/**
+	 * optional cache map to speed up repeated parsing with multiple files
+	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
+	 * cache keys are input `filename` and absolute paths to tsconfig.json files
+	 *
+	 * You must not modify cached values.
+	 */
+	cache?: Map<string, ParseNativeResult>;
 }
 
 export interface ParseNativeResult {

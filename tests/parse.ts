@@ -3,12 +3,13 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { parse, ParseError } from '../src/parse.js';
+import { parse, ParseError, ParseResult } from '../src/parse.js';
 import os from 'os';
 import { copyFixtures } from './util/copy-fixtures.js';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { loadExpectedJSON, loadExpectedTXT } from './util/load-expected.js';
+
 const test = suite('parse');
 
 test('should be a function', () => {
@@ -86,6 +87,55 @@ test('should resolve with expected tsconfig.json for ts file that is part of a s
 				throw e;
 			}
 			assert.unreachable(`parsing ${filename} failed: ${e}`);
+		}
+	}
+});
+
+test('should work with cache', async () => {
+	// use the more interesting samples with extensions and solution-style
+	const samples = [
+		...(await glob('tests/fixtures/parse/valid/with_extends/**/tsconfig.json')),
+		...(await glob('tests/fixtures/parse/solution/**/*.ts'))
+	];
+	const cache = new Map<string, ParseResult>();
+	for (const filename of samples) {
+		try {
+			const expectedFilename = filename.endsWith('.ts')
+				? `${path.basename(filename)}.expected.json`
+				: 'expected.native.json';
+			const expected = await loadExpectedJSON(filename, expectedFilename);
+			assert.is(cache.has(filename), false, `cache does not exist for ${filename}`);
+			const actual = await parse(filename, { cache });
+			assert.equal(actual.tsconfig, expected, `expected for testfile: ${filename}`);
+			assert.is(cache.has(filename), true, `cache exists for ${filename}`);
+			const cached = cache.get(filename)!;
+			assert.equal(cached.tsconfig, expected, `cached for testfile: ${filename}`);
+			const reparsedResult = await parse(filename, { cache });
+			assert.is(reparsedResult, cached, `reparsedResult was returned from cache for ${filename}`);
+			if (filename.endsWith('.ts')) {
+				assert.is(cache.has(actual.filename), true, `cache exists for ${actual.filename}`);
+				const cachedByResultFilename = cache.get(actual.filename)!;
+				assert.equal(
+					cachedByResultFilename.tsconfig,
+					expected,
+					`cache of ${actual.filename} matches for: ${filename}`
+				);
+				const reparsedByResultFilename = await parse(actual.filename, { cache });
+				assert.is(
+					reparsedByResultFilename,
+					cachedByResultFilename,
+					`reparsedByResultFilename was returned from cache for ${actual.filename}`
+				);
+			}
+			cache.clear();
+			const afterClear = await parse(filename, { cache });
+			assert.equal(afterClear.tsconfig, expected, `expected after clear for testfile: ${filename}`);
+			assert.is(cache.has(filename), true, `cache exists again after clear for ${filename}`);
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`unexpected error when testing cache with ${filename}: ${e}`);
 		}
 	}
 });
