@@ -16,6 +16,8 @@ Because no simple official api exists and tsconfig.json isn't actual json.
 - [x] resolve "extends"
 - [x] resolve "references" of solution-style tsconfig
 - [x] optional findNative and parseNative to use official typescript api
+- [x] zero dependencies (typescript optional)
+- [x] extensive testsuite
 
 # Install
 
@@ -139,3 +141,7 @@ pnpm test
 #run tests in watch mode (doesn't require dev in parallel)
 pnpm test:watch
 ```
+
+# License
+
+[MIT](./LICENSE)
