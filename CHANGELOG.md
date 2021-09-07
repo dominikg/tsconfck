@@ -1,3 +1,18 @@
+# [1.0.0-4](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-3...tsconfck@1.0.0-4) (2021-09-07)
+
+
+### Bug Fixes
+
+* improve test coverage and error handling; fixed issues with baseUrl, paths and extends ([#5](https://github.com/dominikg/tsconfck/issues/5)) ([55a0d39](https://github.com/dominikg/tsconfck/commit/55a0d391f17680bcdeb78da9acefef8517514cb8))
+* output buildOptions and tsNode in ParseResult.tsconfig ([ac7cd9c](https://github.com/dominikg/tsconfck/commit/ac7cd9cf6ad2a0faab05392fdff0ebb711ce129a))
+
+
+### Features
+
+* support for solution-style tsconfig ([#3](https://github.com/dominikg/tsconfck/issues/3)) ([0d54b84](https://github.com/dominikg/tsconfck/commit/0d54b84c7e2754c4ce6344b737e7630964897190))
+
+
+
 # [1.0.0-3](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-2...tsconfck@1.0.0-3) (2021-08-28)
 
 
