@@ -100,8 +100,12 @@ export function resolveReferencedTSConfigFiles(result: ParseResult): string[] {
 }
 
 export function resolveSolutionTSConfig(filename: string, result: ParseResult): ParseResult {
-	if (['.ts', '.tsx'].some((ext) => filename.endsWith(ext)) && !isIncluded(filename, result)) {
-		const solutionTSConfig = result.referenced?.find((referenced) =>
+	if (
+		result.referenced &&
+		['.ts', '.tsx'].some((ext) => filename.endsWith(ext)) &&
+		!isIncluded(filename, result)
+	) {
+		const solutionTSConfig = result.referenced.find((referenced) =>
 			isIncluded(filename, referenced)
 		);
 		if (solutionTSConfig) {

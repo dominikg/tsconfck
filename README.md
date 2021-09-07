@@ -59,21 +59,25 @@ see [API-DOCS](docs/api.md)
 
 ### caching
 
-You should cache results to avoid reparsing if you process multiple ts files that share few tsconfig files
+You can use a map to cache results and avoid reparsing if you process multiple ts files that share few tsconfig files
 
 ```js
-import { find, parse } from 'tsconfck';
+import { parse } from 'tsconfck';
+// 1. create cache instance
 const cache = new Map();
-const cachedParse = async (filename) => {
-	const tsconfigFile = find(filename);
-	if (cache.has(tsconfigFile)) {
-		return cache.get(tsconfigFile);
-	}
-	const parseResult = parse(tsconfigFile);
-	cache.put(tsconfigFile, parseResult);
-	return parseResult;
-};
+// 2. pass cache instance in options
+const fooResult = await parse('src/foo.ts', { cache });
+// 3. profit (if they share the same tsconfig.json, it is not parsed again)
+const barResult = await parse('src/bar.ts', { cache });
 ```
+
+> You are responsible for clearing the cache if tsconfig files change on disk during its lifetime.
+>
+> Always clear the whole cache if anything changes as objects in the cache can ref each other
+
+> Returned results are direct cache objects.
+>
+> If you want to modify them, deep-clone first.
 
 ### cli
 
