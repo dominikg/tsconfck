@@ -104,9 +104,7 @@
     ]
   },
   "engines": {
-    "pnpm": "^6.7.0",
-    "yarn": "forbidden, use pnpm",
-    "npm": "forbidden, use pnpm",
+    "pnpm": ">=6.7.0",
     "node": "^12.20 || ^14.13.1 || >= 16"
   }
 }
