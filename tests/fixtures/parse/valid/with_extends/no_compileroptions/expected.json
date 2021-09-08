@@ -1,0 +1,4 @@
+{
+  "extends": "../tsconfig.parent.json",
+  "include": ["src/**/*", "foo.ts"]
+}

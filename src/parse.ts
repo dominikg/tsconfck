@@ -142,6 +142,9 @@ function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
 	);
 	for (const key of Object.keys(extendedConfig).filter((key) => EXTENDABLE_KEYS.includes(key))) {
 		if (key === 'compilerOptions') {
+			if (!extendingConfig.compilerOptions) {
+				extendingConfig.compilerOptions = {};
+			}
 			for (const option of Object.keys(extendedConfig.compilerOptions)) {
 				if (Object.prototype.hasOwnProperty.call(extendingConfig.compilerOptions, option)) {
 					continue; // already set
