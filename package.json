@@ -1,6 +1,6 @@
 {
   "name": "tsconfck",
-  "version": "1.0.0-5",
+  "version": "1.0.0-6",
   "description": "A utility to work with tsconfig.json without typescript",
   "license": "MIT",
   "author": "dominikg",

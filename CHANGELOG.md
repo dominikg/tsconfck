@@ -1,3 +1,13 @@
+# [1.0.0-6](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-5...tsconfck@1.0.0-6) (2021-09-08)
+
+
+### Bug Fixes
+
+* extend compilerOptions when it is only set in extended tsconfig ([e51959a](https://github.com/dominikg/tsconfck/commit/e51959a1bc026a4e439f6dca8c740b7e6b71dcc9))
+* remove engines restriction for yarn and npm ([2079ccc](https://github.com/dominikg/tsconfck/commit/2079ccc5a2e895dd19819c82a818ba7167878f2a))
+
+
+
 # [1.0.0-5](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-4...tsconfck@1.0.0-5) (2021-09-07)
 
 
