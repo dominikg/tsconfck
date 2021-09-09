@@ -81,6 +81,20 @@ const barResult = await parse('src/bar.ts', { cache });
 >
 > If you want to modify them, deep-clone first.
 
+### error handling
+
+find and parse reject for all errors they encounter.
+
+For parse, you can choose to resolve with an empty result instead if no tsconfig file was found
+
+```js
+import { parse } from 'tsconfck';
+const result = await parse('some/path/without/tsconfig/foo.ts', {
+	resolveWithEmptyIfConfigNotFound: true
+});
+// result = { filename: 'no_tsconfig_file_found',tsconfig: {} }
+```
+
 ### cli
 
 A simple cli wrapper is included, you can use it like this
