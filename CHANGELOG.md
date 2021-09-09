@@ -1,3 +1,17 @@
+# [1.0.0-7](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-6...tsconfck@1.0.0-7) (2021-09-09)
+
+
+### Features
+
+* add parse option resolveWithEmptyIfConfigNotFound ([8b02ca8](https://github.com/dominikg/tsconfck/commit/8b02ca8d6e9e26b1391935d10262890d6da4e1cd))
+
+
+### BREAKING CHANGES
+
+* prefix types with TSConfck to avoid confusion
+
+
+
 # [1.0.0-6](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-5...tsconfck@1.0.0-6) (2021-09-08)
 
 
