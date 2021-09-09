@@ -15,16 +15,33 @@ import {
  * parse the closest tsconfig.json file
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param {ParseOptions} options - options
- * @returns {Promise<ParseResult>}
- * @throws {ParseError}
+ * @param {TSConfckParseOptions} options - options
+ * @returns {Promise<TSConfckParseResult>}
+ * @throws {TSConfckParseError}
  */
-export async function parse(filename: string, options?: ParseOptions): Promise<ParseResult> {
+export async function parse(
+	filename: string,
+	options?: TSConfckParseOptions
+): Promise<TSConfckParseResult> {
 	const cache = options?.cache;
 	if (cache?.has(filename)) {
 		return cache.get(filename)!;
 	}
-	const tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
+	let tsconfigFile;
+	if (options?.resolveWithEmptyIfConfigNotFound) {
+		try {
+			tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
+		} catch (e) {
+			const notFoundResult = {
+				filename: 'no_tsconfig_file_found',
+				tsconfig: {}
+			};
+			cache?.set(filename, notFoundResult);
+			return notFoundResult;
+		}
+	} else {
+		tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
+	}
 	let result;
 	if (cache?.has(tsconfigFile)) {
 		result = cache.get(tsconfigFile)!;
@@ -40,8 +57,8 @@ export async function parse(filename: string, options?: ParseOptions): Promise<P
 
 async function parseFile(
 	tsconfigFile: string,
-	cache?: Map<string, ParseResult>
-): Promise<ParseResult> {
+	cache?: Map<string, TSConfckParseResult>
+): Promise<TSConfckParseResult> {
 	if (cache?.has(tsconfigFile)) {
 		return cache.get(tsconfigFile)!;
 	}
@@ -55,7 +72,7 @@ async function parseFile(
 		cache?.set(tsconfigFile, result);
 		return result;
 	} catch (e) {
-		throw new ParseError(`parsing ${tsconfigFile} failed: ${e}`, 'PARSE_FILE', e);
+		throw new TSConfckParseError(`parsing ${tsconfigFile} failed: ${e}`, 'PARSE_FILE', e);
 	}
 }
 
@@ -72,7 +89,10 @@ function normalizeTSConfig(tsconfig: any, dir: string) {
 	return tsconfig;
 }
 
-async function parseReferences(result: ParseResult, cache?: Map<string, ParseResult>) {
+async function parseReferences(
+	result: TSConfckParseResult,
+	cache?: Map<string, TSConfckParseResult>
+) {
 	if (!result.tsconfig.references) {
 		return;
 	}
@@ -82,7 +102,7 @@ async function parseReferences(result: ParseResult, cache?: Map<string, ParseRes
 	result.referenced = referenced;
 }
 
-async function parseExtends(result: ParseResult, cache?: Map<string, ParseResult>) {
+async function parseExtends(result: TSConfckParseResult, cache?: Map<string, TSConfckParseResult>) {
 	if (!result.tsconfig.extends) {
 		return;
 	}
@@ -100,7 +120,10 @@ async function parseExtends(result: ParseResult, cache?: Map<string, ParseResult
 				.concat({ filename: extendedTSConfigFile, tsconfig: null })
 				.map((e) => e.filename)
 				.join(' -> ');
-			throw new ParseError(`Circular dependency in "extends": ${circle}`, 'EXTENDS_CIRCULAR');
+			throw new TSConfckParseError(
+				`Circular dependency in "extends": ${circle}`,
+				'EXTENDS_CIRCULAR'
+			);
 		}
 		extended.push(await parseFile(extendedTSConfigFile, cache));
 	}
@@ -115,7 +138,7 @@ function resolveExtends(extended: string, from: string): string {
 	try {
 		return createRequire(from).resolve(extended);
 	} catch (e) {
-		throw new ParseError(
+		throw new TSConfckParseError(
 			`failed to resolve "extends":"${extended}" in ${from}`,
 			'EXTENDS_RESOLVE',
 			e
@@ -134,7 +157,7 @@ const EXTENDABLE_KEYS = [
 	'typeAcquisition',
 	'buildOptions'
 ];
-function extendTSConfig(extending: ParseResult, extended: ParseResult): any {
+function extendTSConfig(extending: TSConfckParseResult, extended: TSConfckParseResult): any {
 	const extendingConfig = extending.tsconfig;
 	const extendedConfig = extended.tsconfig;
 	const relativePath = native2posix(
@@ -212,7 +235,7 @@ function rebasePath(value: string, prependPath: string): string {
 	}
 }
 
-export interface ParseOptions {
+export interface TSConfckParseOptions {
 	/**
 	 * optional cache map to speed up repeated parsing with multiple files
 	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
@@ -220,10 +243,16 @@ export interface ParseOptions {
 	 *
 	 * You must not modify cached values.
 	 */
-	cache?: Map<string, ParseResult>;
+	cache?: Map<string, TSConfckParseResult>;
+
+	/**
+	 * treat missing tsconfig as empty result instead of an error
+	 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
+	 */
+	resolveWithEmptyIfConfigNotFound?: boolean;
 }
 
-export interface ParseResult {
+export interface TSConfckParseResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */
@@ -237,27 +266,27 @@ export interface ParseResult {
 	/**
 	 * ParseResult for parent solution
 	 */
-	solution?: ParseResult;
+	solution?: TSConfckParseResult;
 
 	/**
 	 * ParseResults for all tsconfig files referenced in a solution
 	 */
-	referenced?: ParseResult[];
+	referenced?: TSConfckParseResult[];
 
 	/**
 	 * ParseResult for all tsconfig files
 	 *
 	 * [a,b,c] where a extends b and b extends c
 	 */
-	extended?: ParseResult[];
+	extended?: TSConfckParseResult[];
 }
 
-export class ParseError extends Error {
+export class TSConfckParseError extends Error {
 	constructor(message: string, code: string, cause?: Error) {
 		super(message);
 		// Set the prototype explicitly.
-		Object.setPrototypeOf(this, ParseError.prototype);
-		this.name = ParseError.name;
+		Object.setPrototypeOf(this, TSConfckParseError.prototype);
+		this.name = TSConfckParseError.name;
 		this.code = code;
 		this.cause = cause;
 	}

@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { parse, ParseError, ParseResult } from '../src/parse.js';
+import { parse, TSConfckParseError, TSConfckParseResult } from '../src/parse.js';
 import os from 'os';
 import { copyFixtures } from './util/copy-fixtures.js';
 import { transform as esbuildTransform } from 'esbuild';
@@ -57,6 +57,21 @@ test('should reject when filename is a tsconfig.json that does not exist', async
 	}
 });
 
+test('should resolve with empty result when filename is a tsconfig.json that does not exist and option is set', async () => {
+	const notExisting = path.resolve(os.homedir(), '..', 'tsconfig.json'); // outside of user home there should not be a tsconfig
+	try {
+		const result = await parse(notExisting, { resolveWithEmptyIfConfigNotFound: true });
+		assert.equal(result, { filename: 'no_tsconfig_file_found', tsconfig: {} }, 'empty result');
+	} catch (e) {
+		if (e.code === 'ERR_ASSERTION') {
+			throw e;
+		}
+		assert.unreachable(
+			`parse("${notExisting}",{resolveWithEmptyIfConfigNotFound: true}) did reject`
+		);
+	}
+});
+
 test('should resolve with expected for valid tsconfig.json', async () => {
 	const samples = await glob('tests/fixtures/parse/valid/**/tsconfig.json');
 	for (const filename of samples) {
@@ -97,7 +112,7 @@ test('should work with cache', async () => {
 		...(await glob('tests/fixtures/parse/valid/with_extends/**/tsconfig.json')),
 		...(await glob('tests/fixtures/parse/solution/**/*.ts'))
 	];
-	const cache = new Map<string, ParseResult>();
+	const cache = new Map<string, TSConfckParseResult>();
 	for (const filename of samples) {
 		try {
 			const expectedFilename = filename.endsWith('.ts')
@@ -208,7 +223,7 @@ test('should reject with correct error for invalid tsconfig.json', async () => {
 			if (e.code === 'ERR_ASSERTION') {
 				throw e;
 			}
-			assert.instance(e, ParseError);
+			assert.instance(e, TSConfckParseError);
 			const actual = e.message;
 			assert.match(
 				actual,

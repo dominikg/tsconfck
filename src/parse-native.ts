@@ -14,23 +14,43 @@ import { findNative } from './find-native.js';
  * You need to have `typescript` installed to use this
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param {ParseNativeOptions} options - options
- * @returns {Promise<ParseNativeResult>}
- * @throws {ParseNativeError}
+ * @param {TSConfckParseNativeOptions} options - options
+ * @returns {Promise<TSConfckParseNativeResult>}
+ * @throws {TSConfckParseNativeError}
  */
 export async function parseNative(
 	filename: string,
-	options?: ParseNativeOptions
-): Promise<ParseNativeResult> {
+	options?: TSConfckParseNativeOptions
+): Promise<TSConfckParseNativeResult> {
 	const cache = options?.cache;
 	if (cache?.has(filename)) {
 		return cache.get(filename)!;
 	}
-	let tsconfigFile = await resolveTSConfig(filename);
-	if (!tsconfigFile) {
-		tsconfigFile = await findNative(filename);
+	let tsconfigFile;
+
+	if (options?.resolveWithEmptyIfConfigNotFound) {
+		try {
+			tsconfigFile = await resolveTSConfig(filename);
+			if (!tsconfigFile) {
+				tsconfigFile = await findNative(filename);
+			}
+		} catch (e) {
+			const notFoundResult = {
+				filename: 'no_tsconfig_file_found',
+				tsconfig: {},
+				result: null
+			};
+			cache?.set(filename, notFoundResult);
+			return notFoundResult;
+		}
+	} else {
+		tsconfigFile = await resolveTSConfig(filename);
+		if (!tsconfigFile) {
+			tsconfigFile = await findNative(filename);
+		}
 	}
-	let result: ParseNativeResult;
+
+	let result: TSConfckParseNativeResult;
 	if (cache?.has(tsconfigFile)) {
 		result = cache.get(tsconfigFile)!;
 	} else {
@@ -50,8 +70,8 @@ export async function parseNative(
 async function parseFile(
 	tsconfigFile: string,
 	ts: any,
-	cache?: Map<string, ParseNativeResult>
-): Promise<ParseNativeResult> {
+	cache?: Map<string, TSConfckParseNativeResult>
+): Promise<TSConfckParseNativeResult> {
 	if (cache?.has(tsconfigFile)) {
 		return cache.get(tsconfigFile)!;
 	}
@@ -59,7 +79,7 @@ async function parseFile(
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
 	const { config, error } = readConfigFile(posixTSConfigFile, sys.readFile);
 	if (error) {
-		throw new ParseNativeError(error, null);
+		throw new TSConfckParseNativeError(error, null);
 	}
 
 	const host = {
@@ -77,7 +97,7 @@ async function parseFile(
 		posixTSConfigFile
 	);
 	checkErrors(nativeResult);
-	const result: ParseNativeResult = {
+	const result: TSConfckParseNativeResult = {
 		filename: tsconfigFile,
 		tsconfig: result2tsconfig(nativeResult, ts),
 		result: nativeResult
@@ -87,9 +107,9 @@ async function parseFile(
 }
 
 async function parseReferences(
-	result: ParseNativeResult,
+	result: TSConfckParseNativeResult,
 	ts: any,
-	cache?: Map<string, ParseNativeResult>
+	cache?: Map<string, TSConfckParseNativeResult>
 ) {
 	if (!result.tsconfig.references) {
 		return;
@@ -105,7 +125,7 @@ async function parseReferences(
  * and do not affect the config itself
  *
  * @param {nativeResult} any - native typescript parse result to check for errors
- * @throws {ParseNativeError} for critical error
+ * @throws {TSConfckParseNativeError} for critical error
  */
 function checkErrors(nativeResult: any) {
 	const ignoredErrorCodes = [
@@ -117,7 +137,7 @@ function checkErrors(nativeResult: any) {
 		(error: TSDiagnosticError) => error.category === 1 && !ignoredErrorCodes.includes(error.code)
 	);
 	if (criticalError) {
-		throw new ParseNativeError(criticalError, nativeResult);
+		throw new TSConfckParseNativeError(criticalError, nativeResult);
 	}
 }
 
@@ -204,7 +224,7 @@ function result2tsconfig(result: any, ts: any) {
 	return tsconfig;
 }
 
-export interface ParseNativeOptions {
+export interface TSConfckParseNativeOptions {
 	/**
 	 * optional cache map to speed up repeated parsing with multiple files
 	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
@@ -212,10 +232,16 @@ export interface ParseNativeOptions {
 	 *
 	 * You must not modify cached values.
 	 */
-	cache?: Map<string, ParseNativeResult>;
+	cache?: Map<string, TSConfckParseNativeResult>;
+
+	/**
+	 * treat missing tsconfig as empty result instead of an error
+	 * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
+	 */
+	resolveWithEmptyIfConfigNotFound?: boolean;
 }
 
-export interface ParseNativeResult {
+export interface TSConfckParseNativeResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */
@@ -229,12 +255,12 @@ export interface ParseNativeResult {
 	/**
 	 * ParseResult for parent solution
 	 */
-	solution?: ParseNativeResult;
+	solution?: TSConfckParseNativeResult;
 
 	/**
 	 * ParseNativeResults for all tsconfig files referenced in a solution
 	 */
-	referenced?: ParseNativeResult[];
+	referenced?: TSConfckParseNativeResult[];
 
 	/**
 	 * full output of ts.parseJsonConfigFileContent
@@ -242,12 +268,12 @@ export interface ParseNativeResult {
 	result: any;
 }
 
-export class ParseNativeError extends Error {
+export class TSConfckParseNativeError extends Error {
 	constructor(diagnostic: TSDiagnosticError, result?: any) {
 		super(diagnostic.messageText);
 		// Set the prototype explicitly.
-		Object.setPrototypeOf(this, ParseNativeError.prototype);
-		this.name = ParseNativeError.name;
+		Object.setPrototypeOf(this, TSConfckParseNativeError.prototype);
+		this.name = TSConfckParseNativeError.name;
 		this.code = `TS ${diagnostic.code}`;
 		this.diagnostic = diagnostic;
 		this.result = result;

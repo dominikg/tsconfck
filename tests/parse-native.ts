@@ -3,7 +3,11 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { parseNative, ParseNativeError, ParseNativeResult } from '../src/parse-native.js';
+import {
+	parseNative,
+	TSConfckParseNativeError,
+	TSConfckParseNativeResult
+} from '../src/parse-native.js';
 import os from 'os';
 import { copyFixtures } from './util/copy-fixtures.js';
 import { transform as esbuildTransform } from 'esbuild';
@@ -47,12 +51,31 @@ test('should reject when filename is a tsconfig.json that does not exist', async
 	const notExisting = path.resolve(os.homedir(), '..', 'tsconfig.json'); // outside of user home there should not be a tsconfig
 	try {
 		await parseNative(notExisting);
-		assert.unreachable(`parse("${notExisting}") did not reject`);
+		assert.unreachable(`parseNative("${notExisting}") did not reject`);
 	} catch (e) {
 		if (e.code === 'ERR_ASSERTION') {
 			throw e;
 		}
 		assert.equal(e.message, `no tsconfig file found for ${notExisting}`);
+	}
+});
+
+test('should resolve with empty result when filename is a tsconfig.json that does not exist and option is set', async () => {
+	const notExisting = path.resolve(os.homedir(), '..', 'tsconfig.json'); // outside of user home there should not be a tsconfig
+	try {
+		const result = await parseNative(notExisting, { resolveWithEmptyIfConfigNotFound: true });
+		assert.equal(
+			result,
+			{ filename: 'no_tsconfig_file_found', tsconfig: {}, result: null },
+			'empty result'
+		);
+	} catch (e) {
+		if (e.code === 'ERR_ASSERTION') {
+			throw e;
+		}
+		assert.unreachable(
+			`parseNative("${notExisting}",{resolveWithEmptyIfConfigNotFound: true}) did reject`
+		);
 	}
 });
 
@@ -96,7 +119,7 @@ test('should work with cache', async () => {
 		...(await glob('tests/fixtures/parse/valid/with_extends/**/tsconfig.json')),
 		...(await glob('tests/fixtures/parse/solution/**/*.ts'))
 	];
-	const cache = new Map<string, ParseNativeResult>();
+	const cache = new Map<string, TSConfckParseNativeResult>();
 	for (const filename of samples) {
 		try {
 			const expectedFilename = filename.endsWith('.ts')
@@ -207,7 +230,7 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 			if (err.code === 'ERR_ASSERTION') {
 				throw err;
 			}
-			assert.instance(err, ParseNativeError);
+			assert.instance(err, TSConfckParseNativeError);
 
 			assert.equal(err.code, expected.code, `filename: ${filename}, err: ${err}`);
 			if (expected.start != null) {

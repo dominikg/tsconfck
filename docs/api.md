@@ -32,12 +32,12 @@ declare function toJson(tsconfigJson: string): string;
  * parse the closest tsconfig.json file
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param {ParseOptions} options - options
- * @returns {Promise<ParseResult>}
- * @throws {ParseError}
+ * @param {TSConfckParseOptions} options - options
+ * @returns {Promise<TSConfckParseResult>}
+ * @throws {TSConfckParseError}
  */
-declare function parse(filename: string, options?: ParseOptions): Promise<ParseResult>;
-interface ParseOptions {
+declare function parse(filename: string, options?: TSConfckParseOptions): Promise<TSConfckParseResult>;
+interface TSConfckParseOptions {
     /**
      * optional cache map to speed up repeated parsing with multiple files
      * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
@@ -45,9 +45,14 @@ interface ParseOptions {
      *
      * You must not modify cached values.
      */
-    cache?: Map<string, ParseResult>;
+    cache?: Map<string, TSConfckParseResult>;
+    /**
+     * treat missing tsconfig as empty result instead of an error
+     * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
+     */
+    resolveWithEmptyIfConfigNotFound?: boolean;
 }
-interface ParseResult {
+interface TSConfckParseResult {
     /**
      * absolute path to parsed tsconfig.json
      */
@@ -59,17 +64,28 @@ interface ParseResult {
     /**
      * ParseResult for parent solution
      */
-    solution?: ParseResult;
+    solution?: TSConfckParseResult;
     /**
      * ParseResults for all tsconfig files referenced in a solution
      */
-    referenced?: ParseResult[];
+    referenced?: TSConfckParseResult[];
     /**
      * ParseResult for all tsconfig files
      *
      * [a,b,c] where a extends b and b extends c
      */
-    extended?: ParseResult[];
+    extended?: TSConfckParseResult[];
+}
+declare class TSConfckParseError extends Error {
+    constructor(message: string, code: string, cause?: Error);
+    /**
+     * error code
+     */
+    code: string;
+    /**
+     * the cause of this error
+     */
+    cause: Error | undefined;
 }
 ```
 
@@ -96,12 +112,12 @@ declare function findNative(filename: string): Promise<string>;
  * You need to have `typescript` installed to use this
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param {ParseNativeOptions} options - options
- * @returns {Promise<ParseNativeResult>}
- * @throws {ParseNativeError}
+ * @param {TSConfckParseNativeOptions} options - options
+ * @returns {Promise<TSConfckParseNativeResult>}
+ * @throws {TSConfckParseNativeError}
  */
-declare function parseNative(filename: string, options?: ParseNativeOptions): Promise<ParseNativeResult>;
-interface ParseNativeOptions {
+declare function parseNative(filename: string, options?: TSConfckParseNativeOptions): Promise<TSConfckParseNativeResult>;
+interface TSConfckParseNativeOptions {
     /**
      * optional cache map to speed up repeated parsing with multiple files
      * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
@@ -109,9 +125,14 @@ interface ParseNativeOptions {
      *
      * You must not modify cached values.
      */
-    cache?: Map<string, ParseNativeResult>;
+    cache?: Map<string, TSConfckParseNativeResult>;
+    /**
+     * treat missing tsconfig as empty result instead of an error
+     * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
+     */
+    resolveWithEmptyIfConfigNotFound?: boolean;
 }
-interface ParseNativeResult {
+interface TSConfckParseNativeResult {
     /**
      * absolute path to parsed tsconfig.json
      */
@@ -123,14 +144,35 @@ interface ParseNativeResult {
     /**
      * ParseResult for parent solution
      */
-    solution?: ParseNativeResult;
+    solution?: TSConfckParseNativeResult;
     /**
      * ParseNativeResults for all tsconfig files referenced in a solution
      */
-    referenced?: ParseNativeResult[];
+    referenced?: TSConfckParseNativeResult[];
     /**
      * full output of ts.parseJsonConfigFileContent
      */
     result: any;
+}
+declare class TSConfckParseNativeError extends Error {
+    constructor(diagnostic: TSDiagnosticError, result?: any);
+    /**
+     * code of typescript diagnostic, prefixed with "TS "
+     */
+    code: string;
+    /**
+     * full ts diagnostic that caused this error
+     */
+    diagnostic: any;
+    /**
+     * native result if present, contains all errors in result.errors
+     */
+    result: any | undefined;
+}
+interface TSDiagnosticError {
+    code: number;
+    category: number;
+    messageText: string;
+    start?: number;
 }
 ```

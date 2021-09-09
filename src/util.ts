@@ -1,6 +1,6 @@
 import path from 'path';
 import { promises as fs } from 'fs';
-import { ParseResult } from './parse';
+import { TSConfckParseResult } from './parse';
 
 const POSIX_SEP_RE = new RegExp('\\' + path.posix.sep, 'g');
 const NATIVE_SEP_RE = new RegExp('\\' + path.sep, 'g');
@@ -91,7 +91,7 @@ export function resolve2posix(dir: string | null, filename: string) {
 	);
 }
 
-export function resolveReferencedTSConfigFiles(result: ParseResult): string[] {
+export function resolveReferencedTSConfigFiles(result: TSConfckParseResult): string[] {
 	const dir = path.dirname(result.filename);
 	return result.tsconfig.references.map((ref: { path: string }) => {
 		const refPath = ref.path.endsWith('.json') ? ref.path : path.join(ref.path, 'tsconfig.json');
@@ -99,7 +99,10 @@ export function resolveReferencedTSConfigFiles(result: ParseResult): string[] {
 	});
 }
 
-export function resolveSolutionTSConfig(filename: string, result: ParseResult): ParseResult {
+export function resolveSolutionTSConfig(
+	filename: string,
+	result: TSConfckParseResult
+): TSConfckParseResult {
 	if (
 		result.referenced &&
 		['.ts', '.tsx'].some((ext) => filename.endsWith(ext)) &&
@@ -118,7 +121,7 @@ export function resolveSolutionTSConfig(filename: string, result: ParseResult): 
 	return result;
 }
 
-function isIncluded(filename: string, result: ParseResult): boolean {
+function isIncluded(filename: string, result: TSConfckParseResult): boolean {
 	const dir = native2posix(path.dirname(result.filename));
 	const files = (result.tsconfig.files || []).map((file: string) => resolve2posix(dir, file));
 	const absoluteFilename = resolve2posix(null, filename);
