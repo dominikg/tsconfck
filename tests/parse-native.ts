@@ -245,7 +245,7 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 	}
 });
 
-test('should prevent typescript file scanning when preventFileScan: true is set', async () => {
+test('should prevent typescript file scanning when ignoreSourceFiles: true is set', async () => {
 	// use the more interesting samples with extensions and solution-style
 	const samples = [
 		...(await glob('tests/fixtures/parse/valid/with_extends/**/tsconfig.json')),
@@ -264,13 +264,13 @@ test('should prevent typescript file scanning when preventFileScan: true is set'
 			expected.files = [];
 			expected.include = [];
 			const actual = await parseNative(filename, { ignoreSourceFiles: true });
-			assert.equal(actual.tsconfig, expected, `testing preventFileScan with ${filename}`);
-			assert.is(actual.result.fileNames.length, 0, `testing preventFileScan with ${filename}`);
+			assert.equal(actual.tsconfig, expected, `testing ignoreSourceFiles with ${filename}`);
+			assert.is(actual.result.fileNames.length, 0, `testing ignoreSourceFiles with ${filename}`);
 		} catch (e) {
 			if (e.code === 'ERR_ASSERTION') {
 				throw e;
 			}
-			assert.unreachable(`unexpected error when testing preventFileScan with ${filename}: ${e}`);
+			assert.unreachable(`unexpected error when testing ignoreSourceFiles with ${filename}: ${e}`);
 		}
 	}
 });
