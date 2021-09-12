@@ -245,4 +245,34 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 	}
 });
 
+test('should prevent typescript file scanning when ignoreSourceFiles: true is set', async () => {
+	// use the more interesting samples with extensions and solution-style
+	const samples = [
+		...(await glob('tests/fixtures/parse/valid/with_extends/**/tsconfig.json')),
+		...(await glob('tests/fixtures/parse/solution/**/*.ts'))
+	];
+
+	for (const filename of samples) {
+		try {
+			let expectedFilename = filename.endsWith('.ts')
+				? `${path.basename(filename)}.expected.json`
+				: 'expected.native.json';
+			if (filename.endsWith('.ts') && filename.includes(path.join('solution', 'mixed', 'src'))) {
+				expectedFilename = path.join('..', 'tsconfig.json'); // mixed solution resolve does not work without files and returns parent
+			}
+			const expected = await loadExpectedJSON(filename, expectedFilename);
+			expected.files = [];
+			expected.include = [];
+			const actual = await parseNative(filename, { ignoreSourceFiles: true });
+			assert.equal(actual.tsconfig, expected, `testing ignoreSourceFiles with ${filename}`);
+			assert.is(actual.result.fileNames.length, 0, `testing ignoreSourceFiles with ${filename}`);
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`unexpected error when testing ignoreSourceFiles with ${filename}: ${e}`);
+		}
+	}
+});
+
 test.run();
