@@ -55,8 +55,8 @@ export async function parseNative(
 		result = cache.get(tsconfigFile)!;
 	} else {
 		const ts = await loadTS();
-		result = await parseFile(tsconfigFile, ts, cache);
-		await parseReferences(result, ts, cache);
+		result = await parseFile(tsconfigFile, ts, options);
+		await parseReferences(result, ts, options);
 		cache?.set(tsconfigFile, result);
 	}
 
@@ -70,8 +70,9 @@ export async function parseNative(
 async function parseFile(
 	tsconfigFile: string,
 	ts: any,
-	cache?: Map<string, TSConfckParseNativeResult>
+	options?: TSConfckParseNativeOptions
 ): Promise<TSConfckParseNativeResult> {
+	const cache = options?.cache;
 	if (cache?.has(tsconfigFile)) {
 		return cache.get(tsconfigFile)!;
 	}
@@ -89,6 +90,10 @@ async function parseFile(
 		readFile: sys.readFile
 	};
 
+	if (options?.ignoreSourceFiles) {
+		config.files = [];
+		config.include = [];
+	}
 	const nativeResult = parseJsonConfigFileContent(
 		config,
 		host,
@@ -97,6 +102,7 @@ async function parseFile(
 		posixTSConfigFile
 	);
 	checkErrors(nativeResult);
+
 	const result: TSConfckParseNativeResult = {
 		filename: tsconfigFile,
 		tsconfig: result2tsconfig(nativeResult, ts),
@@ -109,13 +115,15 @@ async function parseFile(
 async function parseReferences(
 	result: TSConfckParseNativeResult,
 	ts: any,
-	cache?: Map<string, TSConfckParseNativeResult>
+	options?: TSConfckParseNativeOptions
 ) {
 	if (!result.tsconfig.references) {
 		return;
 	}
 	const referencedFiles = resolveReferencedTSConfigFiles(result);
-	result.referenced = await Promise.all(referencedFiles.map((file) => parseFile(file, ts, cache)));
+	result.referenced = await Promise.all(
+		referencedFiles.map((file) => parseFile(file, ts, options))
+	);
 }
 
 /**
@@ -239,6 +247,14 @@ export interface TSConfckParseNativeOptions {
 	 * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
 	 */
 	resolveWithEmptyIfConfigNotFound?: boolean;
+
+	/**
+	 * This is faster for large projects, but comes with 2 caveats
+	 *
+	 * 1) output tsconfig always has `files: [],include: []` instead of any real values configured.
+	 * 2) as a result of 1), it won't be able to resolve solution-style references and always return the closest tsconfig instead
+	 */
+	ignoreSourceFiles?: boolean;
 }
 
 export interface TSConfckParseNativeResult {

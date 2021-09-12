@@ -131,6 +131,13 @@ interface TSConfckParseNativeOptions {
      * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
      */
     resolveWithEmptyIfConfigNotFound?: boolean;
+    /**
+     * This is faster for large projects, but comes with 2 caveats
+     *
+     * 1) output tsconfig always has `files: [],include: []` instead of any real values configured.
+     * 2) as a result of 1), it won't be able to resolve solution-style references and always return the closest tsconfig instead
+     */
+    ignoreSourceFiles?: boolean;
 }
 interface TSConfckParseNativeResult {
     /**
