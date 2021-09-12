@@ -1,3 +1,12 @@
+# [1.0.0-8](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-7...tsconfck@1.0.0-8) (2021-09-12)
+
+
+### Features
+
+* add option 'ignoreSourceFiles' for parseNative ([#7](https://github.com/dominikg/tsconfck/issues/7)) ([33d966c](https://github.com/dominikg/tsconfck/commit/33d966c478bd778494d42a5b5e69c9861a15301e))
+
+
+
 # [1.0.0-7](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-6...tsconfck@1.0.0-7) (2021-09-09)
 
 
