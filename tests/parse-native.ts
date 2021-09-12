@@ -257,8 +257,8 @@ test('should prevent typescript file scanning when preventFileScan: true is set'
 			let expectedFilename = filename.endsWith('.ts')
 				? `${path.basename(filename)}.expected.json`
 				: 'expected.native.json';
-			if (filename.endsWith('.ts') && filename.includes('/solution/mixed/src/')) {
-				expectedFilename = '../tsconfig.json'; // mixed solution resolve does not work without files and returns parent
+			if (filename.endsWith('.ts') && filename.includes(path.join('solution', 'mixed', 'src'))) {
+				expectedFilename = path.join('..', 'tsconfig.json'); // mixed solution resolve does not work without files and returns parent
 			}
 			const expected = await loadExpectedJSON(filename, expectedFilename);
 			expected.files = [];
