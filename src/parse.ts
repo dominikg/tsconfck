@@ -72,7 +72,12 @@ async function parseFile(
 		cache?.set(tsconfigFile, result);
 		return result;
 	} catch (e) {
-		throw new TSConfckParseError(`parsing ${tsconfigFile} failed: ${e}`, 'PARSE_FILE', e);
+		throw new TSConfckParseError(
+			`parsing ${tsconfigFile} failed: ${e}`,
+			'PARSE_FILE',
+			tsconfigFile,
+			e
+		);
 	}
 }
 
@@ -122,7 +127,8 @@ async function parseExtends(result: TSConfckParseResult, cache?: Map<string, TSC
 				.join(' -> ');
 			throw new TSConfckParseError(
 				`Circular dependency in "extends": ${circle}`,
-				'EXTENDS_CIRCULAR'
+				'EXTENDS_CIRCULAR',
+				result.tsconfigFile
 			);
 		}
 		extended.push(await parseFile(extendedTSConfigFile, cache));
@@ -141,6 +147,7 @@ function resolveExtends(extended: string, from: string): string {
 		throw new TSConfckParseError(
 			`failed to resolve "extends":"${extended}" in ${from}`,
 			'EXTENDS_RESOLVE',
+			from,
 			e
 		);
 	}
@@ -282,13 +289,14 @@ export interface TSConfckParseResult {
 }
 
 export class TSConfckParseError extends Error {
-	constructor(message: string, code: string, cause?: Error) {
+	constructor(message: string, code: string, tsconfigFile: string, cause?: Error) {
 		super(message);
 		// Set the prototype explicitly.
 		Object.setPrototypeOf(this, TSConfckParseError.prototype);
 		this.name = TSConfckParseError.name;
 		this.code = code;
 		this.cause = cause;
+		this.tsconfigFile = tsconfigFile;
 	}
 
 	/**
@@ -299,4 +307,9 @@ export class TSConfckParseError extends Error {
 	 * the cause of this error
 	 */
 	cause: Error | undefined;
+
+	/**
+	 * absolute path of tsconfig file where the error happened
+	 */
+	tsconfigFile: string;
 }
