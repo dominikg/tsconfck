@@ -1,3 +1,12 @@
+# [1.0.0-10](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-9...tsconfck@1.0.0-10) (2021-09-14)
+
+
+### Features
+
+* add tsconfigFile to parse error ([#9](https://github.com/dominikg/tsconfck/issues/9)) ([38c13b6](https://github.com/dominikg/tsconfck/commit/38c13b685e3b2a967a864b692ca14e518f449aec))
+
+
+
 # [1.0.0-9](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-8...tsconfck@1.0.0-9) (2021-09-14)
 
 
