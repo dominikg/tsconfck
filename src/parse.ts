@@ -33,7 +33,7 @@ export async function parse(
 			tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
 		} catch (e) {
 			const notFoundResult = {
-				filename: 'no_tsconfig_file_found',
+				tsconfigFile: 'no_tsconfig_file_found',
 				tsconfig: {}
 			};
 			cache?.set(filename, notFoundResult);
@@ -66,7 +66,7 @@ async function parseFile(
 		const tsconfigJson = await fs.readFile(tsconfigFile, 'utf-8');
 		const json = toJson(tsconfigJson);
 		const result = {
-			filename: tsconfigFile,
+			tsconfigFile,
 			tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
 		};
 		cache?.set(tsconfigFile, result);
@@ -109,16 +109,16 @@ async function parseExtends(result: TSConfckParseResult, cache?: Map<string, TSC
 	// use result as first element in extended
 	// but dereference tsconfig so that mergeExtended can modify the original without affecting extended[0]
 	const extended = [
-		{ filename: result.filename, tsconfig: JSON.parse(JSON.stringify(result.tsconfig)) }
+		{ tsconfigFile: result.tsconfigFile, tsconfig: JSON.parse(JSON.stringify(result.tsconfig)) }
 	];
 
 	while (extended[extended.length - 1].tsconfig.extends) {
 		const extending = extended[extended.length - 1];
-		const extendedTSConfigFile = resolveExtends(extending.tsconfig.extends, extending.filename);
-		if (extended.some((x) => x.filename === extendedTSConfigFile)) {
+		const extendedTSConfigFile = resolveExtends(extending.tsconfig.extends, extending.tsconfigFile);
+		if (extended.some((x) => x.tsconfigFile === extendedTSConfigFile)) {
 			const circle = extended
-				.concat({ filename: extendedTSConfigFile, tsconfig: null })
-				.map((e) => e.filename)
+				.concat({ tsconfigFile: extendedTSConfigFile, tsconfig: null })
+				.map((e) => e.tsconfigFile)
 				.join(' -> ');
 			throw new TSConfckParseError(
 				`Circular dependency in "extends": ${circle}`,
@@ -161,7 +161,7 @@ function extendTSConfig(extending: TSConfckParseResult, extended: TSConfckParseR
 	const extendingConfig = extending.tsconfig;
 	const extendedConfig = extended.tsconfig;
 	const relativePath = native2posix(
-		path.relative(path.dirname(extending.filename), path.dirname(extended.filename))
+		path.relative(path.dirname(extending.tsconfigFile), path.dirname(extended.tsconfigFile))
 	);
 	for (const key of Object.keys(extendedConfig).filter((key) => EXTENDABLE_KEYS.includes(key))) {
 		if (key === 'compilerOptions') {
@@ -256,7 +256,7 @@ export interface TSConfckParseResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */
-	filename: string;
+	tsconfigFile: string;
 
 	/**
 	 * parsed result, including merged values from extended

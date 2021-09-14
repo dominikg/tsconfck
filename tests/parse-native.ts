@@ -66,7 +66,7 @@ test('should resolve with empty result when filename is a tsconfig.json that doe
 		const result = await parseNative(notExisting, { resolveWithEmptyIfConfigNotFound: true });
 		assert.equal(
 			result,
-			{ filename: 'no_tsconfig_file_found', tsconfig: {}, result: null },
+			{ tsconfigFile: 'no_tsconfig_file_found', tsconfig: {}, result: null },
 			'empty result'
 		);
 	} catch (e) {
@@ -86,7 +86,7 @@ test('should resolve with expected for valid tsconfig.json', async () => {
 		try {
 			const actual = await parseNative(filename);
 			assert.equal(actual.tsconfig, expected, `testfile: ${filename}`);
-			assert.equal(actual.filename, path.resolve(filename));
+			assert.equal(actual.tsconfigFile, path.resolve(filename));
 		} catch (e) {
 			if (e.code === 'ERR_ASSERTION') {
 				throw e;
@@ -135,18 +135,18 @@ test('should work with cache', async () => {
 			const reparsedResult = await parseNative(filename, { cache });
 			assert.is(reparsedResult, cached, `reparsedResult was returned from cache for ${filename}`);
 			if (filename.endsWith('.ts')) {
-				assert.is(cache.has(actual.filename), true, `cache exists for ${actual.filename}`);
-				const cachedByResultFilename = cache.get(actual.filename)!;
+				assert.is(cache.has(actual.tsconfigFile), true, `cache exists for ${actual.tsconfigFile}`);
+				const cachedByResultFilename = cache.get(actual.tsconfigFile)!;
 				assert.equal(
 					cachedByResultFilename.tsconfig,
 					expected,
-					`cache of ${actual.filename} matches for: ${filename}`
+					`cache of ${actual.tsconfigFile} matches for: ${filename}`
 				);
-				const reparsedByResultFilename = await parseNative(actual.filename, { cache });
+				const reparsedByResultFilename = await parseNative(actual.tsconfigFile, { cache });
 				assert.is(
 					reparsedByResultFilename,
 					cachedByResultFilename,
-					`reparsedByResultFilename was returned from cache for ${actual.filename}`
+					`reparsedByResultFilename was returned from cache for ${actual.tsconfigFile}`
 				);
 			}
 			cache.clear();

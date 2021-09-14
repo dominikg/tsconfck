@@ -56,7 +56,7 @@ interface TSConfckParseResult {
     /**
      * absolute path to parsed tsconfig.json
      */
-    filename: string;
+    tsconfigFile: string;
     /**
      * parsed result, including merged values from extended
      */
@@ -145,7 +145,7 @@ interface TSConfckParseNativeResult {
     /**
      * absolute path to parsed tsconfig.json
      */
-    filename: string;
+    tsconfigFile: string;
     /**
      * parsed result, including merged values from extended and normalized
      */
