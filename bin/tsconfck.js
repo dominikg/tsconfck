@@ -20,7 +20,7 @@ Examples:
 
 > tsconfck parse-result src/index.ts
 >{
->  ... ParseResult json
+>  ... TSConfckParseResult json
 >}
 `;
 

@@ -32,7 +32,7 @@ npm install --save-dev tsconfck # or pnpm, yarn
 ```js
 import { parse } from 'tsconfck';
 const {
-	filename, // full path to found tsconfig
+	tsconfigFile, // full path to found tsconfig
 	tsconfig, // tsconfig object including merged values from extended configs
 	extended, // separate unmerged results of all tsconfig files that contributed to tsconfig
 	solution, // solution result if tsconfig is part of a solution
@@ -45,7 +45,7 @@ const {
 ```js
 import { parseNative } from 'tsconfck';
 const {
-	filename, // full path to found tsconfig
+	tsconfigFile, // full path to found tsconfig
 	tsconfig, // tsconfig object including merged values from extended configs, normalized
 	result, // output of ts.parseJsonConfigFileContent
 	solution, // solution result if tsconfig is part of a solution
@@ -92,7 +92,7 @@ import { parse } from 'tsconfck';
 const result = await parse('some/path/without/tsconfig/foo.ts', {
 	resolveWithEmptyIfConfigNotFound: true
 });
-// result = { filename: 'no_tsconfig_file_found',tsconfig: {} }
+// result = { tsconfigFile: 'no_tsconfig_file_found',tsconfig: {} }
 ```
 
 ### cli

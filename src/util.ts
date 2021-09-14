@@ -92,7 +92,7 @@ export function resolve2posix(dir: string | null, filename: string) {
 }
 
 export function resolveReferencedTSConfigFiles(result: TSConfckParseResult): string[] {
-	const dir = path.dirname(result.filename);
+	const dir = path.dirname(result.tsconfigFile);
 	return result.tsconfig.references.map((ref: { path: string }) => {
 		const refPath = ref.path.endsWith('.json') ? ref.path : path.join(ref.path, 'tsconfig.json');
 		return resolve2posix(dir, refPath);
@@ -122,7 +122,7 @@ export function resolveSolutionTSConfig(
 }
 
 function isIncluded(filename: string, result: TSConfckParseResult): boolean {
-	const dir = native2posix(path.dirname(result.filename));
+	const dir = native2posix(path.dirname(result.tsconfigFile));
 	const files = (result.tsconfig.files || []).map((file: string) => resolve2posix(dir, file));
 	const absoluteFilename = resolve2posix(null, filename);
 	if (files.includes(filename)) {

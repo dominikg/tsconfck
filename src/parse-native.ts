@@ -36,7 +36,7 @@ export async function parseNative(
 			}
 		} catch (e) {
 			const notFoundResult = {
-				filename: 'no_tsconfig_file_found',
+				tsconfigFile: 'no_tsconfig_file_found',
 				tsconfig: {},
 				result: null
 			};
@@ -104,7 +104,7 @@ async function parseFile(
 	checkErrors(nativeResult);
 
 	const result: TSConfckParseNativeResult = {
-		filename: tsconfigFile,
+		tsconfigFile,
 		tsconfig: result2tsconfig(nativeResult, ts),
 		result: nativeResult
 	};
@@ -263,7 +263,7 @@ export interface TSConfckParseNativeResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */
-	filename: string;
+	tsconfigFile: string;
 
 	/**
 	 * parsed result, including merged values from extended and normalized
