@@ -230,6 +230,7 @@ test('should reject with correct error for invalid tsconfig.json', async () => {
 				expected,
 				`expected "${expected}" for filename: ${filename}, got actual "${actual}"`
 			);
+			assert.is(e.tsconfigFile, path.resolve(filename));
 		}
 	}
 });

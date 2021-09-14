@@ -80,7 +80,7 @@ async function parseFile(
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
 	const { config, error } = readConfigFile(posixTSConfigFile, sys.readFile);
 	if (error) {
-		throw new TSConfckParseNativeError(error, null);
+		throw new TSConfckParseNativeError(error, tsconfigFile, null);
 	}
 
 	const host = {
@@ -101,7 +101,7 @@ async function parseFile(
 		undefined,
 		posixTSConfigFile
 	);
-	checkErrors(nativeResult);
+	checkErrors(nativeResult, tsconfigFile);
 
 	const result: TSConfckParseNativeResult = {
 		tsconfigFile,
@@ -135,7 +135,7 @@ async function parseReferences(
  * @param {nativeResult} any - native typescript parse result to check for errors
  * @throws {TSConfckParseNativeError} for critical error
  */
-function checkErrors(nativeResult: any) {
+function checkErrors(nativeResult: any, tsconfigFile: string) {
 	const ignoredErrorCodes = [
 		// see https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
 		18002, // empty files list
@@ -145,7 +145,7 @@ function checkErrors(nativeResult: any) {
 		(error: TSDiagnosticError) => error.category === 1 && !ignoredErrorCodes.includes(error.code)
 	);
 	if (criticalError) {
-		throw new TSConfckParseNativeError(criticalError, nativeResult);
+		throw new TSConfckParseNativeError(criticalError, tsconfigFile, nativeResult);
 	}
 }
 
@@ -287,7 +287,7 @@ export interface TSConfckParseNativeResult {
 }
 
 export class TSConfckParseNativeError extends Error {
-	constructor(diagnostic: TSDiagnosticError, result?: any) {
+	constructor(diagnostic: TSDiagnosticError, tsconfigFile: string, result?: any) {
 		super(diagnostic.messageText);
 		// Set the prototype explicitly.
 		Object.setPrototypeOf(this, TSConfckParseNativeError.prototype);
@@ -295,6 +295,7 @@ export class TSConfckParseNativeError extends Error {
 		this.code = `TS ${diagnostic.code}`;
 		this.diagnostic = diagnostic;
 		this.result = result;
+		this.tsconfigFile = tsconfigFile;
 	}
 
 	/**
@@ -306,6 +307,11 @@ export class TSConfckParseNativeError extends Error {
 	 * full ts diagnostic that caused this error
 	 */
 	diagnostic: any;
+
+	/**
+	 * absolute path of tsconfig file where the error happened
+	 */
+	tsconfigFile: string;
 
 	/**
 	 * native result if present, contains all errors in result.errors

@@ -77,7 +77,7 @@ interface TSConfckParseResult {
     extended?: TSConfckParseResult[];
 }
 declare class TSConfckParseError extends Error {
-    constructor(message: string, code: string, cause?: Error);
+    constructor(message: string, code: string, tsconfigFile: string, cause?: Error);
     /**
      * error code
      */
@@ -86,6 +86,10 @@ declare class TSConfckParseError extends Error {
      * the cause of this error
      */
     cause: Error | undefined;
+    /**
+     * absolute path of tsconfig file where the error happened
+     */
+    tsconfigFile: string;
 }
 ```
 
@@ -164,7 +168,7 @@ interface TSConfckParseNativeResult {
     result: any;
 }
 declare class TSConfckParseNativeError extends Error {
-    constructor(diagnostic: TSDiagnosticError, result?: any);
+    constructor(diagnostic: TSDiagnosticError, tsconfigFile: string, result?: any);
     /**
      * code of typescript diagnostic, prefixed with "TS "
      */
@@ -173,6 +177,10 @@ declare class TSConfckParseNativeError extends Error {
      * full ts diagnostic that caused this error
      */
     diagnostic: any;
+    /**
+     * absolute path of tsconfig file where the error happened
+     */
+    tsconfigFile: string;
     /**
      * native result if present, contains all errors in result.errors
      */

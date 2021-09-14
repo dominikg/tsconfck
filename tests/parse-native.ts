@@ -241,6 +241,8 @@ test('should reject with correct error position for invalid tsconfig.json', asyn
 				expected.message,
 				`expected "${expected.message}" for filename: ${filename}, got "${err.message}", err: ${err}`
 			);
+
+			assert.is(err.tsconfigFile, path.resolve(filename));
 		}
 	}
 });
