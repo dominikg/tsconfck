@@ -1,3 +1,17 @@
+# [1.0.0-9](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-8...tsconfck@1.0.0-9) (2021-09-14)
+
+
+### Features
+
+* rename filename to tsconfigFile to avoid confusion with filename argument ([#8](https://github.com/dominikg/tsconfck/issues/8)) ([9752114](https://github.com/dominikg/tsconfck/commit/9752114deb8439968a80d86f2f0d35ca8c4478fd))
+
+
+### BREAKING CHANGES
+
+* rename `filename` of TSConfckParseResult and TSConfckParseNativeResult to `tsconfigFile`
+
+
+
 # [1.0.0-8](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-7...tsconfck@1.0.0-8) (2021-09-12)
 
 
