@@ -1,3 +1,7 @@
+# [1.0.0](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-10...tsconfck@1.0.0) (2021-09-15)
+
+
+
 # [1.0.0-10](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-9...tsconfck@1.0.0-10) (2021-09-14)
 
 
