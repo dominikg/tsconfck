@@ -7,12 +7,12 @@ import {
 	parseNative,
 	TSConfckParseNativeError,
 	TSConfckParseNativeResult
-} from '../src/parse-native.js';
+} from '../src/parse-native';
 import os from 'os';
-import { copyFixtures } from './util/copy-fixtures.js';
+import { copyFixtures } from './util/copy-fixtures';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
-import { loadExpectedJSON, loadExpectedTXT } from './util/load-expected.js';
+import { loadExpectedJSON, loadExpectedTXT } from './util/load-expected';
 const test = suite('parse-native');
 
 test('should be a function', () => {

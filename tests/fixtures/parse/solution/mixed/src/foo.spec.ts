@@ -1,4 +1,4 @@
-import { foo } from './foo.js';
+import { foo } from './foo';
 import * as assert from 'assert';
 
 function test() {

@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { toJson } from '../src/to-json.js';
+import { toJson } from '../src/to-json';
 const test = suite('toJson');
 
 test('should be a function', () => {

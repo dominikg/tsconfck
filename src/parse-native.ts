@@ -5,8 +5,8 @@ import {
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
 	resolveTSConfig
-} from './util.js';
-import { findNative } from './find-native.js';
+} from './util';
+import { findNative } from './find-native';
 
 /**
  * parse the closest tsconfig.json file with typescript native functions

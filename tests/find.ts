@@ -2,7 +2,7 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import path from 'path';
 import os from 'os';
-import { find } from '../src/find.js';
+import { find } from '../src/find';
 const test = suite('find');
 
 test('should be a function', () => {
