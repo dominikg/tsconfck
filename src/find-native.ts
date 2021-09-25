@@ -1,5 +1,5 @@
 import path from 'path';
-import { loadTS } from './util.js';
+import { loadTS } from './util';
 
 /**
  * find the closest tsconfig.json file using native ts.findConfigFile

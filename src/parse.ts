@@ -1,15 +1,15 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import { createRequire } from 'module';
-import { find } from './find.js';
-import { toJson } from './to-json.js';
+import { find } from './find';
+import { toJson } from './to-json';
 import {
 	native2posix,
 	resolve2posix,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
 	resolveTSConfig
-} from './util.js';
+} from './util';
 
 /**
  * parse the closest tsconfig.json file

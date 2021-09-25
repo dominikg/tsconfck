@@ -1,6 +1,6 @@
 import path from 'path';
 import { promises as fs } from 'fs';
-import { resolve2posix } from '../../src/util.js';
+import { resolve2posix } from '../../src/util';
 
 export async function loadExpectedJSON(
 	inputFile: string,
