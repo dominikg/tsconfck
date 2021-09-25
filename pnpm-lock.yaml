@@ -12,13 +12,12 @@ specifiers:
   conventional-changelog-cli: ^2.1.1
   enquirer: ^2.3.6
   esbuild: ^0.12.28
-  esbuild-node-loader: ^0.3.1
+  esbuild-node-loader: ^0.3.2
   eslint: ^7.32.0
   eslint-config-prettier: ^8.3.0
   eslint-plugin-markdown: ^2.2.1
   eslint-plugin-node: ^11.1.0
   eslint-plugin-prettier: ^4.0.0
-  esmo: ^0.9.1
   execa: ^5.1.1
   husky: ^7.0.2
   lint-staged: ^11.1.2
@@ -46,13 +45,12 @@ devDependencies:
   conventional-changelog-cli: 2.1.1
   enquirer: 2.3.6
   esbuild: 0.12.28
-  esbuild-node-loader: 0.3.1
+  esbuild-node-loader: 0.3.2
   eslint: 7.32.0
   eslint-config-prettier: 8.3.0_eslint@7.32.0
   eslint-plugin-markdown: 2.2.1_eslint@7.32.0
   eslint-plugin-node: 11.1.0_eslint@7.32.0
   eslint-plugin-prettier: 4.0.0_5559632aa3c77deec3ae5c2ea6ed0f36
-  esmo: 0.9.1
   execa: 5.1.1
   husky: 7.0.2
   lint-staged: 11.1.2
@@ -1459,19 +1457,10 @@ packages:
       is-symbol: 1.0.4
     dev: true
 
-  /esbuild-node-loader/0.3.1:
-    resolution: {integrity: sha512-75xPOySulti9R5LwYOMmKiwHyXGr/f89I7UkHolLxRqeBiUNqcyCmNTjv+fO2WV9G3f7LDKVZJlbWoYh5LBpfQ==}
+  /esbuild-node-loader/0.3.2:
+    resolution: {integrity: sha512-4Y6sTwvB5pH+A7gmpd/xzyPkOZC4nmEWRoGBi4BQoE0DhZvrrzHqSmT+jb4x7m1rwv4BCuNbajN13LN8D0PGoA==}
     dependencies:
       esbuild: 0.12.28
-    dev: true
-
-  /esbuild-register/3.0.0_esbuild@0.12.28:
-    resolution: {integrity: sha512-No7U3ZUd6gPrrC6gqdb3XFcf2lNqzn8nvQXcgcyOl8szMVuN6YUvOplnmakxWyogI9d8SiJMl0uzBzJck+Aoxw==}
-    peerDependencies:
-      esbuild: ^0.12.28
-    dependencies:
-      esbuild: 0.12.28
-      jsonc-parser: 3.0.0
     dev: true
 
   /esbuild/0.12.28:
@@ -1646,16 +1635,6 @@ packages:
       v8-compile-cache: 2.3.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /esmo/0.9.1:
-    resolution: {integrity: sha512-T8AlIePktd2MJSekJqbuMYYM5tLwVgg+HZEqgVCWryPqmGHuhqY6RvTyT8LhAICSyhFn1hVQdEbnrlGL+AM5Ig==}
-    hasBin: true
-    dependencies:
-      cross-spawn: 7.0.3
-      esbuild: 0.12.28
-      esbuild-node-loader: 0.3.1
-      esbuild-register: 3.0.0_esbuild@0.12.28
     dev: true
 
   /espree/7.3.1:
@@ -2641,10 +2620,6 @@ packages:
     hasBin: true
     dependencies:
       minimist: 1.2.5
-    dev: true
-
-  /jsonc-parser/3.0.0:
-    resolution: {integrity: sha512-fQzRfAbIBnR0IQvftw9FJveWiHp72Fg20giDrHz6TdfB12UH/uue0D3hm57UB5KgAVuniLMCaS8P1IMj9NR7cA==}
     dev: true
 
   /jsonfile/6.1.0:
