@@ -6,7 +6,10 @@ const POSIX_SEP_RE = new RegExp('\\' + path.posix.sep, 'g');
 const NATIVE_SEP_RE = new RegExp('\\' + path.sep, 'g');
 const PATTERN_REGEX_CACHE = new Map<string, RegExp>();
 const GLOB_ALL_PATTERN = `**/*`;
-
+const DEFAULT_EXTENSIONS = ['.ts', '.tsx', '.mts', '.cts'];
+const DEFAULT_EXTENSIONS_RE_GROUP = `\\.(?:${DEFAULT_EXTENSIONS.map((ext) => ext.substring(1)).join(
+	'|'
+)})`;
 // hide dynamic import from ts transform to prevent it turning into a require
 // see https://github.com/microsoft/TypeScript/issues/43329#issuecomment-811606238
 const dynamicImportDefault = new Function('path', 'return import(path).then(m => m.default)');
@@ -105,7 +108,7 @@ export function resolveSolutionTSConfig(
 ): TSConfckParseResult {
 	if (
 		result.referenced &&
-		['.ts', '.tsx'].some((ext) => filename.endsWith(ext)) &&
+		DEFAULT_EXTENSIONS.some((ext) => filename.endsWith(ext)) &&
 		!isIncluded(filename, result)
 	) {
 		const solutionTSConfig = result.referenced.find((referenced) =>
@@ -169,8 +172,8 @@ export function isGlobMatch(filename: string, dir: string, patterns: string[]): 
 			return false;
 		}
 
-		// if pattern ends with *, filename must end with .ts or .tsx
-		if (pattern.endsWith('*') && !(filename.endsWith('.ts') || filename.endsWith('.tsx'))) {
+		// if pattern ends with *, filename must end with a default extension
+		if (pattern.endsWith('*') && !DEFAULT_EXTENSIONS.some((ext) => filename.endsWith(ext))) {
 			return false;
 		}
 
@@ -237,7 +240,7 @@ function pattern2regex(resolvedPattern: string): RegExp {
 
 	// add known file endings if pattern ends on *
 	if (resolvedPattern.endsWith('*')) {
-		regexStr += '\\.tsx?';
+		regexStr += DEFAULT_EXTENSIONS_RE_GROUP;
 	}
 	regexStr += '$';
 
