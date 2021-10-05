@@ -1,14 +1,14 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { parse, TSConfckParseError, TSConfckParseResult } from '../src/parse';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+import { parse, TSConfckParseError, TSConfckParseResult } from '../src/parse.js';
 import os from 'os';
-import { copyFixtures } from './util/copy-fixtures';
+import { copyFixtures } from './util/copy-fixtures.js';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
-import { loadExpectedJSON, loadExpectedTXT } from './util/load-expected';
+import { loadExpectedJSON, loadExpectedTXT } from './util/load-expected.js';
 
 const test = suite('parse');
 

@@ -1,8 +1,8 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import path from 'path';
-import os from 'os';
-import { isGlobMatch, native2posix, resolve2posix } from '../src/util';
+import path from 'node:path';
+import os from 'node:os';
+import { isGlobMatch, native2posix, resolve2posix } from '../src/util.js';
 const test_isGlobMatch = suite('isGlobMatch');
 
 const GLOBMATCH_TEST_DATA = [

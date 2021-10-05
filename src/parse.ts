@@ -1,8 +1,8 @@
-import path from 'path';
-import { promises as fs } from 'fs';
-import { createRequire } from 'module';
-import { find } from './find';
-import { toJson } from './to-json';
+import path from 'node:path';
+import { promises as fs } from 'node:fs';
+import { createRequire } from 'node:module';
+import { find } from './find.js';
+import { toJson } from './to-json.js';
 import {
 	native2posix,
 	resolve2posix,
