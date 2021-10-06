@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0...tsconfck@1.1.0) (2021-10-06)
+
+
+### Features
+
+* add .mts and .cts to default extensions for typescript 4.5 support ([#13](https://github.com/dominikg/tsconfck/issues/13)) ([87ecc07](https://github.com/dominikg/tsconfck/commit/87ecc076088b8974bb6d69932d471c2b4fcf2d58))
+
+
+
 # [1.0.0](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0-10...tsconfck@1.0.0) (2021-09-15)
 
 
