@@ -95,6 +95,14 @@ const result = await parse('some/path/without/tsconfig/foo.ts', {
 // result = { tsconfigFile: 'no_tsconfig_file_found',tsconfig: {} }
 ```
 
+### TSConfig type (optional, requires typescript as devDependency)
+
+```ts
+import type { TSConfig } from 'pkg-types';
+```
+
+Check out https://github.com/unjs/pkg-types
+
 ### cli
 
 A simple cli wrapper is included, you can use it like this
