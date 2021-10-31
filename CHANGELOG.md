@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/dominikg/tsconfck/compare/tsconfck@1.1.0...tsconfck@1.1.1) (2021-10-31)
+
+
+### Bug Fixes
+
+* remove 'node:' prefix to avoid require(node:xxx) in cjs build for node12 compatibility ([e95b6cb](https://github.com/dominikg/tsconfck/commit/e95b6cb27936179e48f592eadc6a642b39a69b0d))
+
+
+
 # [1.1.0](https://github.com/dominikg/tsconfck/compare/tsconfck@1.0.0...tsconfck@1.1.0) (2021-10-06)
 
 
