@@ -1,5 +1,5 @@
-import { promises as fs, Dirent } from 'node:fs';
-import path from 'node:path';
+import { promises as fs, Dirent } from 'fs';
+import path from 'path';
 
 // eslint-disable-next-line no-unused-vars
 export async function copyFixtures(from: string, to: string, filter?: (x: Dirent) => boolean) {

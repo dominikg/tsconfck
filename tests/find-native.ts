@@ -1,7 +1,7 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import path from 'node:path';
-import os from 'node:os';
+import path from 'path';
+import os from 'os';
 import { findNative } from '../src/find-native.js';
 import { native2posix } from '../src/util.js';
 const test = suite('findNative');

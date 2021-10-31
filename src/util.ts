@@ -1,5 +1,5 @@
-import path from 'node:path';
-import { promises as fs } from 'node:fs';
+import path from 'path';
+import { promises as fs } from 'fs';
 import { TSConfckParseResult } from './parse.js';
 
 const POSIX_SEP_RE = new RegExp('\\' + path.posix.sep, 'g');

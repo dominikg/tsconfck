@@ -1,14 +1,14 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
-import { promises as fs } from 'node:fs';
-import path from 'node:path';
+import { promises as fs } from 'fs';
+import path from 'path';
 import {
 	parseNative,
 	TSConfckParseNativeError,
 	TSConfckParseNativeResult
 } from '../src/parse-native.js';
-import os from 'node:os';
+import os from 'os';
 import { copyFixtures } from './util/copy-fixtures';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
