@@ -1,0 +1,16 @@
+{
+  "extends": ["config:base", "schedule:weekly", "group:allNonMajor",":semanticCommits"],
+  "labels": ["dependencies"],
+  "pin": false,
+  "rangeStrategy": "bump",
+  "node": false,
+  "packageRules": [
+    {
+      "depTypeList": ["peerDependencies"],
+      "enabled": false
+    }
+  ],
+  "ignoreDeps": [
+    // add deps that need manual attention here
+  ]
+}
