@@ -22,11 +22,15 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./sync": {
+      "import": "./dist/sync/index.js",
+      "require": "./dist/sync/index.cjs"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
     "dev": "pnpm run build:ci -- --watch src",
-    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
+    "build:ci": "rimraf dist && tsup-node src/index.ts src/sync/index.ts --format esm,cjs --no-splitting",
     "build": "pnpm run build:ci -- --dts --sourcemap && node scripts/generate-api-docs.js",
     "test": "node --experimental-loader tsm node_modules/uvu/bin.js tests -i fixtures -i temp -i util/",
     "test:watch": "pnpm test; watchlist tests src -- pnpm test",
