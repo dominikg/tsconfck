@@ -8,7 +8,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.4.0
   '@typescript-eslint/parser': ^5.4.0
   c8: ^7.10.0
-  chalk: ^4.1.2
+  chalk: ^5.0.0
   conventional-changelog-cli: ^2.1.1
   enquirer: ^2.3.6
   esbuild: ^0.13.15
@@ -40,7 +40,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 5.4.0_5c8ff4cecd5a55e744866c0654edac32
   '@typescript-eslint/parser': 5.4.0_eslint@8.3.0+typescript@4.5.2
   c8: 7.10.0
-  chalk: 4.1.2
+  chalk: 5.0.0
   conventional-changelog-cli: 2.1.1
   enquirer: 2.3.6
   esbuild: 0.13.15
@@ -677,6 +677,11 @@ packages:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
+    dev: true
+
+  /chalk/5.0.0:
+    resolution: {integrity: sha512-/duVOqst+luxCQRKEo4bNxinsOQtMP80ZYm7mMqzuh5PociNL0PvmHFvREJ9ueYL2TxlHjBcmLCdmocx9Vg+IQ==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
     dev: true
 
   /character-entities-legacy/1.1.4:
