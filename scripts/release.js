@@ -2,7 +2,7 @@
 /**
  * pretty verbatim copy of vites release script. https://github.com/vitejs/vite/blob/main/scripts/release.js
  */
-import execa from 'execa';
+import { execa } from 'execa';
 import path from 'path';
 import fs from 'fs';
 import minimist from 'minimist';
