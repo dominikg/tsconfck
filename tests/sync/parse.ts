@@ -3,12 +3,14 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { parse, TSConfckParseError, TSConfckParseResult } from '../../src/sync/parse.js';
+import { parse } from '../../src/sync/parse.js';
+
 import os from 'os';
 import { copyFixtures } from '../util/copy-fixtures.js';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { loadExpectedJSON, loadExpectedTXT } from '../util/load-expected.js';
+import { TSConfckParseResult, TSConfckParseError } from '../../src/types.js';
 
 const test = suite('sync/parse');
 
@@ -145,7 +147,7 @@ test('should work with cache', async () => {
 test('should resolve with tsconfig that is isomorphic', async () => {
 	const tempDir = await copyFixtures(
 		'parse/valid',
-		'parse-isomorphic/sync',
+		'parse-isomorphic-sync',
 		(x) => x.isDirectory() || x.name.startsWith('tsconfig')
 	);
 	const samples = await glob(`${tempDir}/**/tsconfig.json`);

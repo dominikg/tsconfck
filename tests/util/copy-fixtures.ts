@@ -1,12 +1,14 @@
 import { promises as fs, Dirent } from 'fs';
 import path from 'path';
 
+const rimraf = async (dir: string) => (fs.rm || fs.rmdir)(dir, { recursive: true });
+
 // eslint-disable-next-line no-unused-vars
 export async function copyFixtures(from: string, to: string, filter?: (x: Dirent) => boolean) {
 	const src = path.join('tests', 'fixtures', from);
 	const dest = path.join('tests', 'temp', to);
 	try {
-		await fs.rmdir(dest, { recursive: true });
+		await rimraf(dest);
 	} catch (e) {
 		// ignore
 	}

@@ -7,6 +7,12 @@ import {
 	resolveTSConfig
 } from './util';
 import { findNative } from './find-native';
+import {
+	TSConfckParseNativeError,
+	TSConfckParseNativeOptions,
+	TSConfckParseNativeResult,
+	TSDiagnosticError
+} from './types.js';
 
 /**
  * parse the closest tsconfig.json file with typescript native functions
@@ -135,7 +141,7 @@ async function parseReferences(
  * @param {nativeResult} any - native typescript parse result to check for errors
  * @throws {TSConfckParseNativeError} for critical error
  */
-function checkErrors(nativeResult: any, tsconfigFile: string) {
+export function checkErrors(nativeResult: any, tsconfigFile: string) {
 	const ignoredErrorCodes = [
 		// see https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
 		18002, // empty files list
@@ -160,7 +166,7 @@ function checkErrors(nativeResult: any, tsconfigFile: string) {
  * @param ts typescript
  * @returns {object} tsconfig with merged compilerOptions and enums restored to their string form
  */
-function result2tsconfig(result: any, ts: any) {
+export function result2tsconfig(result: any, ts: any) {
 	// dereference result.raw so changes below don't modify original
 	const tsconfig = JSON.parse(JSON.stringify(result.raw));
 	// for some reason the extended compilerOptions are not available in result.raw but only in result.options
@@ -230,98 +236,4 @@ function result2tsconfig(result: any, ts: any) {
 		delete tsconfig.compileOnSave;
 	}
 	return tsconfig;
-}
-
-export interface TSConfckParseNativeOptions {
-	/**
-	 * optional cache map to speed up repeated parsing with multiple files
-	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-	 * cache keys are input `filename` and absolute paths to tsconfig.json files
-	 *
-	 * You must not modify cached values.
-	 */
-	cache?: Map<string, TSConfckParseNativeResult>;
-
-	/**
-	 * treat missing tsconfig as empty result instead of an error
-	 * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
-	 */
-	resolveWithEmptyIfConfigNotFound?: boolean;
-
-	/**
-	 * Set this option to true to force typescript to ignore all source files.
-	 *
-	 * This is faster - especially for large projects - but comes with 2 caveats
-	 *
-	 * 1) output tsconfig always has `files: [],include: []` instead of any real values configured.
-	 * 2) as a result of 1), it won't be able to resolve solution-style references and always return the closest tsconfig
-	 */
-	ignoreSourceFiles?: boolean;
-}
-
-export interface TSConfckParseNativeResult {
-	/**
-	 * absolute path to parsed tsconfig.json
-	 */
-	tsconfigFile: string;
-
-	/**
-	 * parsed result, including merged values from extended and normalized
-	 */
-	tsconfig: any;
-
-	/**
-	 * ParseResult for parent solution
-	 */
-	solution?: TSConfckParseNativeResult;
-
-	/**
-	 * ParseNativeResults for all tsconfig files referenced in a solution
-	 */
-	referenced?: TSConfckParseNativeResult[];
-
-	/**
-	 * full output of ts.parseJsonConfigFileContent
-	 */
-	result: any;
-}
-
-export class TSConfckParseNativeError extends Error {
-	constructor(diagnostic: TSDiagnosticError, tsconfigFile: string, result?: any) {
-		super(diagnostic.messageText);
-		// Set the prototype explicitly.
-		Object.setPrototypeOf(this, TSConfckParseNativeError.prototype);
-		this.name = TSConfckParseNativeError.name;
-		this.code = `TS ${diagnostic.code}`;
-		this.diagnostic = diagnostic;
-		this.result = result;
-		this.tsconfigFile = tsconfigFile;
-	}
-
-	/**
-	 * code of typescript diagnostic, prefixed with "TS "
-	 */
-	code: string;
-
-	/**
-	 * full ts diagnostic that caused this error
-	 */
-	diagnostic: any;
-
-	/**
-	 * absolute path of tsconfig file where the error happened
-	 */
-	tsconfigFile: string;
-
-	/**
-	 * native result if present, contains all errors in result.errors
-	 */
-	result: any | undefined;
-}
-
-interface TSDiagnosticError {
-	code: number;
-	category: number;
-	messageText: string;
-	start?: number;
 }

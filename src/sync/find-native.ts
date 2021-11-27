@@ -1,5 +1,5 @@
 import path from 'path';
-import { loadTS } from './util.js';
+import { loadTSSync } from '../util.js';
 
 /**
  * find the closest tsconfig.json file using native ts.findConfigFile
@@ -10,7 +10,7 @@ import { loadTS } from './util.js';
  * @returns {string} absolute path to closest tsconfig.json
  */
 export function findNative(filename: string): string {
-	const ts = loadTS();
+	const ts = loadTSSync();
 	const { findConfigFile, sys } = ts;
 	const tsconfigFile = findConfigFile(path.dirname(path.resolve(filename)), sys.fileExists);
 	if (!tsconfigFile) {

@@ -1,10 +1,12 @@
 export { find } from './find.js';
-export { toJson } from './to-json.js';
-export { parse, TSConfckParseOptions, TSConfckParseResult, TSConfckParseError } from './parse.js';
+export { parse } from './parse.js';
 export { findNative } from './find-native.js';
+export { parseNative } from './parse-native.js';
 export {
-	parseNative,
+	TSConfckParseOptions,
+	TSConfckParseResult,
+	TSConfckParseError,
 	TSConfckParseNativeOptions,
 	TSConfckParseNativeResult,
 	TSConfckParseNativeError
-} from './parse-native.js';
+} from '../types.js';

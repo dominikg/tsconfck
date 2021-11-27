@@ -1,22 +1,39 @@
 // very simple .d.ts to .md converter
 // splits blocks extracts title and wraps in ```ts ``` code fence
-
 import fs from 'fs';
 
-const header = '<!-- generated, do not modify -->\n## %%TITLE%% \n\n';
-
-function toMD(block) {
-	const title = block.match(/declare function ([^(]+)/)[1];
+function block2md(block) {
+	const match = block.match(
+		/(?:declare function|declare class|export interface|export class) ([^( ]+)/
+	);
+	if (!match || !match[1]) {
+		return;
+	}
+	const title = match[1];
+	block = block.replace(/\n+$/, '');
 	return '### ' + title + '\n\n```ts\n' + block + '\n```';
 }
 
-function createDocs(title, dtsFile, outFile) {
+function dts2md(title, dtsFile) {
 	const dts = fs.readFileSync(dtsFile, 'utf-8');
-	const blocks = dts.split('\n\n').slice(0, -1);
-	const md =
-		header.replace('%%TITLE%%', title) + blocks.map((block) => toMD(block)).join('\n\n') + '\n';
-	fs.writeFileSync(outFile, md);
-	console.log(`generated ${outFile} from ${dtsFile}`);
+	const blocks = dts.split('\n\n');
+	const md = `\n## ${title}\n\n` + blocks.map(block2md).filter(Boolean).join('\n\n') + '\n';
+	return md;
 }
-createDocs('API', 'dist/index.d.ts', 'docs/api.md');
-createDocs('SYNC API', 'dist/sync/index.d.ts', 'docs/api-sync.md');
+
+function ts2md(title, tsFile) {
+	const ts = fs.readFileSync(tsFile, 'utf-8');
+	const blocks = ts.split('export ').map((b) => `export ${b}`);
+	const md = `\n## ${title}\n\n` + blocks.map(block2md).filter(Boolean).join('\n\n') + '\n';
+	return md;
+}
+
+let apiDocs = '<!-- generated, do not modify -->\n';
+apiDocs += dts2md('API', 'dist/index.d.ts');
+apiDocs += '\n\n';
+apiDocs += dts2md('SYNC API', 'dist/sync/index.d.ts');
+apiDocs += '\n\n';
+apiDocs += ts2md('TYPES', 'src/types.ts');
+
+fs.writeFileSync('docs/api.md', apiDocs, 'utf-8');
+console.log('generated api docs in docs/api.md');

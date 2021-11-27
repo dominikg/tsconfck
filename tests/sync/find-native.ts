@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert';
 import path from 'path';
 import os from 'os';
 import { findNative } from '../../src/sync/find-native.js';
-import { native2posix } from '../../src/sync/util.js';
+import { native2posix } from '../../src/util.js';
 const test = suite('sync/findNative');
 
 test('should be a function', () => {

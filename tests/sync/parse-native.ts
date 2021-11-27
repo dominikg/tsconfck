@@ -3,11 +3,8 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import {
-	parseNative,
-	TSConfckParseNativeError,
-	TSConfckParseNativeResult
-} from '../../src/sync/parse-native.js';
+import { parseNative } from '../../src/sync/parse-native.js';
+import { TSConfckParseNativeError, TSConfckParseNativeResult } from '../../src/types.js';
 import os from 'os';
 import { copyFixtures } from '../util/copy-fixtures';
 import { transform as esbuildTransform } from 'esbuild';
@@ -153,7 +150,7 @@ test('should work with cache', async () => {
 test('should resolve with tsconfig that is isomorphic', async () => {
 	const tempDir = await copyFixtures(
 		'parse/valid',
-		'parse-native-isomorphic/sync',
+		'parse-native-isomorphic-sync',
 		(x) => x.isDirectory() || x.name.startsWith('tsconfig')
 	);
 	const samples = await glob(`${tempDir}/**/tsconfig.json`);

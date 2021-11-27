@@ -1,6 +1,8 @@
 import path from 'path';
-import { promises as fs } from 'fs';
+import fs from 'fs';
+const fsp = fs.promises;
 import { TSConfckParseResult } from './parse.js';
+import { createRequire } from 'module';
 
 const POSIX_SEP_RE = new RegExp('\\' + path.posix.sep, 'g');
 const NATIVE_SEP_RE = new RegExp('\\' + path.sep, 'g');
@@ -10,6 +12,7 @@ const DEFAULT_EXTENSIONS = ['.ts', '.tsx', '.mts', '.cts'];
 const DEFAULT_EXTENSIONS_RE_GROUP = `\\.(?:${DEFAULT_EXTENSIONS.map((ext) => ext.substring(1)).join(
 	'|'
 )})`;
+
 // hide dynamic import from ts transform to prevent it turning into a require
 // see https://github.com/microsoft/TypeScript/issues/43329#issuecomment-811606238
 const dynamicImportDefault = new Function('path', 'return import(path).then(m => m.default)');
@@ -30,7 +33,36 @@ export async function resolveTSConfig(filename: string): Promise<string | void> 
 	}
 	const tsconfig = path.resolve(filename);
 	try {
-		const stat = await fs.stat(tsconfig);
+		const stat = await fsp.stat(tsconfig);
+		if (stat.isFile() || stat.isFIFO()) {
+			return tsconfig;
+		}
+	} catch (e) {
+		// ignore does not exist error
+		if (e.code !== 'ENOENT') {
+			throw e;
+		}
+	}
+	throw new Error(`no tsconfig file found for ${filename}`);
+}
+
+export function loadTSSync(): any {
+	try {
+		return createRequire(import.meta.url)('typescript');
+	} catch (e) {
+		console.error('typescript must be installed to use "native" functions');
+		throw e;
+	}
+}
+
+export function resolveTSConfigSync(filename: string): string | void {
+	const basename = path.basename(filename);
+	if (basename !== 'tsconfig.json') {
+		return;
+	}
+	const tsconfig = path.resolve(filename);
+	try {
+		const stat = fs.statSync(tsconfig);
 		if (stat.isFile() || stat.isFIFO()) {
 			return tsconfig;
 		}

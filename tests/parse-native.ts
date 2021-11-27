@@ -3,11 +3,9 @@ import * as assert from 'uvu/assert';
 import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import path from 'path';
-import {
-	parseNative,
-	TSConfckParseNativeError,
-	TSConfckParseNativeResult
-} from '../src/parse-native.js';
+import { parseNative } from '../src/parse-native.js';
+
+import { TSConfckParseNativeError, TSConfckParseNativeResult } from '../src/types.js';
 import os from 'os';
 import { copyFixtures } from './util/copy-fixtures';
 import { transform as esbuildTransform } from 'esbuild';

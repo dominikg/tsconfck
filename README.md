@@ -143,7 +143,7 @@ tsconfck -h # or --help, -?, help
 
 ### sync api
 
-The default mode of tsconfck is async. It uses fs.promises and dynamic imports under the hood. If you absolutely need sync access, you can import the same functions from `tsconfck/sync`, see [sync api](docs/api-sync.md).
+The default mode of tsconfck is async. It uses fs.promises and dynamic imports under the hood. If you absolutely need sync access, you can import the same functions from `tsconfck/sync`, see [api docs](docs/api.md) for details.
 
 # Links
 

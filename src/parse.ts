@@ -10,6 +10,7 @@ import {
 	resolveSolutionTSConfig,
 	resolveTSConfig
 } from './util';
+import { TSConfckParseError, TSConfckParseOptions, TSConfckParseResult } from './types.js';
 
 /**
  * parse the closest tsconfig.json file
@@ -86,7 +87,7 @@ async function parseFile(
  *
  * @param tsconfig
  */
-function normalizeTSConfig(tsconfig: any, dir: string) {
+export function normalizeTSConfig(tsconfig: any, dir: string) {
 	// set baseUrl to absolute path
 	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
 		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
@@ -140,7 +141,7 @@ async function parseExtends(result: TSConfckParseResult, cache?: Map<string, TSC
 	}
 }
 
-function resolveExtends(extended: string, from: string): string {
+export function resolveExtends(extended: string, from: string): string {
 	try {
 		return createRequire(from).resolve(extended);
 	} catch (e) {
@@ -164,7 +165,7 @@ const EXTENDABLE_KEYS = [
 	'typeAcquisition',
 	'buildOptions'
 ];
-function extendTSConfig(extending: TSConfckParseResult, extended: TSConfckParseResult): any {
+export function extendTSConfig(extending: TSConfckParseResult, extended: TSConfckParseResult): any {
 	const extendingConfig = extending.tsconfig;
 	const extendedConfig = extended.tsconfig;
 	const relativePath = native2posix(
@@ -240,76 +241,4 @@ function rebasePath(value: string, prependPath: string): string {
 		// relative paths use posix syntax in tsconfig
 		return path.posix.normalize(path.posix.join(prependPath, value));
 	}
-}
-
-export interface TSConfckParseOptions {
-	/**
-	 * optional cache map to speed up repeated parsing with multiple files
-	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-	 * cache keys are input `filename` and absolute paths to tsconfig.json files
-	 *
-	 * You must not modify cached values.
-	 */
-	cache?: Map<string, TSConfckParseResult>;
-
-	/**
-	 * treat missing tsconfig as empty result instead of an error
-	 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
-	 */
-	resolveWithEmptyIfConfigNotFound?: boolean;
-}
-
-export interface TSConfckParseResult {
-	/**
-	 * absolute path to parsed tsconfig.json
-	 */
-	tsconfigFile: string;
-
-	/**
-	 * parsed result, including merged values from extended
-	 */
-	tsconfig: any;
-
-	/**
-	 * ParseResult for parent solution
-	 */
-	solution?: TSConfckParseResult;
-
-	/**
-	 * ParseResults for all tsconfig files referenced in a solution
-	 */
-	referenced?: TSConfckParseResult[];
-
-	/**
-	 * ParseResult for all tsconfig files
-	 *
-	 * [a,b,c] where a extends b and b extends c
-	 */
-	extended?: TSConfckParseResult[];
-}
-
-export class TSConfckParseError extends Error {
-	constructor(message: string, code: string, tsconfigFile: string, cause?: Error) {
-		super(message);
-		// Set the prototype explicitly.
-		Object.setPrototypeOf(this, TSConfckParseError.prototype);
-		this.name = TSConfckParseError.name;
-		this.code = code;
-		this.cause = cause;
-		this.tsconfigFile = tsconfigFile;
-	}
-
-	/**
-	 * error code
-	 */
-	code: string;
-	/**
-	 * the cause of this error
-	 */
-	cause: Error | undefined;
-
-	/**
-	 * absolute path of tsconfig file where the error happened
-	 */
-	tsconfigFile: string;
 }
