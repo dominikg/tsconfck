@@ -9,7 +9,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.8.0
   c8: ^7.10.0
   chalk: ^5.0.0
-  conventional-changelog-cli: ^2.1.1
+  conventional-changelog-cli: ^2.2.2
   enquirer: ^2.3.6
   esbuild: ^0.14.8
   eslint: ^8.5.0
@@ -19,7 +19,7 @@ specifiers:
   eslint-plugin-prettier: ^4.0.0
   execa: ^6.0.0
   husky: ^7.0.4
-  lint-staged: ^12.1.3
+  lint-staged: ^12.1.4
   minimist: ^1.2.5
   npm-run-all: ^4.1.5
   prettier: ^2.5.1
@@ -27,7 +27,7 @@ specifiers:
   semver: ^7.3.5
   tiny-glob: ^0.2.9
   tsm: ^2.2.1
-  tsup: ^5.11.7
+  tsup: ^5.11.9
   typescript: ^4.5.4
   uvu: ^0.5.2
   watchlist: ^0.3.1
@@ -41,7 +41,7 @@ devDependencies:
   '@typescript-eslint/parser': 5.8.0_eslint@8.5.0+typescript@4.5.4
   c8: 7.10.0
   chalk: 5.0.0
-  conventional-changelog-cli: 2.1.1
+  conventional-changelog-cli: 2.2.2
   enquirer: 2.3.6
   esbuild: 0.14.8
   eslint: 8.5.0
@@ -51,7 +51,7 @@ devDependencies:
   eslint-plugin-prettier: 4.0.0_94e1b6d3ce6ea916847122712570e9ae
   execa: 6.0.0
   husky: 7.0.4
-  lint-staged: 12.1.3_enquirer@2.3.6
+  lint-staged: 12.1.4_enquirer@2.3.6
   minimist: 1.2.5
   npm-run-all: 4.1.5
   prettier: 2.5.1
@@ -59,7 +59,7 @@ devDependencies:
   semver: 7.3.5
   tiny-glob: 0.2.9
   tsm: 2.2.1
-  tsup: 5.11.7_typescript@4.5.4
+  tsup: 5.11.9_typescript@4.5.4
   typescript: 4.5.4
   uvu: 0.5.2
   watchlist: 0.3.1
@@ -837,8 +837,8 @@ packages:
       q: 1.5.1
     dev: true
 
-  /conventional-changelog-cli/2.1.1:
-    resolution: {integrity: sha512-xMGQdKJ+4XFDDgfX5aK7UNFduvJMbvF5BB+g0OdVhA3rYdYyhctrIE2Al+WYdZeKTdg9YzMWF2iFPT8MupIwng==}
+  /conventional-changelog-cli/2.2.2:
+    resolution: {integrity: sha512-8grMV5Jo8S0kP3yoMeJxV2P5R6VJOqK72IiSV9t/4H5r/HiRqEBQ83bYGuz4Yzfdj4bjaAEhZN/FFbsFXr5bOA==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
@@ -2281,8 +2281,8 @@ packages:
     resolution: {integrity: sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=}
     dev: true
 
-  /lint-staged/12.1.3_enquirer@2.3.6:
-    resolution: {integrity: sha512-ajapdkaFxx+MVhvq6xQRg9zCnCLz49iQLJZP7+w8XaA3U4B35Z9xJJGq9vxmWo73QTvJLG+N2NxhjWiSexbAWQ==}
+  /lint-staged/12.1.4_enquirer@2.3.6:
+    resolution: {integrity: sha512-RgDz9nsFsE0/5eL9Vat0AvCuk0+j5mEuzBIVfrRH5FRtt5wibYe8zTjZs2nuqLFrLAGQGYnj8+HJxolcj08i/A==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     hasBin: true
     dependencies:
@@ -3450,11 +3450,11 @@ packages:
       esbuild: 0.14.8
     dev: true
 
-  /tsup/5.11.7_typescript@4.5.4:
-    resolution: {integrity: sha512-p3NXi/0TahcvlB6CHgsPQZ179Qx0YYPEn4GEkirDbUT3CifPHO6RtZMmPW2v2IXmWsFMg5ZSqzHRnCGtMnjDWw==}
+  /tsup/5.11.9_typescript@4.5.4:
+    resolution: {integrity: sha512-APFcd9qKblMVO35O5OyIcfa4lwBrVNinwtifUojO78I6j0aDhS4fQ06gq6vF1b/+Z83pYDWNb0R2fmO9PX3IVQ==}
     hasBin: true
     peerDependencies:
-      typescript: ^4.2.3
+      typescript: ^4.1.0
     peerDependenciesMeta:
       typescript:
         optional: true
