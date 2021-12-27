@@ -64,8 +64,8 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^15.0.0",
-    "@commitlint/config-conventional": "^15.0.0",
+    "@commitlint/cli": "^16.0.0",
+    "@commitlint/config-conventional": "^16.0.0",
     "@tsconfig/node12": "^1.0.9",
     "@types/node": "^16.11.17",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
