@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.base",
+  "compilerOptions": {
+    "strict": false,
+    "composite": true,
+    "strictNullChecks": true
+  }
+}
