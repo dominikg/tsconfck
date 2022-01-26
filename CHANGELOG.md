@@ -1,3 +1,12 @@
+## [1.1.2](https://github.com/dominikg/tsconfck/compare/tsconfck@1.1.1...tsconfck@1.1.2) (2022-01-26)
+
+
+### Bug Fixes
+
+* allow parsing solution files such as `tsconfig.test.json` with parse directly ([#35](https://github.com/dominikg/tsconfck/issues/35)) ([a12cebe](https://github.com/dominikg/tsconfck/commit/a12cebefbd4c114583dadf8a010e8c23ed386e5f))
+
+
+
 ## [1.1.1](https://github.com/dominikg/tsconfck/compare/tsconfck@1.1.0...tsconfck@1.1.1) (2021-10-31)
 
 
