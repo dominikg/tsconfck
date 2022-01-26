@@ -96,6 +96,23 @@ test('should resolve with expected for valid tsconfig.json', async () => {
 	}
 });
 
+test('should resolve with expected tsconfig.json for valid tsconfig that is part of a solution', async () => {
+	const samples = await glob('tests/fixtures/parse/solution/**/tsconfig?(!(*.expected)).json');
+	for (const filename of samples) {
+		const expectedFilename = `${path.basename(filename)}.expected.json`;
+		const expected = await loadExpectedJSON(filename, expectedFilename);
+		try {
+			const actual = await parseNative(filename);
+			assert.equal(actual.tsconfig, expected, `testfile: ${filename}`);
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.unreachable(`parsing ${filename} failed: ${e}`);
+		}
+	}
+});
+
 test('should resolve with expected tsconfig.json for ts file that is part of a solution', async () => {
 	const samples = await glob('tests/fixtures/parse/solution/**/*.{ts,mts,cts}');
 	for (const filename of samples) {
