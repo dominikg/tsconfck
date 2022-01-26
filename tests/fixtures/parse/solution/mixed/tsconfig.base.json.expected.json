@@ -1,7 +1,6 @@
 {
-    "compilerOptions": {
-      "composite": true,
-      "strictNullChecks": true
-    }
+  "compilerOptions": {
+    "composite": true,
+    "strictNullChecks": true
   }
-  
+}
