@@ -24,8 +24,7 @@ export async function loadTS(): Promise<any> {
 }
 
 export async function resolveTSConfig(filename: string): Promise<string | void> {
-	const basename = path.basename(filename);
-	if (!basename.startsWith('tsconfig.') || !basename.endsWith('.json')) {
+	if (path.extname(filename) !== '.json') {
 		return;
 	}
 	const tsconfig = path.resolve(filename);
