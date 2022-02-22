@@ -81,6 +81,25 @@ const barResult = await parse('src/bar.ts', { cache });
 >
 > If you want to modify them, deep-clone first.
 
+### reduce fs.stat overhead
+
+You can specify a root directory and provide a set of known tsconfig locations to improve performance in large projects
+
+```js
+import { parse, findAll } from 'tsconfck';
+const root = '.';
+const tsConfigPaths = new Set([...(await findAll(root))]);
+const cache = new Map();
+const parseOptions = { cache, root, tsConfigPaths };
+// these calls use minimal fs
+const fooResult = await parse('src/foo.ts', parseOptions);
+const barResult = await parse('src/bar.ts', parseOptions);
+```
+
+> Using the root option can lead to errors if there is no tsconfig inside root.
+
+> You are responsible for updating tsConfigPaths if tsconfig files are added/removed on disk during its lifetime.
+
 ### error handling
 
 find and parse reject for all errors they encounter.
@@ -112,6 +131,13 @@ A simple cli wrapper is included, you can use it like this
 ```shell
 # prints /path/to/tsconfig.json on stdout
 tsconfck find src/index.ts
+```
+
+#### find-all
+
+```shell
+# prints all tsconfig.json in dir on stdout
+tsconfck find-all src/
 ```
 
 #### parse

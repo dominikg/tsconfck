@@ -5,15 +5,20 @@ import { promises as fs } from 'fs';
  * find the closest tsconfig.json file
  *
  * @param {string} filename - path to file to find tsconfig for (absolute or relative to cwd)
+ * @param {TSConfckFindOptions} options - options
  * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
-export async function find(filename: string) {
+export async function find(filename: string, options?: TSConfckFindOptions) {
 	let dir = path.dirname(path.resolve(filename));
+	const root = options?.root ? path.resolve(options.root) : null;
 	while (dir) {
-		const tsconfig = await tsconfigInDir(dir);
+		const tsconfig = await tsconfigInDir(dir, options);
 		if (tsconfig) {
 			return tsconfig;
 		} else {
+			if (root === dir) {
+				break;
+			}
 			const parent = path.dirname(dir);
 			if (parent === dir) {
 				break;
@@ -25,8 +30,11 @@ export async function find(filename: string) {
 	throw new Error(`no tsconfig file found for ${filename}`);
 }
 
-async function tsconfigInDir(dir: string): Promise<string | void> {
+async function tsconfigInDir(dir: string, options?: TSConfckFindOptions): Promise<string | void> {
 	const tsconfig = path.join(dir, 'tsconfig.json');
+	if (options?.tsConfigPaths?.has(tsconfig)) {
+		return tsconfig;
+	}
 	try {
 		const stat = await fs.stat(tsconfig);
 		if (stat.isFile() || stat.isFIFO()) {
@@ -38,4 +46,21 @@ async function tsconfigInDir(dir: string): Promise<string | void> {
 			throw e;
 		}
 	}
+}
+
+export interface TSConfckFindOptions {
+	/**
+	 * Set of known tsconfig file locations to use instead of scanning the file system
+	 *
+	 * This is better for performance in projects like vite where find is called frequently but tsconfig locations rarely change
+	 * You can use `findAll` to build this
+	 */
+	tsConfigPaths?: Set<string>;
+
+	/**
+	 * project root dir, does not continue scanning outside of this directory.
+	 *
+	 * Improves performance but may lead to different results from native typescript when no tsconfig is found inside root
+	 */
+	root?: string;
 }

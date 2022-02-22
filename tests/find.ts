@@ -63,6 +63,43 @@ test('should find tsconfig in parent directory', async () => {
 	}
 });
 
+test('should stop searching at root', async () => {
+	const inputs = [
+		path.join('tests', 'fixtures', 'find-root', 'a', 'b', 'bar.ts'),
+		path.join('.', 'tests', 'fixtures', 'find-root', 'a', 'b', 'bar.ts'),
+		path.resolve('tests', 'fixtures', 'find-root', 'a', 'b', 'bar.ts')
+	];
+	for (const input of inputs) {
+		try {
+			await find(input, { root: path.resolve('tests', 'fixtures', 'find-root', 'a') });
+			assert.unreachable(`unexpectedly found tsconfig for ${input}`);
+		} catch (e) {
+			if (e.code === 'ERR_ASSERTION') {
+				throw e;
+			}
+			assert.equal(e.message, 'no tsconfig file found for ' + input);
+		}
+	}
+});
+
+test('should use provided tsConfigPaths', async () => {
+	const real = path.resolve('tests', 'fixtures', 'find-root', 'tsconfig.json');
+	const fake = path.resolve('tests', 'fixtures', 'find-root', 'a', 'tsconfig.json');
+	const inputs = [
+		path.join('tests', 'fixtures', 'find-root', 'a', 'b', 'foo.ts'),
+		path.join('.', 'tests', 'fixtures', 'find-root', 'a', 'b', 'foo.ts'),
+		path.resolve('tests', 'fixtures', 'find-root', 'a', 'b', 'foo.ts')
+	];
+	const tsConfigPaths = new Set<string>([fake]);
+
+	for (const input of inputs) {
+		const tsconfig = await find(input);
+		assert.is(tsconfig, real, `input: ${input}`);
+		const tsconfigWithPaths = await find(input, { tsConfigPaths });
+		assert.is(tsconfigWithPaths, fake, `input: ${input}`);
+	}
+});
+
 test('should reject when no tsconfig file was found', async () => {
 	const input = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
 	try {
