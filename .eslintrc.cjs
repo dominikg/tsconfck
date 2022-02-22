@@ -1,4 +1,5 @@
 module.exports = {
+	ignorePatterns: ['tests/fixtures/find-all/recursive-symlink/**/*'],
 	root: true,
 	extends: [
 		'eslint:recommended',

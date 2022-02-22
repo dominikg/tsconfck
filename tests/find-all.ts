@@ -61,7 +61,7 @@ test('should find multiple tsconfig in child directories', async () => {
 	assert.equal(found, expected, 'found all tsconfig in test/fixtures');
 });
 
-test('should find multiple tsconfig in child directories', async () => {
+test('should handle directories with recursive symlinks', async () => {
 	const expected = [
 		path.resolve('tests', 'fixtures', 'find-all', 'recursive-symlink', 'tsconfig.json'),
 		path.resolve('tests', 'fixtures', 'find-all', 'recursive-symlink', 'child', 'tsconfig.json')
