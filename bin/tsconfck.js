@@ -1,15 +1,20 @@
 #!/usr/bin/env node
-import { parse, find } from '../dist/index.js';
+import { parse, find, findAll } from '../dist/index.js';
 import * as process from 'process';
 
 const HELP_TEXT = `
 Usage: tsconfck <command> <file>
 
-Commands: find, parse, parse-result
+Commands: find, find-all, parse, parse-result
 
 Examples:
 > tsconfck find src/index.ts
 > /path/to/tsconfig.json
+
+> tsconfck find-all src/
+> /src/foo/tsconfig.json
+> /src/bar/tsconfig.json
+> /src/tsconfig.json
 
 > tsconfck parse src/index.ts
 >{
@@ -25,7 +30,7 @@ Examples:
 `;
 
 const HELP_ARGS = ['-h', '--help', '-?', 'help'];
-const COMMANDS = ['find', 'parse', 'parse-result'];
+const COMMANDS = ['find', 'find-all', 'parse', 'parse-result'];
 function needsHelp(args) {
 	if (args.some((arg) => HELP_ARGS.includes(arg))) {
 		return HELP_TEXT;
@@ -50,6 +55,8 @@ async function main() {
 		return JSON.stringify((await parse(file)).tsconfig, null, 2);
 	} else if (command === 'parse-result') {
 		return JSON.stringify(await parse(file), null, 2);
+	} else if (command === 'find-all') {
+		return (await findAll(file || '.')).join('\n');
 	}
 }
 

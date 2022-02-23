@@ -1,7 +1,7 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import { createRequire } from 'module';
-import { find } from './find.js';
+import { find, TSConfckFindOptions } from './find.js';
 import { toJson } from './to-json.js';
 import {
 	native2posix,
@@ -30,7 +30,7 @@ export async function parse(
 	let tsconfigFile;
 	if (options?.resolveWithEmptyIfConfigNotFound) {
 		try {
-			tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
+			tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename, options));
 		} catch (e) {
 			const notFoundResult = {
 				tsconfigFile: 'no_tsconfig_file_found',
@@ -40,7 +40,7 @@ export async function parse(
 			return notFoundResult;
 		}
 	} else {
-		tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename));
+		tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename, options));
 	}
 	let result;
 	if (cache?.has(tsconfigFile)) {
@@ -242,7 +242,7 @@ function rebasePath(value: string, prependPath: string): string {
 	}
 }
 
-export interface TSConfckParseOptions {
+export interface TSConfckParseOptions extends TSConfckFindOptions {
 	/**
 	 * optional cache map to speed up repeated parsing with multiple files
 	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime

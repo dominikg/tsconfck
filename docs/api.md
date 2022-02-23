@@ -8,9 +8,45 @@
  * find the closest tsconfig.json file
  *
  * @param {string} filename - path to file to find tsconfig for (absolute or relative to cwd)
+ * @param {TSConfckFindOptions} options - options
  * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
-declare function find(filename: string): Promise<string>;
+declare function find(filename: string, options?: TSConfckFindOptions): Promise<string>;
+interface TSConfckFindOptions {
+    /**
+     * Set of known tsconfig file locations to use instead of scanning the file system
+     *
+     * This is better for performance in projects like vite where find is called frequently but tsconfig locations rarely change
+     * You can use `findAll` to build this
+     */
+    tsConfigPaths?: Set<string>;
+    /**
+     * project root dir, does not continue scanning outside of this directory.
+     *
+     * Improves performance but may lead to different results from native typescript when no tsconfig is found inside root
+     */
+    root?: string;
+}
+```
+
+### findAll
+
+```ts
+/**
+ * find all tsconfig.json files in dir
+ *
+ * @param {string} dir - path to dir (absolute or relative to cwd)
+ * @param {TSConfckFindAllOptions} options - options
+ * @returns {Promise<string[]>} list of absolute paths to all found tsconfig.json files
+ */
+declare function findAll(dir: string, options?: TSConfckFindAllOptions): Promise<string[]>;
+interface TSConfckFindAllOptions {
+    /**
+     * helper to skip subdirectories when scanning for tsconfig.json
+     *
+     * eg ` dir => dir === 'node_modules' || dir === '.git'`
+     */ skip?: (dir: string) => boolean;
+}
 ```
 
 ### toJson
@@ -37,7 +73,7 @@ declare function toJson(tsconfigJson: string): string;
  * @throws {TSConfckParseError}
  */
 declare function parse(filename: string, options?: TSConfckParseOptions): Promise<TSConfckParseResult>;
-interface TSConfckParseOptions {
+interface TSConfckParseOptions extends TSConfckFindOptions {
     /**
      * optional cache map to speed up repeated parsing with multiple files
      * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
