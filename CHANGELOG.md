@@ -1,3 +1,12 @@
+# [1.2.0](https://github.com/dominikg/tsconfck/compare/tsconfck@1.1.2...tsconfck@1.2.0) (2022-02-23)
+
+
+### Features
+
+* add findAll and performance improving options to find and parse ([#41](https://github.com/dominikg/tsconfck/issues/41)) ([a0834c8](https://github.com/dominikg/tsconfck/commit/a0834c89904e5a6b9e6f7c8985994fb79012b960))
+
+
+
 ## [1.1.2](https://github.com/dominikg/tsconfck/compare/tsconfck@1.1.1...tsconfck@1.1.2) (2022-01-26)
 
 
