@@ -69,6 +69,23 @@ test('should handle directories with recursive symlinks', async () => {
 	expected.sort();
 	const found = await findAll(path.join('tests', 'fixtures', 'find-all', 'recursive-symlink'));
 	found.sort();
-	assert.equal(found, expected, 'found all tsconfig in test/fixtures');
+	assert.equal(found, expected, 'found all tsconfig in test/fixtures/find-all/recursive-symlink');
+});
+test.run();
+
+test('should exclude skipped directories', async () => {
+	const expected = [
+		path.resolve('tests', 'fixtures', 'find-all', 'recursive-symlink', 'tsconfig.json')
+	];
+	expected.sort();
+	const found = await findAll(path.join('tests', 'fixtures', 'find-all', 'recursive-symlink'), {
+		skip: (dir) => dir === 'child'
+	});
+	found.sort();
+	assert.equal(
+		found,
+		expected,
+		'found filtered tsconfig in test/fixtures/find-all/recursive-symlink'
+	);
 });
 test.run();

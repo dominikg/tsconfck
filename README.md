@@ -88,7 +88,9 @@ You can specify a root directory and provide a set of known tsconfig locations t
 ```js
 import { parse, findAll } from 'tsconfck';
 const root = '.';
-const tsConfigPaths = new Set([...(await findAll(root))]);
+const tsConfigPaths = new Set([
+	...(await findAll(root, { skip: (dir) => dir === 'node_modules' || dir === '.git' }))
+]);
 const cache = new Map();
 const parseOptions = { cache, root, tsConfigPaths };
 // these calls use minimal fs

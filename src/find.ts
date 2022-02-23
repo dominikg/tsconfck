@@ -32,8 +32,8 @@ export async function find(filename: string, options?: TSConfckFindOptions) {
 
 async function tsconfigInDir(dir: string, options?: TSConfckFindOptions): Promise<string | void> {
 	const tsconfig = path.join(dir, 'tsconfig.json');
-	if (options?.tsConfigPaths?.has(tsconfig)) {
-		return tsconfig;
+	if (options?.tsConfigPaths) {
+		return options.tsConfigPaths.has(tsconfig) ? tsconfig : undefined;
 	}
 	try {
 		const stat = await fs.stat(tsconfig);

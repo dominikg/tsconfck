@@ -21,7 +21,9 @@ interface TSConfckFindOptions {
      */
     tsConfigPaths?: Set<string>;
     /**
-     * project root dir, does not continue scanning outside of this directory
+     * project root dir, does not continue scanning outside of this directory.
+     *
+     * Improves performance but may lead to different results from native typescript when no tsconfig is found inside root
      */
     root?: string;
 }
@@ -34,9 +36,17 @@ interface TSConfckFindOptions {
  * find all tsconfig.json files in dir
  *
  * @param {string} dir - path to dir (absolute or relative to cwd)
+ * @param {TSConfckFindAllOptions} options - options
  * @returns {Promise<string[]>} list of absolute paths to all found tsconfig.json files
  */
-declare function findAll(dir: string): Promise<string[]>;
+declare function findAll(dir: string, options?: TSConfckFindAllOptions): Promise<string[]>;
+interface TSConfckFindAllOptions {
+    /**
+     * helper to skip subdirectories when scanning for tsconfig.json
+     *
+     * eg ` dir => dir === 'node_modules' || dir === '.git'`
+     */ skip?: (dir: string) => boolean;
+}
 ```
 
 ### toJson
