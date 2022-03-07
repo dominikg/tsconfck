@@ -23,7 +23,7 @@ jobs:
     outputs:
       build_successful: ${{ steps.build.outcome == 'success' }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -70,7 +70,7 @@ jobs:
             os: ubuntu-latest
     steps:
       - run: git config --global core.autocrlf false # prevent crlf on windows
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
