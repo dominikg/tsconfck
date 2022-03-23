@@ -20,7 +20,7 @@ specifiers:
   execa: ^6.1.0
   husky: ^7.0.4
   lint-staged: ^12.3.5
-  minimist: ^1.2.5
+  minimist: ^1.2.6
   npm-run-all: ^4.1.5
   prettier: ^2.5.1
   rimraf: ^3.0.2
@@ -52,7 +52,7 @@ devDependencies:
   execa: 6.1.0
   husky: 7.0.4
   lint-staged: 12.3.5_enquirer@2.3.6
-  minimist: 1.2.5
+  minimist: 1.2.6
   npm-run-all: 4.1.5
   prettier: 2.5.1
   rimraf: 3.0.2
@@ -656,7 +656,7 @@ packages:
     resolution: {integrity: sha512-VXG6epB1yrLAvWVQpl92qF347/UXmncQj7J3U8kZEbdVZ1ZkQyr4hYeL/9RvcE8vVVdp53dY78Fd/3pqfRqI1A==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     peerDependencies:
-      esbuild: '>=0.13'
+      esbuild: ^0.14.26
     dependencies:
       esbuild: 0.14.26
       load-tsconfig: 0.2.3
@@ -1933,12 +1933,12 @@ packages:
     engines: {node: '>=0.4.7'}
     hasBin: true
     dependencies:
-      minimist: 1.2.5
+      minimist: 1.2.6
       neo-async: 2.6.2
       source-map: 0.6.1
       wordwrap: 1.0.0
     optionalDependencies:
-      uglify-js: 3.15.2
+      uglify-js: 3.15.3
     dev: true
 
   /hard-rejection/2.1.0:
@@ -2546,8 +2546,8 @@ packages:
       kind-of: 6.0.3
     dev: true
 
-  /minimist/1.2.5:
-    resolution: {integrity: sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==}
+  /minimist/1.2.6:
+    resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
     dev: true
 
   /modify-values/1.0.1:
@@ -3564,8 +3564,8 @@ packages:
     hasBin: true
     dev: true
 
-  /uglify-js/3.15.2:
-    resolution: {integrity: sha512-peeoTk3hSwYdoc9nrdiEJk+gx1ALCtTjdYuKSXMTDqq7n1W7dHPqWDdSi+BPL0ni2YMeHD7hKUSdbj3TZauY2A==}
+  /uglify-js/3.15.3:
+    resolution: {integrity: sha512-6iCVm2omGJbsu3JWac+p6kUiOpg3wFO2f8lIXjfEb8RrmLjzog1wTPMmwKB7swfzzqxj9YM+sGUM++u1qN4qJg==}
     engines: {node: '>=0.8.0'}
     hasBin: true
     requiresBuild: true
