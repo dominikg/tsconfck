@@ -154,7 +154,7 @@ function resolveExtends(extended: string, from: string): string {
 			const fallbackExtended = path.join(extended, 'tsconfig.json');
 			return createRequire(from).resolve(fallbackExtended);
 		} catch (e) {
-			error = e
+			error = e;
 		}
 	}
 
