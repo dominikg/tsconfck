@@ -144,12 +144,17 @@ function resolveExtends(extended: string, from: string): string {
 	try {
 		return createRequire(from).resolve(extended);
 	} catch (e) {
-		throw new TSConfckParseError(
-			`failed to resolve "extends":"${extended}" in ${from}`,
-			'EXTENDS_RESOLVE',
-			from,
-			e
-		);
+		try {
+			const fallbackExtended = path.join(extended, 'tsconfig.json');
+			return createRequire(from).resolve(fallbackExtended);
+		} catch {
+			throw new TSConfckParseError(
+				`failed to resolve "extends":"${extended}" in ${from}`,
+				'EXTENDS_RESOLVE',
+				from,
+				e
+			);
+		}
 	}
 }
 
