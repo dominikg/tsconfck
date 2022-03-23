@@ -1,3 +1,12 @@
+## [1.2.1](https://github.com/dominikg/tsconfck/compare/tsconfck@1.2.0...tsconfck@1.2.1) (2022-03-23)
+
+
+### Bug Fixes
+
+* resolve `extends` where value is missing the filename part. eg `"extends": "@tsconfig/node14"` ([#48](https://github.com/dominikg/tsconfck/issues/48)) ([9364456](https://github.com/dominikg/tsconfck/commit/93644567ea60b156b58a91390ad3ae02e1599f91))
+
+
+
 # [1.2.0](https://github.com/dominikg/tsconfck/compare/tsconfck@1.1.2...tsconfck@1.2.0) (2022-02-23)
 
 
