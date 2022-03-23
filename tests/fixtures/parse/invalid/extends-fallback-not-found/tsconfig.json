@@ -1,0 +1,9 @@
+{
+    "extends": "./dir",
+    "compilerOptions": {
+      "types": ["foo"],
+      "strictNullChecks": true
+    },
+    "include": ["src/**/*"]
+  }
+  
