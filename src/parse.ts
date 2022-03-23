@@ -141,16 +141,29 @@ async function parseExtends(result: TSConfckParseResult, cache?: Map<string, TSC
 }
 
 function resolveExtends(extended: string, from: string): string {
+	let error: any;
+
 	try {
 		return createRequire(from).resolve(extended);
 	} catch (e) {
-		throw new TSConfckParseError(
-			`failed to resolve "extends":"${extended}" in ${from}`,
-			'EXTENDS_RESOLVE',
-			from,
-			e
-		);
+		error = e;
 	}
+
+	if (!path.isAbsolute(extended) && !extended.startsWith('./') && !extended.startsWith('../')) {
+		try {
+			const fallbackExtended = path.join(extended, 'tsconfig.json');
+			return createRequire(from).resolve(fallbackExtended);
+		} catch (e) {
+			error = e;
+		}
+	}
+
+	throw new TSConfckParseError(
+		`failed to resolve "extends":"${extended}" in ${from}`,
+		'EXTENDS_RESOLVE',
+		from,
+		error
+	);
 }
 
 // references, extends and custom keys are not carried over

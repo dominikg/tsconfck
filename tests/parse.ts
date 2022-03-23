@@ -230,7 +230,10 @@ test('should resolve with tsconfig that works when transpiling', async () => {
 });
 
 test('should reject with correct error for invalid tsconfig.json', async () => {
-	const samples = await glob('tests/fixtures/parse/invalid/**/tsconfig.json');
+	let samples = await glob('tests/fixtures/parse/invalid/**/tsconfig.json');
+	samples = samples.filter(
+		(sample) => !sample.includes(path.join('extends-fallback-not-found', 'dir'))
+	);
 	for (const filename of samples) {
 		const expected = await loadExpectedTXT(filename);
 		try {
