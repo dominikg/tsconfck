@@ -105,6 +105,7 @@ test_inaccessible.before(() => {
 });
 
 test_inaccessible.after(() => {
+	fs.chmodSync(inaccessible, 0o777);
 	fs.rmdirSync(inaccessible);
 });
 test_inaccessible('should handle directories with inaccessible children', async () => {
