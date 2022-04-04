@@ -2,6 +2,7 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import path from 'path';
 import { findAll } from '../src/find-all.js';
+import * as fs from 'fs';
 import glob from 'tiny-glob';
 const test = suite('findAll');
 
@@ -52,13 +53,14 @@ test('should find tsconfig in child directory', async () => {
 });
 
 test('should find multiple tsconfig in child directories', async () => {
-	const expected = (await glob('tests/fixtures/**/tsconfig.json')).map((file) =>
+	const expected = (await glob('tests/fixtures/find-all/multiple/**/tsconfig.json')).map((file) =>
 		path.resolve(file)
 	);
 	expected.sort();
-	const found = await findAll(path.join('tests', 'fixtures'));
+
+	const found = await findAll(path.join('tests', 'fixtures', 'find-all', 'multiple'));
 	found.sort();
-	assert.equal(found, expected, 'found all tsconfig in test/fixtures');
+	assert.equal(found, expected, 'found all tsconfig in test/fixtures/find-all/multiple');
 });
 
 test('should handle directories with recursive symlinks', async () => {
@@ -71,7 +73,6 @@ test('should handle directories with recursive symlinks', async () => {
 	found.sort();
 	assert.equal(found, expected, 'found all tsconfig in test/fixtures/find-all/recursive-symlink');
 });
-test.run();
 
 test('should exclude skipped directories', async () => {
 	const expected = [
@@ -88,4 +89,29 @@ test('should exclude skipped directories', async () => {
 		'found filtered tsconfig in test/fixtures/find-all/recursive-symlink'
 	);
 });
+
+test('should handle directories with inaccessible children', async () => {
+	const inaccessible = path.resolve(
+		'tests',
+		'fixtures',
+		'find-all',
+		'inaccessible-dir',
+		'_inaccessible'
+	);
+	try {
+		if (fs.existsSync(inaccessible)) {
+			fs.chmodSync(inaccessible, 0o000);
+		}
+	} catch (e) {
+		assert.unreachable(`failed to set inaccessible-child permissions: ${e}`);
+	}
+	const expected = [
+		path.resolve('tests', 'fixtures', 'find-all', 'inaccessible-dir', 'tsconfig.json')
+	];
+	expected.sort();
+	const found = await findAll(path.join('tests', 'fixtures', 'find-all', 'inaccessible-dir'));
+	found.sort();
+	assert.equal(found, expected, 'found all tsconfig in test/fixtures/find-all/inaccessible-dir');
+});
+
 test.run();

@@ -22,13 +22,21 @@ async function* findTSConfig(
 	visited: Set<string> = new Set<string>()
 ): AsyncGenerator<string> {
 	if (!visited.has(dir)) {
-		const dirents = await fs.readdir(dir, { withFileTypes: true });
-		for (const dirent of dirents) {
-			if (dirent.isDirectory() && (!options?.skip || !options.skip(dirent.name))) {
-				yield* findTSConfig(path.resolve(dir, dirent.name), options, visited);
-			} else if (dirent.isFile() && dirent.name === 'tsconfig.json') {
-				yield path.resolve(dir, dirent.name);
+		visited.add(dir);
+		try {
+			const dirents = await fs.readdir(dir, { withFileTypes: true });
+			for (const dirent of dirents) {
+				if (dirent.isDirectory() && (!options?.skip || !options.skip(dirent.name))) {
+					yield* findTSConfig(path.resolve(dir, dirent.name), options, visited);
+				} else if (dirent.isFile() && dirent.name === 'tsconfig.json') {
+					yield path.resolve(dir, dirent.name);
+				}
 			}
+		} catch (e) {
+			if (e.code === 'EACCES' || e.code === 'ENOENT') {
+				return; // directory inaccessible or deleted
+			}
+			throw e;
 		}
 	}
 }
