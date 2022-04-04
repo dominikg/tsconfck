@@ -89,22 +89,27 @@ test('should exclude skipped directories', async () => {
 		'found filtered tsconfig in test/fixtures/find-all/recursive-symlink'
 	);
 });
+test.run();
 
-test('should handle directories with inaccessible children', async () => {
-	const inaccessible = path.resolve(
-		'tests',
-		'fixtures',
-		'find-all',
-		'inaccessible-dir',
-		'_inaccessible'
-	);
-	try {
-		if (fs.existsSync(inaccessible)) {
-			fs.chmodSync(inaccessible, 0o000);
-		}
-	} catch (e) {
-		assert.unreachable(`failed to set inaccessible-child permissions: ${e}`);
-	}
+const test_inaccessible = suite('findAll inaccessible');
+const inaccessible = path.resolve(
+	'tests',
+	'fixtures',
+	'find-all',
+	'inaccessible-dir',
+	'_inaccessible'
+);
+test_inaccessible.before(() => {
+	fs.mkdirSync(inaccessible);
+	fs.chmodSync(inaccessible, 0o000);
+});
+
+test_inaccessible.after(() => {
+	fs.chmodSync(inaccessible, 0o777);
+	fs.rmdirSync(inaccessible);
+});
+test_inaccessible('should handle directories with inaccessible children', async () => {
+	assert.equal(true, fs.existsSync(inaccessible));
 	const expected = [
 		path.resolve('tests', 'fixtures', 'find-all', 'inaccessible-dir', 'tsconfig.json')
 	];
@@ -114,4 +119,4 @@ test('should handle directories with inaccessible children', async () => {
 	assert.equal(found, expected, 'found all tsconfig in test/fixtures/find-all/inaccessible-dir');
 });
 
-test.run();
+test_inaccessible.run();
