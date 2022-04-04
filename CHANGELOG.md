@@ -1,3 +1,12 @@
+## [1.2.2](https://github.com/dominikg/tsconfck/compare/tsconfck@1.2.1...tsconfck@1.2.2) (2022-04-04)
+
+
+### Bug Fixes
+
+* **find-all:** prevent errors for inaccessible or deleted directories ([#52](https://github.com/dominikg/tsconfck/issues/52)) ([e1e9b28](https://github.com/dominikg/tsconfck/commit/e1e9b28dfae2960817cc5cba59545860e3c656a6))
+
+
+
 ## [1.2.1](https://github.com/dominikg/tsconfck/compare/tsconfck@1.2.0...tsconfck@1.2.1) (2022-03-23)
 
 
