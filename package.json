@@ -25,21 +25,21 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "dev": "pnpm run build:ci -- --watch src",
+    "dev": "pnpm build:ci --watch src",
     "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
-    "build": "pnpm run build:ci -- --dts --sourcemap && node scripts/generate-api-docs.js",
+    "build": "pnpm build:ci --dts --sourcemap && node scripts/generate-api-docs.js",
     "test": "node --experimental-loader tsm node_modules/uvu/bin.js tests -i fixtures -i temp -i util/",
     "test:watch": "pnpm test; watchlist tests src -- pnpm test",
-    "test:coverage": "c8 --include=src --clean pnpm run test",
+    "test:coverage": "c8 --include=src --clean pnpm test",
     "test:report": "c8 report --reporter=text-lcov > coverage/coverage.lcov",
     "lint": "eslint --ignore-path .gitignore '**/*.{cjs,js,ts,md}'",
-    "lint:fix": "pnpm run lint -- --fix",
+    "lint:fix": "pnpm lint --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{cjs,js,ts,md}' --check",
-    "format:fix": "pnpm run format -- --write",
+    "format:fix": "pnpm format --write",
     "fixup": "run-s lint:fix format:fix",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -l tsconfck",
     "release": "node scripts/release.js",
-    "release:dry": "pnpm run release -- --dry",
+    "release:dry": "pnpm release --dry",
     "prepare": "husky install"
   },
   "repository": {
@@ -101,8 +101,9 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@6",
+  "packageManager": "pnpm@7.0.1",
   "engines": {
-    "node": "^12.20 || ^14.13.1 || >= 16"
+    "node": "^12.20 || ^14.13.1 || >= 16",
+    "pnpm": "^7.0.1"
   }
 }
