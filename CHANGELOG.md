@@ -1,3 +1,17 @@
+# [2.0.0](https://github.com/dominikg/tsconfck/compare/tsconfck@1.2.2...tsconfck@2.0.0) (2022-05-12)
+
+
+### Features
+
+* update build to target node14 ([#59](https://github.com/dominikg/tsconfck/issues/59)) ([6f0c385](https://github.com/dominikg/tsconfck/commit/6f0c385f1a42622b59f3a7946656b9a9a9d7f2da))
+
+
+### BREAKING CHANGES
+
+* Removed support for node12. Minimum supported version is now 14.13.1
+
+
+
 ## [1.2.2](https://github.com/dominikg/tsconfck/compare/tsconfck@1.2.1...tsconfck@1.2.2) (2022-04-04)
 
 
