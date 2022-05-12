@@ -26,7 +26,7 @@
   },
   "scripts": {
     "dev": "pnpm build:ci --watch src",
-    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
+    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --target node14.13.1",
     "build": "pnpm build:ci --dts --sourcemap && node scripts/generate-api-docs.js",
     "test": "node --experimental-loader tsm node_modules/uvu/bin.js tests -i fixtures -i temp -i util/",
     "test:watch": "pnpm test; watchlist tests src -- pnpm test",
@@ -66,7 +66,7 @@
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
     "@commitlint/config-conventional": "^16.2.4",
-    "@tsconfig/node12": "^1.0.9",
+    "@tsconfig/node14": "^1.0.1",
     "@types/node": "^17.0.21",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
@@ -103,7 +103,7 @@
   },
   "packageManager": "pnpm@7.0.1",
   "engines": {
-    "node": "^12.20 || ^14.13.1 || >= 16",
+    "node": "^14.13.1 || ^16 || >=18",
     "pnpm": "^7.0.1"
   }
 }
