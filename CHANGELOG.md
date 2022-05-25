@@ -1,6 +1,10 @@
 ## [2.0.1](https://github.com/dominikg/tsconfck/compare/tsconfck@2.0.0...tsconfck@2.0.1) (2022-05-25)
 
 
+### Bug Fixes
+
+* **parse-native:** prevent target: esnext getting converted to latest  ([#60](https://github.com/dominikg/tsconfck/issues/60)) ([d77d648](https://github.com/dominikg/tsconfck/commit/d77d6485b7b8f16939e527c2ab1395bc30d755e4))
+
 
 # [2.0.0](https://github.com/dominikg/tsconfck/compare/tsconfck@1.2.2...tsconfck@2.0.0) (2022-05-12)
 
