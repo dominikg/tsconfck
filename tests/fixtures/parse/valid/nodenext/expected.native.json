@@ -4,7 +4,7 @@
   "compilerOptions": {
     "types": ["foo"],
     "importsNotUsedAsValues": "error",
-    "module": "es2020",
+    "module": "nodenext",
     "moduleResolution": "node",
     "newLine": "lf",
     "target": "esnext"

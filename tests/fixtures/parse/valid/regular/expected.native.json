@@ -4,10 +4,10 @@
   "compilerOptions": {
     "types": ["foo"],
     "importsNotUsedAsValues": "error",
-    "module": "es2015",
+    "module": "es2020",
     "moduleResolution": "node",
     "newLine": "lf",
-    "target": "es2015"
+    "target": "esnext"
   },
   "watchOptions": {
     "watchFile": "useFsEvents",
