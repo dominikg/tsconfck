@@ -201,6 +201,9 @@ function result2tsconfig(result: any, ts: any) {
 				compilerOptions[prop.name] = prop.enumeration[compilerOptions[prop.name]].toLowerCase();
 			}
 		}
+		if (compilerOptions.target === 'latest') {
+			compilerOptions.target = 'esnext'; // why ts, why?
+		}
 	}
 
 	// merged watchOptions
