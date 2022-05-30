@@ -75,7 +75,7 @@
     "chalk": "^5.0.1",
     "conventional-changelog-cli": "^2.2.2",
     "enquirer": "^2.3.6",
-    "esbuild": "^0.14.39",
+    "esbuild": "^0.14.42",
     "eslint": "^8.16.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-markdown": "^2.2.1",
@@ -102,9 +102,9 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@7.1.5",
+  "packageManager": "pnpm@7.1.7",
   "engines": {
     "node": "^14.13.1 || ^16 || >=18",
-    "pnpm": "^7.0.1"
+    "pnpm": "^7.1.7"
   }
 }
