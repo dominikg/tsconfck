@@ -1,5 +1,6 @@
 {
-  "extends": ["config:base", "schedule:weekly", "group:allNonMajor",":semanticCommits"],
+	"extends": ["config:base","group:allNonMajor",":semanticCommits"],
+	"schedule": ["before 5am on the 3rd day of the month"],
   "labels": ["dependencies"],
   "pin": false,
   "rangeStrategy": "bump",
