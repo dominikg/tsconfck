@@ -14,7 +14,7 @@ specifiers:
   esbuild: ^0.14.53
   eslint: ^8.21.0
   eslint-config-prettier: ^8.5.0
-  eslint-plugin-markdown: ^2.2.1
+  eslint-plugin-markdown: ^3.0.0
   eslint-plugin-node: ^11.1.0
   eslint-plugin-prettier: ^4.2.1
   execa: ^6.1.0
@@ -46,7 +46,7 @@ devDependencies:
   esbuild: 0.14.53
   eslint: 8.21.0
   eslint-config-prettier: 8.5.0_eslint@8.21.0
-  eslint-plugin-markdown: 2.2.1_eslint@8.21.0
+  eslint-plugin-markdown: 3.0.0_eslint@8.21.0
   eslint-plugin-node: 11.1.0_eslint@8.21.0
   eslint-plugin-prettier: 4.2.1_h62lvancfh4b7r6zn2dgodrh5e
   execa: 6.1.0
@@ -1501,11 +1501,11 @@ packages:
       regexpp: 3.2.0
     dev: true
 
-  /eslint-plugin-markdown/2.2.1_eslint@8.21.0:
-    resolution: {integrity: sha512-FgWp4iyYvTFxPwfbxofTvXxgzPsDuSKHQy2S+a8Ve6savbujey+lgrFFbXQA0HPygISpRYWYBjooPzhYSF81iA==}
-    engines: {node: ^8.10.0 || ^10.12.0 || >= 12.0.0}
+  /eslint-plugin-markdown/3.0.0_eslint@8.21.0:
+    resolution: {integrity: sha512-hRs5RUJGbeHDLfS7ELanT0e29Ocyssf/7kBM+p7KluY5AwngGkDf8Oyu4658/NZSGTTq05FZeWbkxXtbVyHPwg==}
+    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
-      eslint: '>=6.0.0'
+      eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       eslint: 8.21.0
       mdast-util-from-markdown: 0.8.5
