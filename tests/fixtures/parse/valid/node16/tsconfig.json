@@ -4,8 +4,8 @@
   "compilerOptions": {
     "types": ["foo"],
     "importsNotUsedAsValues": "error",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "node16",
+    "moduleResolution": "node16",
     "newLine": "lf",
     "target": "esnext"
   },
