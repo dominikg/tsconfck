@@ -5,7 +5,7 @@
     "types": ["foo"],
     "importsNotUsedAsValues": "error",
     "module": "nodenext",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "newLine": "lf",
     "target": "esnext"
   },
