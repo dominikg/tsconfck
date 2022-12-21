@@ -1,3 +1,12 @@
+## [2.0.2](https://github.com/dominikg/tsconfck/compare/tsconfck@2.0.1...tsconfck@2.0.2) (2022-12-21)
+
+
+### Bug Fixes
+
+* **parseNative:** support Node16 and NodeNext resolution ([#73](https://github.com/dominikg/tsconfck/issues/73)) ([4683947](https://github.com/dominikg/tsconfck/commit/4683947a78876b0543e60559336952b85a5bf30d))
+
+
+
 ## [2.0.1](https://github.com/dominikg/tsconfck/compare/tsconfck@2.0.0...tsconfck@2.0.1) (2022-05-25)
 
 
