@@ -68,31 +68,31 @@
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
     "@tsconfig/node14": "^1.0.3",
-    "@types/node": "^18.11.10",
-    "@typescript-eslint/eslint-plugin": "^5.45.0",
-    "@typescript-eslint/parser": "^5.45.0",
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
     "c8": "^7.12.0",
-    "chalk": "^5.1.2",
+    "chalk": "^5.2.0",
     "conventional-changelog-cli": "^2.2.2",
     "enquirer": "^2.3.6",
-    "esbuild": "^0.15.17",
-    "eslint": "^8.29.0",
-    "eslint-config-prettier": "^8.5.0",
+    "esbuild": "^0.16.13",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-markdown": "^3.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "execa": "^6.1.0",
-    "husky": "^8.0.2",
+    "husky": "^8.0.3",
     "lint-staged": "^13.1.0",
     "minimist": "^1.2.7",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.8.0",
+    "prettier": "^2.8.1",
     "rimraf": "^3.0.2",
     "semver": "^7.3.8",
     "tiny-glob": "^0.2.9",
     "tsm": "^2.3.0",
     "tsup": "^6.5.0",
-    "typescript": "^4.9.3",
+    "typescript": "^4.9.4",
     "uvu": "^0.5.6",
     "watchlist": "^0.3.1"
   },
@@ -102,9 +102,9 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@7.18.0",
+  "packageManager": "pnpm@7.21.0",
   "engines": {
     "node": "^14.13.1 || ^16 || >=18",
-    "pnpm": "^7.18.0"
+    "pnpm": "^7.21.0"
   }
 }
