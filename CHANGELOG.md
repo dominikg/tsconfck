@@ -1,3 +1,12 @@
+## [2.0.3](https://github.com/dominikg/tsconfck/compare/tsconfck@2.0.2...tsconfck@2.0.3) (2023-02-22)
+
+
+### Bug Fixes
+
+* relax pnpm ([#79](https://github.com/dominikg/tsconfck/issues/79)) ([7f9fee0](https://github.com/dominikg/tsconfck/commit/7f9fee013fc2a86e11962b81572e671935a2c8ff))
+
+
+
 ## [2.0.2](https://github.com/dominikg/tsconfck/compare/tsconfck@2.0.1...tsconfck@2.0.2) (2022-12-21)
 
 
