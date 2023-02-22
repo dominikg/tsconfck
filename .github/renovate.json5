@@ -1,17 +1,17 @@
 {
 	"extends": ["config:base","group:allNonMajor",":semanticCommits"],
 	"schedule": ["before 5am on the 3rd day of the month"],
-  "labels": ["dependencies"],
-  "pin": false,
-  "rangeStrategy": "bump",
-  "node": false,
-  "packageRules": [
-    {
-      "depTypeList": ["peerDependencies"],
-      "enabled": false
-    }
-  ],
-  "ignoreDeps": [
-    // add deps that need manual attention here
-  ]
+	"labels": ["dependencies"],
+	"pin": false,
+	"rangeStrategy": "bump",
+	"node": false,
+	"packageRules": [
+		{
+			"matchDepTypes": ["peerDependencies","engines"],
+			"enabled": false
+		}
+	],
+	"ignoreDeps": [
+		// add deps that need manual attention here
+	]
 }
