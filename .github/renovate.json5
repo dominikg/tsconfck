@@ -5,12 +5,12 @@
   "pin": false,
   "rangeStrategy": "bump",
   "node": false,
-  "packageRules": [
-    {
-      "depTypeList": ["peerDependencies"],
-      "enabled": false
-    }
-  ],
+	"packageRules": [
+		{
+			"matchDepTypes": ["peerDependencies","engines"],
+			"enabled": false
+		}
+	]
   "ignoreDeps": [
     // add deps that need manual attention here
   ]
