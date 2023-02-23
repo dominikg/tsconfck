@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.a.b.json",
+  "compilerOptions": {
+    "noImplicitAny": true
+  }
+}

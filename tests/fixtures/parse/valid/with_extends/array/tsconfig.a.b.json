@@ -1,0 +1,6 @@
+{
+  "extends": ["./tsconfig.c.json"],
+  "compilerOptions": {
+    "disableSizeLimit": true
+  }
+}
