@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.a.b.json",
+  "compilerOptions": {
+    "strictNullChecks": false,
+    "noImplicitAny": false
+  },
+  "files": ["src/foo.ts"]
+}

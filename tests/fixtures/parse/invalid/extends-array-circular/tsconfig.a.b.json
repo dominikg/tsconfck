@@ -1,0 +1,6 @@
+{
+  "extends": ["./tsconfig.a.json"], // extending a here introduces a loop because a extends a.b too
+  "compilerOptions": {
+    "disableSizeLimit": true 
+  }
+}
