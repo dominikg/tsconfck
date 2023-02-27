@@ -3,5 +3,6 @@
   "compilerOptions": {
     "strictNullChecks": false,
     "noImplicitAny": false
-  }
+  },
+  "files": ["src/foo.ts"] // files is not extended so expected output still has src/** (b extends a)
 }
