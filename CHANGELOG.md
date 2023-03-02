@@ -1,3 +1,12 @@
+# [2.1.0-next.0](https://github.com/dominikg/tsconfck/compare/tsconfck@2.0.3...tsconfck@2.1.0-next.0) (2023-03-02)
+
+
+### Features
+
+* add support for ts 5  ([#80](https://github.com/dominikg/tsconfck/issues/80)) ([1026f90](https://github.com/dominikg/tsconfck/commit/1026f90851ab904ca09e943df64d8a8ce7eecfd4))
+
+
+
 ## [2.0.3](https://github.com/dominikg/tsconfck/compare/tsconfck@2.0.2...tsconfck@2.0.3) (2023-02-22)
 
 
