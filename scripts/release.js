@@ -32,20 +32,14 @@ const skipBuild = args.skipBuild;
 /**
  * @type {import('semver').ReleaseType[]}
  */
-const versionIncrements = [
-	'patch',
-	'minor',
-	'major',
-	'prepatch',
-	'preminor',
-	'premajor',
-	'prerelease'
-];
+const versionIncrements = args.next
+	? ['prepatch', 'preminor', 'premajor', 'prerelease']
+	: ['patch', 'minor', 'major'];
 
 /**
  * @param {import('semver').ReleaseType} i
  */
-const inc = (i) => semver.inc(currentVersion, i);
+const inc = (i) => semver.inc(currentVersion, i, i.startsWith('pre') ? 'next' : undefined);
 
 /**
  * @param {string} bin
@@ -171,8 +165,8 @@ function updateVersion(version) {
  */
 async function publishPackage(version, runIfNotDry) {
 	const publishArgs = ['publish', '--publish-branch', 'main', '--access', 'public'];
-	if (args.tag) {
-		publishArgs.push(`--tag`, args.tag);
+	if (args.next) {
+		publishArgs.push('--tag', 'next');
 	}
 	try {
 		await runIfNotDry('pnpm', publishArgs, {

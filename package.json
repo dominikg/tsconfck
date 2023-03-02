@@ -41,6 +41,7 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -l tsconfck",
     "release": "node scripts/release.js",
     "release:dry": "pnpm release --dry",
+    "release:next": "pnpm release --next",
     "prepare": "husky install"
   },
   "repository": {
