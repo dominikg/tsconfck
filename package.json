@@ -57,7 +57,7 @@
   },
   "homepage": "https://github.com/dominikg/tsconfck/tree/main/#readme",
   "peerDependencies": {
-    "typescript": "^4.3.5 || ^5.0.0-beta"
+    "typescript": "^4.3.5 || ^5.0.1-rc || ^5.0.0"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -92,7 +92,7 @@
     "tiny-glob": "^0.2.9",
     "tsm": "^2.3.0",
     "tsup": "^6.6.3",
-    "typescript": "5.0.0-beta",
+    "typescript": "^5.0.1-rc",
     "uvu": "^0.5.6",
     "watchlist": "^0.3.1"
   },
