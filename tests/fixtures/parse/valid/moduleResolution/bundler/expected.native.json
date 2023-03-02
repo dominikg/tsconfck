@@ -1,11 +1,10 @@
 {
-  "extends": "",
   "files": ["foo.ts"],
   "compilerOptions": {
     "types": ["foo"],
     "importsNotUsedAsValues": "error",
     "module": "node16",
-    "moduleResolution": "node16",
+    "moduleResolution": "bundler",
     "newLine": "lf",
     "target": "esnext"
   },

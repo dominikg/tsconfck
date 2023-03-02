@@ -1,0 +1,9 @@
+{
+  "extends": ["./tsconfig.a.json","./tsconfig.b.json","./tsconfig.c.json"],
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "disableSizeLimit": true
+  },
+  "files": ["src/**"]
+}

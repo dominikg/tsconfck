@@ -41,6 +41,7 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -l tsconfck",
     "release": "node scripts/release.js",
     "release:dry": "pnpm release --dry",
+    "release:next": "pnpm release --next",
     "prepare": "husky install"
   },
   "repository": {
@@ -57,7 +58,7 @@
   },
   "homepage": "https://github.com/dominikg/tsconfck/tree/main/#readme",
   "peerDependencies": {
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5 || ^5.0.1-rc || ^5.0.0"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -65,34 +66,34 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.4.2",
-    "@commitlint/config-conventional": "^17.4.2",
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
     "@tsconfig/node14": "^1.0.3",
-    "@types/node": "^18.11.19",
-    "@typescript-eslint/eslint-plugin": "^5.50.0",
-    "@typescript-eslint/parser": "^5.50.0",
-    "c8": "^7.12.0",
+    "@types/node": "^18.14.1",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
+    "c8": "^7.13.0",
     "chalk": "^5.2.0",
     "conventional-changelog-cli": "^2.2.2",
     "enquirer": "^2.3.6",
-    "esbuild": "^0.17.5",
-    "eslint": "^8.33.0",
+    "esbuild": "^0.17.10",
+    "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-markdown": "^3.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "execa": "^6.1.0",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.0",
-    "minimist": "^1.2.7",
+    "lint-staged": "^13.1.2",
+    "minimist": "^1.2.8",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.8.3",
+    "prettier": "^2.8.4",
     "rimraf": "^4.1.2",
     "semver": "^7.3.8",
     "tiny-glob": "^0.2.9",
     "tsm": "^2.3.0",
-    "tsup": "^6.5.0",
-    "typescript": "^4.9.5",
+    "tsup": "^6.6.3",
+    "typescript": "^5.0.1-rc",
     "uvu": "^0.5.6",
     "watchlist": "^0.3.1"
   },

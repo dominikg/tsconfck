@@ -3,8 +3,8 @@
   "compilerOptions": {
     "types": ["foo"],
     "importsNotUsedAsValues": "error",
-    "module": "es2020",
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "classic",
     "newLine": "lf",
     "target": "esnext"
   },

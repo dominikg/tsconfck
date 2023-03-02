@@ -1,0 +1,6 @@
+{
+  "extends": ["./tsconfig.c.json"], // extending c here works because it does not create a loop
+  "compilerOptions": {
+    "disableSizeLimit": true // this hasn't been defined before, so it is expected in the output
+  }
+}

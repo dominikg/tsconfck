@@ -113,25 +113,53 @@ async function parseExtends(result: TSConfckParseResult, cache?: Map<string, TSC
 	}
 	// use result as first element in extended
 	// but dereference tsconfig so that mergeExtended can modify the original without affecting extended[0]
-	const extended = [
+	const extended: TSConfckParseResult[] = [
 		{ tsconfigFile: result.tsconfigFile, tsconfig: JSON.parse(JSON.stringify(result.tsconfig)) }
 	];
 
-	while (extended[extended.length - 1].tsconfig.extends) {
-		const extending = extended[extended.length - 1];
-		const extendedTSConfigFile = resolveExtends(extending.tsconfig.extends, extending.tsconfigFile);
-		if (extended.some((x) => x.tsconfigFile === extendedTSConfigFile)) {
-			const circle = extended
-				.concat({ tsconfigFile: extendedTSConfigFile, tsconfig: null })
-				.map((e) => e.tsconfigFile)
-				.join(' -> ');
-			throw new TSConfckParseError(
-				`Circular dependency in "extends": ${circle}`,
-				'EXTENDS_CIRCULAR',
-				result.tsconfigFile
+	// flatten extends graph into extended
+	let pos = 0;
+	const extendsPath: string[] = [];
+	let currentBranchDepth = 0;
+	while (pos < extended.length) {
+		const extending = extended[pos];
+		extendsPath.push(extending.tsconfigFile);
+		if (extending.tsconfig.extends) {
+			// keep following this branch
+			currentBranchDepth += 1;
+			let resolvedExtends: string[];
+			if (!Array.isArray(extending.tsconfig.extends)) {
+				resolvedExtends = [resolveExtends(extending.tsconfig.extends, extending.tsconfigFile)];
+			} else {
+				// reverse because typescript 5.0 treats ['a','b','c'] as c extends b extends a
+				resolvedExtends = extending.tsconfig.extends
+					.reverse()
+					.map((ex: string) => resolveExtends(ex, extending.tsconfigFile));
+			}
+
+			const circularExtends = resolvedExtends.find((tsconfigFile) =>
+				extendsPath.includes(tsconfigFile)
 			);
+			if (circularExtends) {
+				const circle = extendsPath.concat([circularExtends]).join(' -> ');
+				throw new TSConfckParseError(
+					`Circular dependency in "extends": ${circle}`,
+					'EXTENDS_CIRCULAR',
+					result.tsconfigFile
+				);
+			}
+			// add new extends to the list directly after current
+			extended.splice(
+				pos + 1,
+				0,
+				...(await Promise.all(resolvedExtends.map((file) => parseFile(file, cache))))
+			);
+		} else {
+			// reached a leaf, backtrack to the last branching point and continue
+			extendsPath.splice(-currentBranchDepth);
+			currentBranchDepth = 0;
 		}
-		extended.push(await parseFile(extendedTSConfigFile, cache));
+		pos = pos + 1;
 	}
 	result.extended = extended;
 	// skip first as it is the original config

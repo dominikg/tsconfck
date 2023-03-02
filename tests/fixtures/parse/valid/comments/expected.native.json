@@ -1,6 +1,5 @@
 {
-  "extends": "",
-  "compilerOptions": {
+  "compilerOptions": { 
     "types": [
       "//keep \"this",
       "/*",

@@ -1,5 +1,4 @@
 {
-  "extends": "",
   "files": ["foo.ts"],
   "compilerOptions": {
     "types": ["foo"],
