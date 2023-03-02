@@ -189,11 +189,9 @@ function result2tsconfig(result: any, ts: any) {
 			{
 				name: 'moduleResolution',
 				enumeration: {
-					1: 'classic',
-					2: 'node',
-					3: 'node16',
-					99: 'nodenext'
-				} /*ts.ModuleResolutionKind uses different names*/
+					...ts.ModuleResolutionKind,
+					2: 'node' /*ts.ModuleResolutionKind uses "Node10" but in tsconfig it is just node"*/
+				}
 			},
 			{
 				name: 'newLine',
