@@ -1,3 +1,7 @@
+# [2.1.0](https://github.com/dominikg/tsconfck/compare/tsconfck@2.1.0-next.0...tsconfck@2.1.0) (2023-03-13)
+
+
+
 # [2.1.0-next.0](https://github.com/dominikg/tsconfck/compare/tsconfck@2.0.3...tsconfck@2.1.0-next.0) (2023-03-02)
 
 
