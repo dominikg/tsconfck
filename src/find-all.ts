@@ -1,5 +1,15 @@
 import path from 'path';
-import { promises as fs } from 'fs';
+import { Dirent, readdir } from 'fs';
+
+interface WalkState {
+	files: string[];
+	calls: number;
+	// eslint-disable-next-line no-unused-vars
+	skip?: (dir: string) => boolean;
+	err: boolean;
+}
+
+const sep = path.sep;
 
 /**
  * find all tsconfig.json files in dir
@@ -9,36 +19,50 @@ import { promises as fs } from 'fs';
  * @returns {Promise<string[]>} list of absolute paths to all found tsconfig.json files
  */
 export async function findAll(dir: string, options?: TSConfckFindAllOptions): Promise<string[]> {
-	const files = [];
-	for await (const tsconfigFile of findTSConfig(path.resolve(dir), options)) {
-		files.push(tsconfigFile);
-	}
-	return files;
+	const state: WalkState = {
+		files: [],
+		calls: 0,
+		skip: options?.skip,
+		err: false
+	};
+	return new Promise((resolve, reject) => {
+		walk(path.resolve(dir), state, (err, files) => (err ? reject(err) : resolve(files!)));
+	});
 }
 
-async function* findTSConfig(
+function walk(
 	dir: string,
-	options?: TSConfckFindAllOptions,
-	visited: Set<string> = new Set<string>()
-): AsyncGenerator<string> {
-	if (!visited.has(dir)) {
-		visited.add(dir);
-		try {
-			const dirents = await fs.readdir(dir, { withFileTypes: true });
-			for (const dirent of dirents) {
-				if (dirent.isDirectory() && (!options?.skip || !options.skip(dirent.name))) {
-					yield* findTSConfig(path.resolve(dir, dirent.name), options, visited);
-				} else if (dirent.isFile() && dirent.name === 'tsconfig.json') {
-					yield path.resolve(dir, dirent.name);
+	state: WalkState,
+	// eslint-disable-next-line no-unused-vars
+	done: (err: NodeJS.ErrnoException | null, files?: string[]) => void
+) {
+	if (state.err) {
+		return;
+	}
+	state.calls++;
+	readdir(dir, { withFileTypes: true }, (err, entries: Dirent[] = []) => {
+		if (state.err) {
+			return;
+		}
+		// skip deleted or inaccessible directories
+		if (err && !(err.code === 'ENOENT' || err.code === 'EACCES')) {
+			state.err = true;
+			done(err);
+		} else {
+			for (const ent of entries) {
+				if (ent.isDirectory() && !state.skip?.(ent.name)) {
+					walk(`${dir}${sep}${ent.name}`, state, done);
+				} else if (ent.isFile() && ent.name === 'tsconfig.json') {
+					state.files.push(`${dir}${sep}tsconfig.json`);
 				}
 			}
-		} catch (e) {
-			if (e.code === 'EACCES' || e.code === 'ENOENT') {
-				return; // directory inaccessible or deleted
+			if (--state.calls === 0) {
+				if (!state.err) {
+					done(null, state.files);
+				}
 			}
-			throw e;
 		}
-	}
+	});
 }
 
 export interface TSConfckFindAllOptions {
