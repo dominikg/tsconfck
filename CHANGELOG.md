@@ -1,3 +1,12 @@
+## [2.1.1](https://github.com/dominikg/tsconfck/compare/tsconfck@2.1.0...tsconfck@2.1.1) (2023-03-22)
+
+
+### Bug Fixes
+
+* **find-all:** improve performance for larger trees by using traditional callbacks instead of yield ([#84](https://github.com/dominikg/tsconfck/issues/84)) ([1324d21](https://github.com/dominikg/tsconfck/commit/1324d2154a8c6fbc0d353a43a14bb661519f4e02))
+
+
+
 # [2.1.0](https://github.com/dominikg/tsconfck/compare/tsconfck@2.1.0-next.0...tsconfck@2.1.0) (2023-03-13)
 
 
