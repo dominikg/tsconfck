@@ -1,0 +1,1 @@
+parsing <dir>/tsconfig.json failed: SyntaxError: Expected double-quoted property name in JSON at position 69
