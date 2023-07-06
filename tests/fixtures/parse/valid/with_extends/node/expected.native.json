@@ -2,7 +2,7 @@
   "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
     "lib": ["es2020"],
-    "module": "commonjs",
+    "module": "node16",
     "target": "es2020",
     "strict": true,
     "esModuleInterop": true,
@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["foo"],
     "strictNullChecks": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node16"
   },
   "include": ["src/**/*"]
 }
