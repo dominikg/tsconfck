@@ -235,7 +235,7 @@ test('should reject with correct error for invalid tsconfig.json', async () => {
 		(sample) => !sample.includes(path.join('extends-fallback-not-found', 'dir'))
 	);
 	for (const filename of samples) {
-		const expected = await loadExpectedTXT(filename);
+		const expected = loadExpectedTXT(filename).trim();
 		try {
 			await parse(filename);
 			assert.unreachable(`${filename} did not reject`);
@@ -245,10 +245,10 @@ test('should reject with correct error for invalid tsconfig.json', async () => {
 			}
 			assert.instance(e, TSConfckParseError);
 			const actual = e.message;
-			assert.match(
-				actual,
-				expected,
-				`expected "${expected}" for filename: ${filename}, got actual "${actual}"`
+			assert.is(
+				actual.includes(expected),
+				true,
+				`expected "${actual}" for filename: ${filename}, to include "${expected}"`
 			);
 			assert.is(e.tsconfigFile, path.resolve(filename));
 		}
