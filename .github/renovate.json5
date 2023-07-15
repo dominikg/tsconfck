@@ -1,10 +1,9 @@
 {
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:base","group:allNonMajor",":semanticCommits"],
 	"schedule": ["before 5am on the 3rd day of the month"],
 	"labels": ["dependencies"],
-	"pin": false,
 	"rangeStrategy": "bump",
-	"node": false,
 	"packageRules": [
 		{
 			"matchDepTypes": ["peerDependencies","engines"],
@@ -13,5 +12,6 @@
 	],
 	"ignoreDeps": [
 		// add deps that need manual attention here
+		"tsup" // v7 does not work with node14
 	]
 }
