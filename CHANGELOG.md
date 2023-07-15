@@ -1,6 +1,11 @@
 ## [2.1.2](https://github.com/dominikg/tsconfck/compare/tsconfck@2.1.1...tsconfck@2.1.2) (2023-07-15)
 
 
+### Bug Fixes
+
+* **find-all:** ignore inaccessible directory error on windows ([#96](https://github.com/dominikg/tsconfck/issues/96)) ([760b84c](https://github.com/dominikg/tsconfck/commit/760b84c8e432a962f917e0c168ca845e0bddf156))
+
+
 
 ## [2.1.1](https://github.com/dominikg/tsconfck/compare/tsconfck@2.1.0...tsconfck@2.1.1) (2023-03-22)
 
