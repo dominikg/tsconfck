@@ -45,7 +45,7 @@ function walk(
 			return;
 		}
 		// skip deleted or inaccessible directories
-		if (err && !(err.code === 'ENOENT' || err.code === 'EACCES')) {
+		if (err && !(err.code === 'ENOENT' || err.code === 'EACCES' || err.code === 'EPERM')) {
 			state.err = true;
 			done(err);
 		} else {
