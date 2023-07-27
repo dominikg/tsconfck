@@ -91,6 +91,10 @@ function normalizeTSConfig(tsconfig: any, dir: string) {
 	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
 		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
 	}
+	// remove compileOnSave if set to false
+	if (tsconfig.compileOnSave === false) {
+		delete tsconfig.compileOnSave;
+	}
 	return tsconfig;
 }
 
