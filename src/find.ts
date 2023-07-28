@@ -32,8 +32,8 @@ export async function find(filename: string, options?: TSConfckFindOptions) {
 
 async function tsconfigInDir(dir: string, options?: TSConfckFindOptions): Promise<string | void> {
 	const tsconfig = path.join(dir, 'tsconfig.json');
-	if (options?.tsConfigPaths) {
-		return options.tsConfigPaths.has(tsconfig) ? tsconfig : undefined;
+	if (options?.tsconfigPaths) {
+		return options.tsconfigPaths.has(tsconfig) ? tsconfig : undefined;
 	}
 	try {
 		const stat = await fs.stat(tsconfig);
@@ -55,7 +55,7 @@ export interface TSConfckFindOptions {
 	 * This is better for performance in projects like vite where find is called frequently but tsconfig locations rarely change
 	 * You can use `findAll` to build this
 	 */
-	tsConfigPaths?: Set<string>;
+	tsconfigPaths?: Set<string>;
 
 	/**
 	 * project root dir, does not continue scanning outside of this directory.

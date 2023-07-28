@@ -82,7 +82,7 @@ test('should stop searching at root', async () => {
 	}
 });
 
-test('should use provided tsConfigPaths', async () => {
+test('should use provided tsconfigPaths', async () => {
 	const real = path.resolve('tests', 'fixtures', 'find-root', 'tsconfig.json');
 	const fake = path.resolve('tests', 'fixtures', 'find-root', 'a', 'tsconfig.json');
 	const inputs = [
@@ -90,12 +90,12 @@ test('should use provided tsConfigPaths', async () => {
 		path.join('.', 'tests', 'fixtures', 'find-root', 'a', 'b', 'foo.ts'),
 		path.resolve('tests', 'fixtures', 'find-root', 'a', 'b', 'foo.ts')
 	];
-	const tsConfigPaths = new Set<string>([fake]);
+	const tsconfigPaths = new Set<string>([fake]);
 
 	for (const input of inputs) {
 		const tsconfig = await find(input);
 		assert.is(tsconfig, real, `input: ${input}`);
-		const tsconfigWithPaths = await find(input, { tsConfigPaths });
+		const tsconfigWithPaths = await find(input, { tsconfigPaths });
 		assert.is(tsconfigWithPaths, fake, `input: ${input}`);
 	}
 });

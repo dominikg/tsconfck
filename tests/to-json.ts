@@ -24,7 +24,7 @@ test('should throw for invalid tsconfigJson arg', () => {
 		);
 	}
 	// @ts-ignore
-	assert.throws(() => toJson(), TypeError, 'tsConfigJson not set');
+	assert.throws(() => toJson(), TypeError, 'tsconfigJson not set');
 	assert.not.throws(() => toJson('str'));
 });
 
