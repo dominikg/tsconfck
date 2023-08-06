@@ -90,6 +90,7 @@ jobs:
         run: |
           npm i -g pnpm@^7.32.0
           tmppkg="$(jq '.engines.pnpm = "^7.32.0"' package.json)" && echo -E "${tmppkg}" > package.json && tmppkg=""
+          sed -i 's/engine-strict=true/engine-strict=false/' .npmrc
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}

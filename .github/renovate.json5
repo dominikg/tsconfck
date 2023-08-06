@@ -12,6 +12,5 @@
 	],
 	"ignoreDeps": [
 		// add deps that need manual attention here
-		"tsup" // v7 does not work with node14
 	]
 }
