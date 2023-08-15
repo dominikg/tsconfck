@@ -1,0 +1,14 @@
+{
+	"extends": "./tsconfig.base",
+	"include": [
+		"src/**/*"
+	],
+	"exclude": [
+		"src/**/*.spec.ts"
+	],
+	"compilerOptions": {
+		"composite": true,
+		"strictNullChecks": true,
+		"strict": true
+	}
+}

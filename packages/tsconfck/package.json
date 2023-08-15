@@ -1,0 +1,64 @@
+{
+	"name": "tsconfck",
+	"version": "3.0.0-next.0",
+	"description": "A utility to work with tsconfig.json without typescript",
+	"license": "MIT",
+	"author": "dominikg",
+	"files": [
+		"bin",
+		"src",
+		"types",
+		"README.md",
+		"LICENSE",
+		"package.json"
+	],
+	"type": "module",
+	"bin": "bin/tsconfck.js",
+	"types": "types/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./types/index.d.ts",
+			"import": "./src/index.js"
+		}
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dominikg/tsconfck.git",
+		"directory": "packages/tsconfck"
+	},
+	"keywords": [
+		"typescript",
+		"tsconfig",
+		"tsconfig.json"
+	],
+	"bugs": {
+		"url": "https://github.com/dominikg/tsconfck/issues"
+	},
+	"homepage": "https://github.com/dominikg/tsconfck/tree/main/packages/tsconfck#readme",
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"peerDependenciesMeta": {
+		"typescript": {
+			"optional": true
+		}
+	},
+	"devDependencies": {
+		"@tsconfig/node18": "^18.2.0",
+		"esbuild": "^0.19.1",
+		"tiny-glob": "^0.2.9",
+		"typescript": "^5.1.6",
+		"vitest": "^0.34.1"
+	},
+	"engines": {
+		"node": "^18 || >=20"
+	},
+	"scripts": {
+		"check:publint": "publint --strict",
+		"check:types": "tsc --noEmit",
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest",
+		"dts-buddy": "dts-buddy"
+	}
+}

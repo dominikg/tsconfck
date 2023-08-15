@@ -1,0 +1,10 @@
+{
+	"include": [],
+	"extends": "../tsconfig.base",
+	"compilerOptions": {
+		"composite": true,
+		"strictNullChecks": true,
+		"strict": true
+	},
+	"files": []
+}

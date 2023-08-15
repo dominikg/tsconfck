@@ -1,0 +1,1 @@
+parsing <fixture-dir>/parse/invalid/comma/tsconfig.json failed: SyntaxError: Unexpected token x in JSON at position 69

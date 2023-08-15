@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"types": [
+			"//keep \"this",
+			"/*",
+			"*/",
+			"/* this too */"
+		]
+	}
+}

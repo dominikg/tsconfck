@@ -1,1 +1,0 @@
-parsing <dir>/tsconfig.json failed: SyntaxError: Expected ',' or '}' after property value in JSON at position 236
