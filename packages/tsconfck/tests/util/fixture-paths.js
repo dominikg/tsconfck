@@ -1,17 +1,15 @@
 import { fileURLToPath } from 'node:url';
 import path from 'path';
 import glob from 'tiny-glob';
-import { native2posix } from '../../src/util.js';
 const cwd = process.cwd();
 const root = fileURLToPath(new URL('../..', import.meta.url));
 export const fixtures = fileURLToPath(new URL('../fixtures', import.meta.url));
-export const absRoot = (relative) => native2posix(path.resolve(root, relative));
-export const absFixture = (fixture) => native2posix(path.resolve(fixtures, fixture));
-export const relFixture = (fixture) => native2posix(path.relative(cwd, absFixture(fixture)));
-export const relFromFixtures = (fixture) =>
-	native2posix(path.relative(fixtures, path.resolve(fixture)));
+export const absRoot = (relative) => path.resolve(root, relative);
+export const absFixture = (fixture) => path.resolve(fixtures, fixture);
+export const relFixture = (fixture) => path.relative(cwd, absFixture(fixture));
+export const relFromFixtures = (fixture) => path.relative(fixtures, path.resolve(fixture));
 export const globFixtures = async (pattern) =>
-	(await glob(`${fixtures}/${pattern}`)).map((file) => native2posix(path.resolve(file))).sort();
+	(await glob(`${fixtures}/${pattern}`)).map((file) => path.resolve(file)).sort();
 /**
  *
  * @param {string} file
