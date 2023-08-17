@@ -3,6 +3,7 @@ import path from 'path';
 import os from 'os';
 import { findNative } from '../src/find-native.js';
 import { absFixture, absRoot, relFixture } from './util/fixture-paths.js';
+import { native2posix } from '../src/util.js';
 
 describe('find-native', () => {
 	it('should be a function', () => {
@@ -19,13 +20,13 @@ describe('find-native', () => {
 		}
 		await expect(findNative(), 'no filename arg').rejects.toThrow();
 		await expect(findNative('str'), `filename string arg`).resolves.toEqual(
-			absRoot('tsconfig.json')
+			native2posix(absRoot('tsconfig.json'))
 		);
 	});
 
 	it('should find tsconfig in same directory', async () => {
 		const fixtureDir = 'find/a';
-		const expected = absFixture(`${fixtureDir}/tsconfig.json`);
+		const expected = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
 		const relativeTS = relFixture(`${fixtureDir}/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
@@ -36,7 +37,7 @@ describe('find-native', () => {
 
 	it('should find tsconfig in parent directory', async () => {
 		const fixtureDir = 'find/a';
-		const expected = absFixture(`${fixtureDir}/tsconfig.json`);
+		const expected = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
 		const relativeTS = relFixture(`${fixtureDir}/b/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/b/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
