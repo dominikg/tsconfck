@@ -25,11 +25,3 @@ export const snapName = (file, suffix) => {
 	const joined = [...fileParts, ...suffixParts].filter((s) => !!s);
 	return `snapshots/${dir}/${joined.join('.')}`;
 };
-
-const fixtureDirRegex = new RegExp(
-	fixtures.replace(/\\/g, '/').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-	'g'
-);
-export function replaceFixtureDir(str) {
-	return str.replace(fixtureDirRegex, '<fixture-dir>');
-}

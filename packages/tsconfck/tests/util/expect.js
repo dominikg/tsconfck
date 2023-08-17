@@ -1,8 +1,14 @@
 import { expect } from 'vitest';
-import { replaceFixtureDir, snapName } from './fixture-paths.js';
+import { fixtures, snapName } from './fixture-paths.js';
 
+const fixtureDirRegex = new RegExp(
+	fixtures.replace(/[.*+?^${}()|[\]]/g, '\\$&').replace(/[/\\]/g, '[/\\\\]'),
+	'g'
+);
 function normalizeSnapshot(str) {
-	return replaceFixtureDir(str);
+	return str
+		.replace(fixtureDirRegex, '<fixture-dir>')
+		.replace(/<fixture-dir>(\\[^\\ ]+)+/g, (m) => m.replace(/\\/g, '/'));
 }
 // TODO refactor after vitest is able to print regular json for toMatchFileSnapshot calls
 /**
