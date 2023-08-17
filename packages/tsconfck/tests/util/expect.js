@@ -1,5 +1,10 @@
 import { expect } from 'vitest';
 import { fixtures, snapName } from './fixture-paths.js';
+
+const fixtureDirRegex = new RegExp(fixtures.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+function normalizeSnapshot(str) {
+	return str.replace(fixtureDirRegex, '<fixture-dir>');
+}
 // TODO refactor after vitest is able to print regular json for toMatchFileSnapshot calls
 /**
  *
@@ -23,9 +28,9 @@ export async function expectToMatchSnap(actual, message, inputFile, suffix) {
 			suffix = suffix + '.txt';
 		}
 	}
-	await expect(toJSON ? JSON.stringify(actual, null, '\t') : actual, message).toMatchFileSnapshot(
-		snapName(inputFile, suffix)
-	);
+	const normalizedValue = normalizeSnapshot(toJSON ? JSON.stringify(actual, null, '\t') : actual);
+
+	await expect(normalizedValue, message).toMatchFileSnapshot(snapName(inputFile, suffix));
 }
 
 /**
@@ -36,18 +41,11 @@ export async function expectToMatchSnap(actual, message, inputFile, suffix) {
  * @return {Promise<void>}
  */
 export async function expectToMatchErrorSnap(errormessage, inputFile, suffix) {
-	const fixtureDirRegex = new RegExp(fixtures.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
 	const nodeMajor = process?.versions.node.split('.', 1)[0];
-	const normalizedMessage = errormessage.replace(fixtureDirRegex, '<fixture-dir>');
 	const suffixes = ['error', `node${nodeMajor}`];
 	if (suffix) {
 		suffixes.push(suffix);
 	}
 	suffixes.push('txt');
-	await expectToMatchSnap(
-		normalizedMessage,
-		`error for ${inputFile}`,
-		inputFile,
-		suffixes.join('.')
-	);
+	await expectToMatchSnap(errormessage, `error for ${inputFile}`, inputFile, suffixes.join('.'));
 }

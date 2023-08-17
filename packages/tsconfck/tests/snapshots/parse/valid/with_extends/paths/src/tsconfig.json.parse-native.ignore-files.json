@@ -6,7 +6,7 @@
 		],
 		"strictNullChecks": true,
 		"noImplicitAny": true,
-		"baseUrl": "/home/dominikg/develop/tsconfck/packages/tsconfck/tests/fixtures/parse/valid/with_extends/paths",
+		"baseUrl": "<fixture-dir>/parse/valid/with_extends/paths",
 		"paths": {
 			"$lib": [
 				"*",
