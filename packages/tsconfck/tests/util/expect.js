@@ -1,7 +1,10 @@
 import { expect } from 'vitest';
 import { fixtures, snapName } from './fixture-paths.js';
 
-const fixtureDirRegex = new RegExp(fixtures.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+const fixtureDirRegex = new RegExp(
+	fixtures.replace(/\\/g, '/').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+	'g'
+);
 function normalizeSnapshot(str) {
 	return str.replace(fixtureDirRegex, '<fixture-dir>');
 }
