@@ -5,7 +5,7 @@ export interface TSConfckFindOptions {
 	 * This is better for performance in projects like vite where find is called frequently but tsconfig locations rarely change
 	 * You can use `findAll` to build this
 	 */
-	tsConfigPaths?: Set<string>;
+	tsconfigPaths?: Set<string>;
 
 	/**
 	 * project root dir, does not continue scanning outside of this directory.

@@ -56,7 +56,7 @@ describe('find', () => {
 		}
 	});
 
-	it('should use provided tsConfigPaths', async () => {
+	it('should use provided tsconfigPaths', async () => {
 		const fixtureDir = 'find-root';
 		const relativeTS = relFixture(`${fixtureDir}/a/b/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/a/b/foo.ts`);
@@ -64,11 +64,11 @@ describe('find', () => {
 		const real = absFixture(`${fixtureDir}/tsconfig.json`);
 		const fake = absFixture(`${fixtureDir}/a/tsconfig.json`);
 
-		const tsConfigPaths = new Set([fake]);
+		const tsconfigPaths = new Set([fake]);
 
 		for (const input of inputs) {
 			expect(await find(input), `input: ${input}`).toBe(real);
-			expect(await find(input, { tsConfigPaths }), `input: ${input}`).toBe(fake);
+			expect(await find(input, { tsconfigPaths }), `input: ${input}`).toBe(fake);
 		}
 	});
 

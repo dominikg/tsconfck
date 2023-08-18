@@ -38,8 +38,8 @@ export async function find(filename, options) {
  */
 async function tsconfigInDir(dir, options) {
 	const tsconfig = path.join(dir, 'tsconfig.json');
-	if (options?.tsConfigPaths) {
-		return options.tsConfigPaths.has(tsconfig) ? tsconfig : undefined;
+	if (options?.tsconfigPaths) {
+		return options.tsconfigPaths.has(tsconfig) ? tsconfig : undefined;
 	}
 	try {
 		const stat = await fs.stat(tsconfig);
