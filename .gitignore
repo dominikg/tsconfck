@@ -3,13 +3,10 @@
 *.cpuprofile
 temp
 *.tmp
-
-# build and dist
-build
-dist
+.eslintcache
 
 # test coverage
-/coverage
+coverage
 *.lcov
 
 # env and local

@@ -1,0 +1,52 @@
+{
+	"ignorePatterns": [
+		"**/tests/fixtures/parse/invalid/**/*",
+		"**/tests/fixtures/find-all/recursive-symlink/**/*",
+		"**/tests/snapshots/**/*.js"
+	],
+	"root": true,
+	"extends": ["eslint:recommended", "plugin:n/recommended", "prettier"],
+	"globals": {
+		"Atomics": "readonly",
+		"SharedArrayBuffer": "readonly"
+	},
+	"parserOptions": {
+		"ecmaVersion": 2022
+	},
+	"plugins": ["n", "markdown"],
+	"rules": {
+		"no-debugger": ["error"]
+	},
+	"overrides": [
+		{
+			"files": ["**/*.md"],
+			"processor": "markdown/markdown",
+			"rules": {
+				"no-undef": "off",
+				"no-unused-vars": "off",
+				"no-console": "off",
+				"padded-blocks": "off",
+				"n/no-missing-import": "off",
+				"n/no-extraneous-require": "off",
+				"import/no-unresolved": "off"
+			}
+		},
+		{
+			"files": ["**/*.md/*.**"],
+			"rules": {
+				"no-undef": "off",
+				"no-unused-vars": "off",
+				"no-console": "off",
+				"padded-blocks": "off",
+				"n/no-missing-import": "off",
+				"import/no-unresolved": "off"
+			}
+		},
+		{
+			"files": ["**/tests/fixtures/**/*"],
+			"rules": {
+				"no-unused-vars": "off"
+			}
+		}
+	]
+}

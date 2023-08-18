@@ -1,0 +1,8 @@
+{
+	"mode": "pre",
+	"tag": "next",
+	"initialVersions": {
+		"tsconfck": "3.0.0-next.0"
+	},
+	"changesets": []
+}

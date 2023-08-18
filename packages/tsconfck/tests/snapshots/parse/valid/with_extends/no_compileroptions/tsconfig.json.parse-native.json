@@ -1,0 +1,22 @@
+{
+	"extends": "../tsconfig.parent.json",
+	"include": [
+		"src/**/*",
+		"foo.ts"
+	],
+	"exclude": [
+		"../**/foo/*"
+	],
+	"compilerOptions": {
+		"types": [
+			"bar"
+		],
+		"strictNullChecks": false,
+		"noImplicitAny": true
+	},
+	"watchOptions": {
+		"watchFile": "useFsEvents",
+		"watchDirectory": "useFsEvents",
+		"fallbackPolling": "dynamicPriority"
+	}
+}

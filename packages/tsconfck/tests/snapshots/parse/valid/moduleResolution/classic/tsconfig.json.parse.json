@@ -1,0 +1,20 @@
+{
+	"files": [
+		"foo.ts"
+	],
+	"compilerOptions": {
+		"types": [
+			"foo"
+		],
+		"importsNotUsedAsValues": "error",
+		"module": "node16",
+		"moduleResolution": "classic",
+		"newLine": "lf",
+		"target": "esnext"
+	},
+	"watchOptions": {
+		"watchFile": "useFsEvents",
+		"watchDirectory": "useFsEvents",
+		"fallbackPolling": "dynamicPriority"
+	}
+}

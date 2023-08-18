@@ -1,0 +1,32 @@
+{
+	"extends": "../tsconfig.base",
+	"compilerOptions": {
+		"types": [
+			"foo"
+		],
+		"strictNullChecks": true,
+		"baseUrl": "<fixture-dir>/parse/valid/with_extends/paths",
+		"paths": {
+			"$lib": [
+				"*",
+				"./lib"
+			],
+			"$src": [
+				"./src"
+			]
+		},
+		"noImplicitAny": true
+	},
+	"include": [
+		"../src/**/*",
+		"../lib/**/*"
+	],
+	"watchOptions": {
+		"watchFile": "useFsEvents",
+		"watchDirectory": "useFsEvents",
+		"fallbackPolling": "dynamicPriority"
+	},
+	"exclude": [
+		"../../**/foo/*"
+	]
+}
