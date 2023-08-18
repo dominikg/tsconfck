@@ -1,8 +1,16 @@
 {
-	"mode": "pre",
-	"tag": "next",
-	"initialVersions": {
-		"tsconfck": "3.0.0-next.0"
-	},
-	"changesets": []
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "tsconfck": "3.0.0-next.0"
+  },
+  "changesets": [
+    "gold-singers-cheer",
+    "good-taxis-teach",
+    "lazy-geckos-hide",
+    "perfect-dryers-smile",
+    "sweet-onions-carry",
+    "tasty-icons-prove",
+    "tricky-frogs-pull"
+  ]
 }
