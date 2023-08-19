@@ -16,7 +16,7 @@ const sep = path.sep;
  * find all tsconfig.json files in dir
  *
  * @param {string} dir - path to dir (absolute or relative to cwd)
- * @param {import('./public.d.ts').TSConfckFindAllOptions?} options - options
+ * @param {import('./public.d.ts').TSConfckFindAllOptions} [options] - options
  * @returns {Promise<string[]>} list of absolute paths to all found tsconfig.json files
  */
 export async function findAll(dir, options) {

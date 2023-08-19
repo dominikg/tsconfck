@@ -15,7 +15,7 @@ import {
  * parse the closest tsconfig.json file
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param {import('./public.d.ts').TSConfckParseOptions?} options - options
+ * @param {import('./public.d.ts').TSConfckParseOptions} [options] - options
  * @returns {Promise<import('./public.d.ts').TSConfckParseResult>}
  * @throws {TSConfckParseError}
  */

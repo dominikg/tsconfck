@@ -14,7 +14,7 @@ import { findNative } from './find-native.js';
  * You need to have `typescript` installed to use this
  *
  * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param {import('./public.d.ts').TSConfckParseNativeOptions?} options - options
+ * @param {import('./public.d.ts').TSConfckParseNativeOptions} [options] - options
  * @returns {Promise<import('./public.d.ts').TSConfckParseNativeResult>}
  * @throws {TSConfckParseNativeError}
  */
@@ -47,7 +47,7 @@ export async function parseNative(filename, options) {
 		}
 	}
 
-	/** @type {import('../types/index.js').TSConfckParseNativeResult} */
+	/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
 	let result;
 	if (cache?.has(tsconfigFile)) {
 		result = cache.get(tsconfigFile);
@@ -69,8 +69,8 @@ export async function parseNative(filename, options) {
  *
  * @param {string} tsconfigFile
  * @param {any} ts
- * @param {import('../types/index.js').TSConfckParseNativeOptions?} options
- * @returns {Promise<import('../types/index.js').TSConfckParseNativeResult>}
+ * @param {import('./public.d.ts').TSConfckParseNativeOptions} [options]
+ * @returns {Promise<import('./public.d.ts').TSConfckParseNativeResult>}
  */
 async function parseFile(tsconfigFile, ts, options) {
 	const cache = options?.cache;
@@ -104,7 +104,7 @@ async function parseFile(tsconfigFile, ts, options) {
 	);
 	checkErrors(nativeResult, tsconfigFile);
 
-	/** @type {import('../types/index.js').TSConfckParseNativeResult} */
+	/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
 	const result = {
 		tsconfigFile,
 		tsconfig: result2tsconfig(nativeResult, ts),
@@ -116,9 +116,9 @@ async function parseFile(tsconfigFile, ts, options) {
 
 /**
  *
- * @param {import('../types/index.js').TSConfckParseNativeResult} result
+ * @param {import('./public.d.ts').TSConfckParseNativeResult} result
  * @param {any} ts
- * @param {import('../types/index.js').TSConfckParseNativeOptions?} options
+ * @param {import('./public.d.ts').TSConfckParseNativeOptions} [options]
  */
 async function parseReferences(result, ts, options) {
 	if (!result.tsconfig.references) {

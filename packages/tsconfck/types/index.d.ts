@@ -6,7 +6,7 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json
 	 */
-	export function find(filename: string, options: TSConfckFindOptions | null): Promise<string>;
+	export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
 	/**
 	 * find all tsconfig.json files in dir
 	 *
@@ -14,7 +14,7 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns list of absolute paths to all found tsconfig.json files
 	 */
-	export function findAll(dir: string, options: TSConfckFindAllOptions | null): Promise<string[]>;
+	export function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
 	/**
 	 * convert content of tsconfig.json to regular json
 	 *
@@ -37,7 +37,7 @@ declare module 'tsconfck' {
 	 * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
 	 * @param options - options
 	 * */
-	export function parse(filename: string, options: TSConfckParseOptions | null): Promise<TSConfckParseResult>;
+	export function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
 	export class TSConfckParseError extends Error {
 		/**
 		 *
@@ -69,7 +69,7 @@ declare module 'tsconfck' {
 	 * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
 	 * @param options - options
 	 * */
-	export function parseNative(filename: string, options: TSConfckParseNativeOptions | null): Promise<TSConfckParseNativeResult>;
+	export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
 	export class TSConfckParseNativeError extends Error {
 		/**
 		 *
