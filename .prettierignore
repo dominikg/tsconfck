@@ -4,3 +4,4 @@ pnpm-lock.yaml
 CHANGELOG.md
 **/docs/api.md
 packages/tsconfck/types/index.d.*
+.changeset/pre.json

@@ -101,7 +101,7 @@ export function resolve2posix(dir, filename) {
 
 /**
  *
- * @param {import('../types/index.js').TSConfckParseResult} result
+ * @param {import('./public.d.ts').TSConfckParseResult} result
  * @returns {string[]}
  */
 export function resolveReferencedTSConfigFiles(result) {
@@ -114,8 +114,8 @@ export function resolveReferencedTSConfigFiles(result) {
 
 /**
  * @param {string} filename
- * @param {import('../types/index.js').TSConfckParseResult} result
- * @returns {import('../types/index.js').TSConfckParseResult}
+ * @param {import('./public.d.ts').TSConfckParseResult} result
+ * @returns {import('./public.d.ts').TSConfckParseResult}
  */
 export function resolveSolutionTSConfig(filename, result) {
 	if (
@@ -139,7 +139,7 @@ export function resolveSolutionTSConfig(filename, result) {
 /**
  *
  * @param {string} filename
- * @param {import('../types/index.js').TSConfckParseResult} result
+ * @param {import('./public.d.ts').TSConfckParseResult} result
  * @returns {boolean}
  */
 function isIncluded(filename, result) {
