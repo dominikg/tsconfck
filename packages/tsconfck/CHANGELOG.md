@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.0.0-next.2
+
+### Patch Changes
+
+- fix(types): use [] for optional parameter jsdoc to ensure dts-buddy emits them as optional ([#110](https://github.com/dominikg/tsconfck/pull/110))
+
 ## 3.0.0-next.1
 
 ### Major Changes
