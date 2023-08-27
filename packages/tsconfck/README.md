@@ -15,6 +15,7 @@ Because no simple official api exists and tsconfig.json isn't actual json.
 - [x] convert tsconfig.json to actual json and parse it
 - [x] resolve "extends"
 - [x] resolve "references" of solution-style tsconfig
+- [x] optional caching for improved performance
 - [x] optional findNative and parseNative to use official typescript api
 - [x] zero dependencies (typescript optional)
 - [x] extensive testsuite
@@ -61,46 +62,46 @@ see [API-DOCS](docs/api.md)
 
 ### caching
 
-You can use a map to cache results and avoid reparsing if you process multiple ts files that share few tsconfig files
+a TSConfckCache instance can be created and passed to find and parse functions to reduce overhead when they are called often within the same project
 
 ```js
-import { parse } from 'tsconfck';
+import { find, parse, TSCOnfckCache } from 'tsconfck';
 // 1. create cache instance
-const cache = new Map();
+const cache = new TSCOnfckCache();
 // 2. pass cache instance in options
-const fooResult = await parse('src/foo.ts', { cache });
-// 3. profit (if they share the same tsconfig.json, it is not parsed again)
-const barResult = await parse('src/bar.ts', { cache });
+const fooTSConfig = await find(('src/foo.ts', { cache })); // stores tsconfit for src in cache
+const barTSConfig = await find(('src/bar.ts', { cache })); // reuses tsconfig result for src
+
+const fooResult = await parse('src/foo.ts', { cache }); // uses cached path for tsconfig, stores parse result in cache
+const barResult = await parse('src/bar.ts', { cache }); // uses cached parse result
 ```
 
-> You are responsible for clearing the cache if tsconfig files change on disk during its lifetime.
->
-> Always clear the whole cache if anything changes as objects in the cache can ref each other
+#### cache invalidation
 
-> Returned results are direct cache objects.
->
-> If you want to modify them, deep-clone first.
+You are responsible for clearing the cache if tsconfig files are added/removed/changed during the cache lifetime.
 
-### reduce fs.stat overhead
+Call `cache.clear()` and also omit all previous compilation results based on cached configs.
 
-You can specify a root directory and provide a set of known tsconfig locations to improve performance in large projects
+#### cache mutation
+
+Returned results are direct cache objects. If you want to modify them, deep-clone first
+
+#### cache reuse
+
+Never use the same cache instance for mixed calls of parse/parseNative as result structures are different
+
+### root
 
 ```js
-import { parse, findAll } from 'tsconfck';
+import { parse, TSConfckCache } from 'tsconfck';
 const root = '.';
-const tsconfigPaths = new Set([
-	...(await findAll(root, { skip: (dir) => dir === 'node_modules' || dir === '.git' }))
-]);
-const cache = new Map();
-const parseOptions = { cache, root, tsconfigPaths };
-// these calls use minimal fs
-const fooResult = await parse('src/foo.ts', parseOptions);
+const parseOptions = { root };
+// these calls are not going to look for tsconfig files outside root
+const fooResult = await find('src/foo.ts', parseOptions);
 const barResult = await parse('src/bar.ts', parseOptions);
 ```
 
-> Using the root option can lead to errors if there is no tsconfig inside root.
-
-> You are responsible for updating tsconfigPaths if tsconfig files are added/removed on disk during its lifetime.
+> Using the root option can lead to errors if there is no tsconfig found inside root.
 
 ### error handling
 

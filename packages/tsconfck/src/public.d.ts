@@ -1,11 +1,12 @@
+import { TSConfckCache } from './cache';
+
 export interface TSConfckFindOptions {
 	/**
-	 * Set of known tsconfig file locations to use instead of scanning the file system
+	 * A cache to improve performance for multiple calls in the same project
 	 *
-	 * This is better for performance in projects like vite where find is called frequently but tsconfig locations rarely change
-	 * You can use `findAll` to build this
+	 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 	 */
-	tsconfigPaths?: Set<string>;
+	cache?: TSConfckCache;
 
 	/**
 	 * project root dir, does not continue scanning outside of this directory.
@@ -25,15 +26,6 @@ export interface TSConfckFindAllOptions {
 }
 
 export interface TSConfckParseOptions extends TSConfckFindOptions {
-	/**
-	 * optional cache map to speed up repeated parsing with multiple files
-	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-	 * cache keys are input `filename` and absolute paths to tsconfig.json files
-	 *
-	 * You must not modify cached values.
-	 */
-	cache?: Map<string, TSConfckParseResult>;
-
 	/**
 	 * treat missing tsconfig as empty result instead of an error
 	 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
@@ -70,22 +62,7 @@ export interface TSConfckParseResult {
 	extended?: TSConfckParseResult[];
 }
 
-export interface TSConfckParseNativeOptions {
-	/**
-	 * optional cache map to speed up repeated parsing with multiple files
-	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-	 * cache keys are input `filename` and absolute paths to tsconfig.json files
-	 *
-	 * You must not modify cached values.
-	 */
-	cache?: Map<string, TSConfckParseNativeResult>;
-
-	/**
-	 * treat missing tsconfig as empty result instead of an error
-	 * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
-	 */
-	resolveWithEmptyIfConfigNotFound?: boolean;
-
+export interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *

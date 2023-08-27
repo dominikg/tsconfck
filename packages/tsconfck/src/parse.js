@@ -21,8 +21,8 @@ import {
  */
 export async function parse(filename, options) {
 	const cache = options?.cache;
-	if (cache?.has(filename)) {
-		return cache.get(filename);
+	if (cache?.hasParseResult(filename)) {
+		return cache.getParseResult(filename);
 	}
 	let tsconfigFile;
 	if (options?.resolveWithEmptyIfConfigNotFound) {
@@ -33,34 +33,34 @@ export async function parse(filename, options) {
 				tsconfigFile: 'no_tsconfig_file_found',
 				tsconfig: {}
 			};
-			cache?.set(filename, notFoundResult);
+			cache?.setParseResult(filename, notFoundResult);
 			return notFoundResult;
 		}
 	} else {
 		tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename, options));
 	}
 	let result;
-	if (cache?.has(tsconfigFile)) {
-		result = cache.get(tsconfigFile);
+	if (cache?.hasParseResult(tsconfigFile)) {
+		result = cache.getParseResult(tsconfigFile);
 	} else {
 		result = await parseFile(tsconfigFile, cache);
 		await Promise.all([parseExtends(result, cache), parseReferences(result, cache)]);
-		cache?.set(tsconfigFile, result);
+		cache?.setParseResult(tsconfigFile, result);
 	}
 	result = resolveSolutionTSConfig(filename, result);
-	cache?.set(filename, result);
+	cache?.setParseResult(filename, result);
 	return result;
 }
 
 /**
  *
  * @param {string} tsconfigFile - path to tsconfig file
- * @param {Map<string,import('../types/index.d.ts').TSConfckParseResult>?} cache - cache
- * @returns {Promise<import('../types/index.d.ts').TSConfckParseResult>}
+ * @param {TSConfckCache} cache - cache
+ * @returns {Promise<import('./public.d.ts').TSConfckParseResult>}
  */
 async function parseFile(tsconfigFile, cache) {
-	if (cache?.has(tsconfigFile)) {
-		return cache.get(tsconfigFile);
+	if (cache?.hasParseResult(tsconfigFile)) {
+		return cache.getParseResult(tsconfigFile);
 	}
 	try {
 		const tsconfigJson = await fs.readFile(tsconfigFile, 'utf-8');
@@ -69,7 +69,7 @@ async function parseFile(tsconfigFile, cache) {
 			tsconfigFile,
 			tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
 		};
-		cache?.set(tsconfigFile, result);
+		cache?.setParseResult(tsconfigFile, result);
 		return result;
 	} catch (e) {
 		throw new TSConfckParseError(
@@ -97,8 +97,8 @@ function normalizeTSConfig(tsconfig, dir) {
 
 /**
  *
- * @param {import('../types/index.d.ts').TSConfckParseResult} result
- * @param {Map<string, import('../types/index.d.ts').TSConfckParseResult>?} cache
+ * @param {import('./public.d.ts').TSConfckParseResult} result
+ * @param {Map<string, import('./public.d.ts').TSConfckParseResult>?} cache
  * @returns {Promise<void>}
  */
 async function parseReferences(result, cache) {
@@ -112,8 +112,8 @@ async function parseReferences(result, cache) {
 }
 
 /**
- * @param {import('../types/index.d.ts').TSConfckParseResult} result
- * @param {Map<string, import('../types/index.d.ts').TSConfckParseResult>?} cache
+ * @param {import('./public.d.ts').TSConfckParseResult} result
+ * @param {Map<string, import('./public.d.ts').TSConfckParseResult>?} cache
  * @returns {Promise<void>}
  */
 async function parseExtends(result, cache) {
@@ -122,7 +122,7 @@ async function parseExtends(result, cache) {
 	}
 	// use result as first element in extended
 	// but dereference tsconfig so that mergeExtended can modify the original without affecting extended[0]
-	/** @type {import('../types/index.d.ts').TSConfckParseResult[]} */
+	/** @type {import('./public.d.ts').TSConfckParseResult[]} */
 	const extended = [
 		{ tsconfigFile: result.tsconfigFile, tsconfig: JSON.parse(JSON.stringify(result.tsconfig)) }
 	];
@@ -226,8 +226,8 @@ const EXTENDABLE_KEYS = [
 
 /**
  *
- * @param {import('../types/index.d.ts').TSConfckParseResult} extending
- * @param {import('../types/index.d.ts').TSConfckParseResult} extended
+ * @param {import('./public.d.ts').TSConfckParseResult} extending
+ * @param {import('./public.d.ts').TSConfckParseResult} extended
  * @returns void
  */
 function extendTSConfig(extending, extended) {

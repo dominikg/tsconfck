@@ -48,9 +48,10 @@ export function toJson(tsconfigJson: string): string;
  * You must have `typescript` installed to use this
  *
  * @param filename - path to file to find tsconfig for (absolute or relative to cwd)
+ * @param options - options
  * @returns absolute path to closest tsconfig.json
  */
-export function findNative(filename: string): Promise<string>;
+export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
 ```
 
 ### parse
@@ -143,12 +144,11 @@ export class TSConfckParseNativeError extends Error {
 ```ts
 interface TSConfckFindOptions {
 	/**
-	 * Set of known tsconfig file locations to use instead of scanning the file system
+	 * A cache to improve performance for multiple calls in the same project
 	 *
-	 * This is better for performance in projects like vite where find is called frequently but tsconfig locations rarely change
-	 * You can use `findAll` to build this
+	 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 	 */
-	tsconfigPaths?: Set<string>;
+	cache?: TSConfckCache;
 
 	/**
 	 * project root dir, does not continue scanning outside of this directory.
@@ -176,15 +176,6 @@ interface TSConfckFindAllOptions {
 
 ```ts
 interface TSConfckParseOptions extends TSConfckFindOptions {
-	/**
-	 * optional cache map to speed up repeated parsing with multiple files
-	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-	 * cache keys are input `filename` and absolute paths to tsconfig.json files
-	 *
-	 * You must not modify cached values.
-	 */
-	cache?: Map<string, TSConfckParseResult>;
-
 	/**
 	 * treat missing tsconfig as empty result instead of an error
 	 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
@@ -229,22 +220,7 @@ interface TSConfckParseResult {
 ### TSConfckParseNativeOptions
 
 ```ts
-interface TSConfckParseNativeOptions {
-	/**
-	 * optional cache map to speed up repeated parsing with multiple files
-	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-	 * cache keys are input `filename` and absolute paths to tsconfig.json files
-	 *
-	 * You must not modify cached values.
-	 */
-	cache?: Map<string, TSConfckParseNativeResult>;
-
-	/**
-	 * treat missing tsconfig as empty result instead of an error
-	 * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
-	 */
-	resolveWithEmptyIfConfigNotFound?: boolean;
-
+interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *
@@ -285,5 +261,29 @@ interface TSConfckParseNativeResult {
 	 * full output of ts.parseJsonConfigFileContent
 	 */
 	result: any;
+}
+```
+
+### TSConfckCache
+
+```ts
+class TSConfckCache {
+	/**
+	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
+	 */
+	clear(): void;
+	
+	setTSConfigPath(tsconfigPath: string, directories: string[]): void;
+	
+	getTSConfigPath(dir: string): string;
+	
+	hasTSConfigPath(dir: string): boolean;
+	
+	getParseResult(file: string): TSConfckParseResult | TSConfckParseNativeResult;
+	
+	setParseResult(file: any, result: TSConfckParseResult | TSConfckParseNativeResult): void;
+	
+	hasParseResult(file: string): boolean;
+	#private;
 }
 ```

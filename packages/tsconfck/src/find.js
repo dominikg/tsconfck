@@ -9,38 +9,49 @@ import { promises as fs } from 'fs';
  * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
 export async function find(filename, options) {
+	const cache = options?.cache;
 	let dir = path.dirname(path.resolve(filename));
 	const root = options?.root ? path.resolve(options.root) : null;
+	/** @type {string[]} */
+	const visited = [];
+	let found;
 	while (dir) {
-		const tsconfig = await tsconfigInDir(dir, options);
+		if (cache?.hasTSConfigPath(dir)) {
+			found = cache.getTSConfigPath(dir);
+			break;
+		}
+		visited.push(dir);
+		const tsconfig = await tsconfigInDir(dir);
 		if (tsconfig) {
-			return tsconfig;
+			found = tsconfig;
+			break;
 		} else {
-			if (root === dir) {
-				break;
-			}
 			const parent = path.dirname(dir);
-			if (parent === dir) {
+			if (root === dir || parent === dir) {
+				// reached root
+				found = null;
 				break;
 			} else {
 				dir = parent;
 			}
 		}
 	}
-	throw new Error(`no tsconfig file found for ${filename}`);
+	if (cache && visited.length) {
+		cache.setTSConfigPath(found, visited);
+	}
+	if (!found) {
+		throw new Error(`no tsconfig file found for ${filename}`);
+	}
+	return found;
 }
 
 /**
  * test if tsconfig exists in dir
  * @param {string} dir
- * @param {import('./public.d.ts').TSConfckFindOptions} [options] - options
  * @returns {Promise<string|undefined>}
  */
-async function tsconfigInDir(dir, options) {
+async function tsconfigInDir(dir) {
 	const tsconfig = path.join(dir, 'tsconfig.json');
-	if (options?.tsconfigPaths) {
-		return options.tsconfigPaths.has(tsconfig) ? tsconfig : undefined;
-	}
 	try {
 		const stat = await fs.stat(tsconfig);
 		if (stat.isFile() || stat.isFIFO()) {
