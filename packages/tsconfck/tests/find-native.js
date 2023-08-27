@@ -65,7 +65,7 @@ describe('find-native', () => {
 		const relativeTS = relFixture(`${fixtureDir}/a/b/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/a/b/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
-		const real = absFixture(`${fixtureDir}/tsconfig.json`);
+		const real = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
 		const cache = new TSConfckCache();
 		for (const input of inputs) {
 			expect(await findNative(input, { cache }), `input: ${input}`).toBe(real);
