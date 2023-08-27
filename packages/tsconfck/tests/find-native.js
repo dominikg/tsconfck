@@ -65,20 +65,21 @@ describe('find-native', () => {
 		const relativeTS = relFixture(`${fixtureDir}/a/b/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/a/b/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
-		const real = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
+		const real = absFixture(`${fixtureDir}/tsconfig.json`);
+		const expected = native2posix(real);
 		const cache = new TSConfckCache();
 		for (const input of inputs) {
-			expect(await findNative(input, { cache }), `input: ${input}`).toBe(real);
+			expect(await findNative(input, { cache }), `input: ${input}`).toBe(expected);
 		}
 		const dir = path.dirname(absoluteTS);
 		expect(cache.hasTSConfigPath(dir)).toBe(true);
-		expect(cache.getTSConfigPath(dir)).toBe(real);
+		expect(cache.getTSConfigPath(dir)).toBe(expected);
 		const parent = path.dirname(dir);
 		expect(cache.hasTSConfigPath(parent)).toBe(true);
-		expect(cache.getTSConfigPath(parent)).toBe(real);
+		expect(cache.getTSConfigPath(parent)).toBe(expected);
 		const root = path.dirname(real);
 		expect(cache.hasTSConfigPath(root)).toBe(true);
-		expect(cache.getTSConfigPath(root)).toBe(real);
+		expect(cache.getTSConfigPath(root)).toBe(expected);
 		cache.setTSConfigPath('fake', [dir, parent, root]);
 		for (const input of inputs) {
 			expect(await findNative(input, { cache }), `input: ${input}`).toBe('fake');

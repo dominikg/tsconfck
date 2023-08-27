@@ -55,7 +55,6 @@ const blockHeadings = {
 const order = Object.keys(blockHeadings);
 
 function sortBlocks(a, b) {
-	console.log('xxx', a.title, b.title);
 	const aIndex = order.indexOf(a.title);
 	const bIndex = order.indexOf(b.title);
 	if (aIndex < 0) {
