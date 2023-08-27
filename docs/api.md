@@ -14,132 +14,7 @@
 export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
 ```
 
-### findAll
-
-```ts
-/**
- * find all tsconfig.json files in dir
- *
- * @param dir - path to dir (absolute or relative to cwd)
- * @param options - options
- * @returns list of absolute paths to all found tsconfig.json files
- */
-export function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
-```
-
-### toJson
-
-```ts
-/**
- * convert content of tsconfig.json to regular json
- *
- * @param tsconfigJson - content of tsconfig.json
- * @returns content as regular json, comments and dangling commas have been replaced with whitespace
- */
-export function toJson(tsconfigJson: string): string;
-```
-
-### findNative
-
-```ts
-/**
- * find the closest tsconfig.json file using native ts.findConfigFile
- *
- * You must have `typescript` installed to use this
- *
- * @param filename - path to file to find tsconfig for (absolute or relative to cwd)
- * @param options - options
- * @returns absolute path to closest tsconfig.json
- */
-export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
-```
-
-### parse
-
-```ts
-/**
- * parse the closest tsconfig.json file
- *
- * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param options - options
- * */
-export function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
-```
-
-### TSConfckParseError
-
-```ts
-export class TSConfckParseError extends Error {
-	/**
-	 *
-	 * @param message - error message
-	 * @param code - error code
-	 * @param tsconfigFile - path to tsconfig file
-	 * @param cause - cause of this error
-	 */
-	constructor(message: string, code: string, tsconfigFile: string, cause: Error | null);
-	/**
-	 * error code
-	 * */
-	code: string;
-	/**
-	 * error cause
-	 * */
-	cause: Error | undefined;
-	/**
-	 * absolute path of tsconfig file where the error happened
-	 * */
-	tsconfigFile: string;
-	name: any;
-}
-```
-
-### parseNative
-
-```ts
-/**
- * parse the closest tsconfig.json file with typescript native functions
- *
- * You need to have `typescript` installed to use this
- *
- * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param options - options
- * */
-export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
-```
-
-### TSConfckParseNativeError
-
-```ts
-export class TSConfckParseNativeError extends Error {
-	/**
-	 *
-	 * @param diagnostic - diagnostics of ts
-	 * @param tsconfigFile - file that errored
-	 * @param result  - parsed result, if any
-	 */
-	constructor(diagnostic: any, tsconfigFile: string, result: any | null);
-	name: any;
-	/**
-	 * code of typescript diagnostic, prefixed with "TS "
-	 * */
-	code: string;
-	/**
-	 * full ts diagnostic that caused this error
-	 * */
-	diagnostic: any;
-	/**
-	 * native result if present, contains all errors in result.errors
-	 * */
-	result: any | undefined;
-	/**
-	 * absolute path of tsconfig file where the error happened
-	 * */
-	tsconfigFile: string;
-}
-```
-
-### TSConfckFindOptions
+#### TSConfckFindOptions
 
 ```ts
 interface TSConfckFindOptions {
@@ -159,20 +34,19 @@ interface TSConfckFindOptions {
 }
 ```
 
-### TSConfckFindAllOptions
+### parse
 
 ```ts
-interface TSConfckFindAllOptions {
-	/**
-	 * helper to skip subdirectories when scanning for tsconfig.json
-	 *
-	 * eg ` dir => dir === 'node_modules' || dir === '.git'`
-	 */ // eslint-disable-next-line no-unused-vars
-	skip?: (dir: string) => boolean;
-}
+/**
+ * parse the closest tsconfig.json file
+ *
+ * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param options - options
+ * */
+export function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
 ```
 
-### TSConfckParseOptions
+#### TSConfckParseOptions
 
 ```ts
 interface TSConfckParseOptions extends TSConfckFindOptions {
@@ -184,7 +58,7 @@ interface TSConfckParseOptions extends TSConfckFindOptions {
 }
 ```
 
-### TSConfckParseResult
+#### TSConfckParseResult
 
 ```ts
 interface TSConfckParseResult {
@@ -217,7 +91,64 @@ interface TSConfckParseResult {
 }
 ```
 
-### TSConfckParseNativeOptions
+#### TSConfckParseError
+
+```ts
+export class TSConfckParseError extends Error {
+	/**
+	 *
+	 * @param message - error message
+	 * @param code - error code
+	 * @param tsconfigFile - path to tsconfig file
+	 * @param cause - cause of this error
+	 */
+	constructor(message: string, code: string, tsconfigFile: string, cause: Error | null);
+	/**
+	 * error code
+	 * */
+	code: string;
+	/**
+	 * error cause
+	 * */
+	cause: Error | undefined;
+	/**
+	 * absolute path of tsconfig file where the error happened
+	 * */
+	tsconfigFile: string;
+	name: any;
+}
+```
+
+### findNative
+
+```ts
+/**
+ * find the closest tsconfig.json file using native ts.findConfigFile
+ *
+ * You must have `typescript` installed to use this
+ *
+ * @param filename - path to file to find tsconfig for (absolute or relative to cwd)
+ * @param options - options
+ * @returns absolute path to closest tsconfig.json
+ */
+export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+```
+
+### parseNative
+
+```ts
+/**
+ * parse the closest tsconfig.json file with typescript native functions
+ *
+ * You need to have `typescript` installed to use this
+ *
+ * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param options - options
+ * */
+export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
+```
+
+#### TSConfckParseNativeOptions
 
 ```ts
 interface TSConfckParseNativeOptions extends TSConfckParseOptions {
@@ -233,7 +164,7 @@ interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 }
 ```
 
-### TSConfckParseNativeResult
+#### TSConfckParseNativeResult
 
 ```ts
 interface TSConfckParseNativeResult {
@@ -264,26 +195,82 @@ interface TSConfckParseNativeResult {
 }
 ```
 
+#### TSConfckParseNativeError
+
+```ts
+export class TSConfckParseNativeError extends Error {
+	/**
+	 *
+	 * @param diagnostic - diagnostics of ts
+	 * @param tsconfigFile - file that errored
+	 * @param result  - parsed result, if any
+	 */
+	constructor(diagnostic: any, tsconfigFile: string, result: any | null);
+	name: any;
+	/**
+	 * code of typescript diagnostic, prefixed with "TS "
+	 * */
+	code: string;
+	/**
+	 * full ts diagnostic that caused this error
+	 * */
+	diagnostic: any;
+	/**
+	 * native result if present, contains all errors in result.errors
+	 * */
+	result: any | undefined;
+	/**
+	 * absolute path of tsconfig file where the error happened
+	 * */
+	tsconfigFile: string;
+}
+```
+
+### findAll
+
+```ts
+/**
+ * find all tsconfig.json files in dir
+ *
+ * @param dir - path to dir (absolute or relative to cwd)
+ * @param options - options
+ * @returns list of absolute paths to all found tsconfig.json files
+ */
+export function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
+```
+
+#### TSConfckFindAllOptions
+
+```ts
+interface TSConfckFindAllOptions {
+	/**
+	 * helper to skip subdirectories when scanning for tsconfig.json
+	 *
+	 * eg ` dir => dir === 'node_modules' || dir === '.git'`
+	 */ // eslint-disable-next-line no-unused-vars
+	skip?: (dir: string) => boolean;
+}
+```
+
+### toJson
+
+```ts
+/**
+ * convert content of tsconfig.json to regular json
+ *
+ * @param tsconfigJson - content of tsconfig.json
+ * @returns content as regular json, comments and dangling commas have been replaced with whitespace
+ */
+export function toJson(tsconfigJson: string): string;
+```
+
 ### TSConfckCache
 
 ```ts
-class TSConfckCache {
+export class TSConfckCache {
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
 	 */
 	clear(): void;
-	
-	setTSConfigPath(tsconfigPath: string, directories: string[]): void;
-	
-	getTSConfigPath(dir: string): string;
-	
-	hasTSConfigPath(dir: string): boolean;
-	
-	getParseResult(file: string): TSConfckParseResult | TSConfckParseNativeResult;
-	
-	setParseResult(file: any, result: TSConfckParseResult | TSConfckParseNativeResult): void;
-	
-	hasParseResult(file: string): boolean;
-	#private;
 }
 ```

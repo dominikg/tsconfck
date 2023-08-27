@@ -1,14 +1,16 @@
 export class TSConfckCache {
 	/**
-	 * @internal
 	 * map directories to their closest tsconfig.json
+	 * @internal
+	 * @private
 	 * @type{Map<string,string>}
 	 */
 	#tsconfigPaths = new Map();
 
 	/**
-	 * @internal
 	 * map files to their parsed tsconfig result
+	 * @internal
+	 * @private
 	 * @type {Map<string,import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
 	 */
 	#parsed = new Map();
@@ -23,6 +25,7 @@ export class TSConfckCache {
 
 	/**
 	 * @internal
+	 * @private
 	 * @param {string} tsconfigPath
 	 * @param {string[]} directories
 	 */
@@ -34,6 +37,7 @@ export class TSConfckCache {
 
 	/**
 	 * @internal
+	 * @private
 	 * @param {string} dir
 	 * @returns {string}
 	 */
@@ -43,6 +47,7 @@ export class TSConfckCache {
 
 	/**
 	 * @internal
+	 * @private
 	 * @param {string} dir
 	 * @returns {boolean}
 	 */
@@ -52,6 +57,7 @@ export class TSConfckCache {
 
 	/**
 	 * @internal
+	 * @private
 	 * @param {string} file
 	 * @returns {import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult }
 	 */
@@ -61,6 +67,7 @@ export class TSConfckCache {
 
 	/**
 	 * @internal
+	 * @private
 	 * @param file
 	 * @param {import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult} result
 	 */
@@ -70,6 +77,7 @@ export class TSConfckCache {
 
 	/**
 	 * @internal
+	 * @private
 	 * @param {string} file
 	 * @returns {boolean}
 	 */

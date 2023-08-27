@@ -32,6 +32,25 @@ declare module 'tsconfck' {
 	 * @returns absolute path to closest tsconfig.json
 	 */
 	export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+	export class TSConfckCache {
+		/**
+		 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
+		 */
+		clear(): void;
+		
+		private setTSConfigPath;
+		
+		private getTSConfigPath;
+		
+		private hasTSConfigPath;
+		
+		private getParseResult;
+		
+		private setParseResult;
+		
+		private hasParseResult;
+		#private;
+	}
 	/**
 	 * parse the closest tsconfig.json file
 	 *
@@ -196,25 +215,6 @@ declare module 'tsconfck' {
 		 * full output of ts.parseJsonConfigFileContent
 		 */
 		result: any;
-	}
-	class TSConfckCache {
-		/**
-		 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
-		 */
-		clear(): void;
-		
-		setTSConfigPath(tsconfigPath: string, directories: string[]): void;
-		
-		getTSConfigPath(dir: string): string;
-		
-		hasTSConfigPath(dir: string): boolean;
-		
-		getParseResult(file: string): TSConfckParseResult | TSConfckParseNativeResult;
-		
-		setParseResult(file: any, result: TSConfckParseResult | TSConfckParseNativeResult): void;
-		
-		hasParseResult(file: string): boolean;
-		#private;
 	}
 }
 
