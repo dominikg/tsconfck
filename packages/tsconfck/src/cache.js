@@ -1,21 +1,5 @@
 export class TSConfckCache {
 	/**
-	 * map directories to their closest tsconfig.json
-	 * @internal
-	 * @private
-	 * @type{Map<string,string>}
-	 */
-	#tsconfigPaths = new Map();
-
-	/**
-	 * map files to their parsed tsconfig result
-	 * @internal
-	 * @private
-	 * @type {Map<string,import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
-	 */
-	#parsed = new Map();
-
-	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
 	 */
 	clear() {
@@ -24,30 +8,7 @@ export class TSConfckCache {
 	}
 
 	/**
-	 * @internal
-	 * @private
-	 * @param {string} tsconfigPath
-	 * @param {string[]} directories
-	 */
-	setTSConfigPath(tsconfigPath, directories) {
-		for (const dir of directories) {
-			this.#tsconfigPaths.set(dir, tsconfigPath);
-		}
-	}
-
-	/**
-	 * @internal
-	 * @private
-	 * @param {string} dir
-	 * @returns {string}
-	 */
-	getTSConfigPath(dir) {
-		return this.#tsconfigPaths.get(dir);
-	}
-
-	/**
-	 * @internal
-	 * @private
+	 * has cached closest tsconfig for files in dir
 	 * @param {string} dir
 	 * @returns {boolean}
 	 */
@@ -56,8 +17,25 @@ export class TSConfckCache {
 	}
 
 	/**
-	 * @internal
-	 * @private
+	 * get cached closest tsconfig for files in dir
+	 * @param {string} dir
+	 * @returns {string}
+	 */
+	getTSConfigPath(dir) {
+		return this.#tsconfigPaths.get(dir);
+	}
+
+	/**
+	 * has parsed tsconfig for file
+	 * @param {string} file
+	 * @returns {boolean}
+	 */
+	hasParseResult(file) {
+		return this.#parsed.has(file);
+	}
+
+	/**
+	 * get parsed tsconfig for file
 	 * @param {string} file
 	 * @returns {import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult }
 	 */
@@ -78,10 +56,28 @@ export class TSConfckCache {
 	/**
 	 * @internal
 	 * @private
-	 * @param {string} file
-	 * @returns {boolean}
+	 * @param {string} tsconfigPath
+	 * @param {string[]} directories
 	 */
-	hasParseResult(file) {
-		return this.#parsed.has(file);
+	setTSConfigPath(tsconfigPath, directories) {
+		for (const dir of directories) {
+			this.#tsconfigPaths.set(dir, tsconfigPath);
+		}
 	}
+
+	/**
+	 * map directories to their closest tsconfig.json
+	 * @internal
+	 * @private
+	 * @type{Map<string,string>}
+	 */
+	#tsconfigPaths = new Map();
+
+	/**
+	 * map files to their parsed tsconfig result
+	 * @internal
+	 * @private
+	 * @type {Map<string,import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
+	 */
+	#parsed = new Map();
 }

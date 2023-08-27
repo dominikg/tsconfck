@@ -37,18 +37,26 @@ declare module 'tsconfck' {
 		 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
 		 */
 		clear(): void;
-		
-		private setTSConfigPath;
-		
-		private getTSConfigPath;
-		
-		private hasTSConfigPath;
-		
-		private getParseResult;
+		/**
+		 * has cached closest tsconfig for files in dir
+		 * */
+		hasTSConfigPath(dir: string): boolean;
+		/**
+		 * get cached closest tsconfig for files in dir
+		 * */
+		getTSConfigPath(dir: string): string;
+		/**
+		 * has parsed tsconfig for file
+		 * */
+		hasParseResult(file: string): boolean;
+		/**
+		 * get parsed tsconfig for file
+		 * */
+		getParseResult(file: string): TSConfckParseResult | TSConfckParseNativeResult;
 		
 		private setParseResult;
 		
-		private hasParseResult;
+		private setTSConfigPath;
 		#private;
 	}
 	/**
