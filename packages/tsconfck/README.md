@@ -69,28 +69,30 @@ import { find, parse, TSCOnfckCache } from 'tsconfck';
 // 1. create cache instance
 const cache = new TSCOnfckCache();
 // 2. pass cache instance in options
-const fooTSConfig = await find(('src/foo.ts', { cache })); // stores tsconfit for src in cache
-const barTSConfig = await find(('src/bar.ts', { cache })); // reuses tsconfig result for src
+const fooTSConfig = await find(('src/foo.ts', { cache })); // stores tsconfig for src in cache
+const barTSConfig = await find(('src/bar.ts', { cache })); // reuses tsconfig result for src without fs call
 
 const fooResult = await parse('src/foo.ts', { cache }); // uses cached path for tsconfig, stores parse result in cache
-const barResult = await parse('src/bar.ts', { cache }); // uses cached parse result
+const barResult = await parse('src/bar.ts', { cache }); // uses cached parse result without fs call or resolving
 ```
 
 #### cache invalidation
 
-You are responsible for clearing the cache if tsconfig files are added/removed/changed during the cache lifetime.
+You are responsible for clearing the cache if tsconfig files are added/removed/changed after reading them during the cache lifetime.
 
-Call `cache.clear()` and also omit all previous compilation results based on cached configs.
+Call `cache.clear()` and also discard all previous compilation results based previously cached configs.
 
 #### cache mutation
 
-Returned results are direct cache objects. If you want to modify them, deep-clone first
+Returned results are direct cache objects. If you want to modify them, deep-clone first.
 
 #### cache reuse
 
-Never use the same cache instance for mixed calls of parse/parseNative as result structures are different
+Never use the same cache instance for mixed calls of find/findNative or parse/parseNative as result structures are different
 
 ### root
+
+This option can be used to limit finding tsconfig files outside of a root directory
 
 ```js
 import { parse, TSConfckCache } from 'tsconfck';
