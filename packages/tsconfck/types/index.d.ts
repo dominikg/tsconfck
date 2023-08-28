@@ -35,8 +35,9 @@ declare module 'tsconfck' {
 	export class TSConfckCache {
 		/**
 		 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
+		 * await it to ensure all find and parse calls are settled before continuing
 		 */
-		clear(): void;
+		clear(): Promise<void>;
 		/**
 		 * has cached closest tsconfig for files in dir
 		 * */

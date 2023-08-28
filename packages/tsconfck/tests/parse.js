@@ -109,7 +109,7 @@ describe('parse', () => {
 					`reparsedByResultFilename was returned from cache for ${actual.tsconfigFile}`
 				).toBe(cachedByResultFilename);
 			}
-			cache.clear();
+			await cache.clear();
 			const newParse = await parse(filename, { cache });
 			expect(newParse, `input: ${filename} new parse is different object from old cached`).not.toBe(
 				cached

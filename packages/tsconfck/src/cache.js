@@ -1,10 +1,20 @@
 export class TSConfckCache {
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
+	 * await it to ensure all find and parse calls are settled before continuing
 	 */
-	clear() {
-		this.#tsconfigPaths.clear();
-		this.#parsed.clear();
+	async clear() {
+		if (!this.#clearing) {
+			this.#clearing = Promise.allSettled([
+				...this.#tsconfigPaths.values(),
+				...this.#parsed.values()
+			]).then(() => {
+				this.#tsconfigPaths.clear();
+				this.#parsed.clear();
+				this.#clearing = undefined;
+			});
+		}
+		return this.#clearing;
 	}
 
 	/**
@@ -87,4 +97,7 @@ export class TSConfckCache {
 	 * @type {Map<string,Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>>}
 	 */
 	#parsed = new Map();
+
+	/** @type{Promise<void>} */
+	#clearing;
 }
