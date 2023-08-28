@@ -19,9 +19,9 @@ export class TSConfckCache {
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * @param {string} dir
-	 * @returns {string}
+	 * @returns {Promise<string>}
 	 */
-	getTSConfigPath(dir) {
+	async getTSConfigPath(dir) {
 		return this.#tsconfigPaths.get(dir);
 	}
 
@@ -56,20 +56,18 @@ export class TSConfckCache {
 	/**
 	 * @internal
 	 * @private
-	 * @param {string} tsconfigPath
-	 * @param {string[]} directories
+	 * @param {string} dir
+	 * @param {Promise<string>} tsconfigPath
 	 */
-	setTSConfigPath(tsconfigPath, directories) {
-		for (const dir of directories) {
-			this.#tsconfigPaths.set(dir, tsconfigPath);
-		}
+	setTSConfigPath(dir, tsconfigPath) {
+		this.#tsconfigPaths.set(dir, tsconfigPath);
 	}
 
 	/**
 	 * map directories to their closest tsconfig.json
 	 * @internal
 	 * @private
-	 * @type{Map<string,string>}
+	 * @type{Map<string,Promise<string>>}
 	 */
 	#tsconfigPaths = new Map();
 

@@ -11,38 +11,42 @@ import { promises as fs } from 'fs';
 export async function find(filename, options) {
 	const cache = options?.cache;
 	let dir = path.dirname(path.resolve(filename));
+	if (cache?.hasTSConfigPath(dir)) {
+		return cache.getTSConfigPath(dir);
+	}
 	const root = options?.root ? path.resolve(options.root) : null;
-	/** @type {string[]} */
-	const visited = [];
-	let found;
+
+	/** @type {(result: string|null)=>void}*/
+	let resolvePathPromise;
+	/** @type {Promise<string|null> | string | null}*/
+	const pathPromise = new Promise((r) => {
+		resolvePathPromise = r;
+	});
 	while (dir) {
-		if (cache?.hasTSConfigPath(dir)) {
-			found = cache.getTSConfigPath(dir);
-			break;
+		if (cache) {
+			if (cache.hasTSConfigPath(dir)) {
+				cache.getTSConfigPath(dir).then(resolvePathPromise);
+				return pathPromise;
+			} else {
+				cache.setTSConfigPath(dir, pathPromise);
+			}
 		}
-		visited.push(dir);
 		const tsconfig = await tsconfigInDir(dir);
 		if (tsconfig) {
-			found = tsconfig;
-			break;
+			resolvePathPromise(tsconfig);
+			return pathPromise;
 		} else {
 			const parent = path.dirname(dir);
 			if (root === dir || parent === dir) {
 				// reached root
-				found = null;
 				break;
 			} else {
 				dir = parent;
 			}
 		}
 	}
-	if (cache && visited.length) {
-		cache.setTSConfigPath(found, visited);
-	}
-	if (!found) {
-		throw new Error(`no tsconfig file found for ${filename}`);
-	}
-	return found;
+	resolvePathPromise(null);
+	throw new Error(`no tsconfig file found for ${filename}`);
 }
 
 /**

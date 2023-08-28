@@ -279,7 +279,7 @@ export class TSConfckCache {
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * */
-	getTSConfigPath(dir: string): string;
+	getTSConfigPath(dir: string): Promise<string>;
 	/**
 	 * has parsed tsconfig for file
 	 * */

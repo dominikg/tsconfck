@@ -73,14 +73,16 @@ describe('find-native', () => {
 		}
 		const dir = path.dirname(absoluteTS);
 		expect(cache.hasTSConfigPath(dir)).toBe(true);
-		expect(cache.getTSConfigPath(dir)).toBe(expected);
+		expect(await cache.getTSConfigPath(dir)).toBe(expected);
 		const parent = path.dirname(dir);
 		expect(cache.hasTSConfigPath(parent)).toBe(true);
-		expect(cache.getTSConfigPath(parent)).toBe(expected);
+		expect(await cache.getTSConfigPath(parent)).toBe(expected);
 		const root = path.dirname(real);
 		expect(cache.hasTSConfigPath(root)).toBe(true);
-		expect(cache.getTSConfigPath(root)).toBe(expected);
-		cache.setTSConfigPath('fake', [dir, parent, root]);
+		expect(await cache.getTSConfigPath(root)).toBe(expected);
+		[dir, parent, root].forEach((d) => {
+			cache.setTSConfigPath(d, Promise.resolve('fake'));
+		});
 		for (const input of inputs) {
 			expect(await findNative(input, { cache }), `input: ${input}`).toBe('fake');
 		}

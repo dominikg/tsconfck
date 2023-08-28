@@ -66,7 +66,7 @@ describe('find', () => {
 		const fake = absFixture(`${fixtureDir}/a/tsconfig.json`);
 
 		const cache = new TSConfckCache();
-		cache.setTSConfigPath(fake, [path.dirname(fake)]);
+		cache.setTSConfigPath(path.dirname(fake), Promise.resolve(fake));
 
 		for (const input of inputs) {
 			expect(await find(input), `input: ${input}`).toBe(real);
@@ -74,7 +74,7 @@ describe('find', () => {
 		}
 		const added_key = path.dirname(absoluteTS);
 		expect(cache.hasTSConfigPath(added_key)).toBe(true);
-		expect(cache.getTSConfigPath(added_key)).toBe(fake);
+		expect(await cache.getTSConfigPath(added_key)).toBe(fake);
 	});
 
 	it('should reject when no tsconfig file was found', async () => {

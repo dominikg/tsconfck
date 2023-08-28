@@ -15,7 +15,7 @@ export async function findNative(filename, options) {
 	const cache = options?.cache;
 	const root = options?.root ? path.resolve(options.root) : undefined;
 	if (cache?.hasTSConfigPath(fileDir)) {
-		const tsconfigFile = cache.getTSConfigPath(fileDir);
+		const tsconfigFile = await cache.getTSConfigPath(fileDir);
 		if (!tsconfigFile) {
 			throw new Error(`no tsconfig file found for ${filename}`);
 		}
@@ -66,5 +66,8 @@ function cache_result(tsconfigFile, fileDir, cache, root) {
 			dir = parent;
 		}
 	}
-	cache.setTSConfigPath(tsconfigFile, directories);
+	const p = Promise.resolve(tsconfigFile);
+	directories.forEach((d) => {
+		cache.setTSConfigPath(d, p);
+	});
 }
