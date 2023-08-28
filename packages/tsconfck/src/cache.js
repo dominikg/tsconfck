@@ -37,7 +37,7 @@ export class TSConfckCache {
 	/**
 	 * get parsed tsconfig for file
 	 * @param {string} file
-	 * @returns {import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult }
+	 * @returns {Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult> }
 	 */
 	getParseResult(file) {
 		return this.#parsed.get(file);
@@ -47,10 +47,19 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param file
-	 * @param {import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult} result
+	 * @param {Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult> } result
 	 */
 	setParseResult(file, result) {
 		this.#parsed.set(file, result);
+	}
+
+	/**
+	 * @internal
+	 * @private
+	 * @param file
+	 */
+	deleteParseResult(file) {
+		this.#parsed.delete(file);
 	}
 
 	/**
@@ -75,7 +84,7 @@ export class TSConfckCache {
 	 * map files to their parsed tsconfig result
 	 * @internal
 	 * @private
-	 * @type {Map<string,import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
+	 * @type {Map<string,Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>>}
 	 */
 	#parsed = new Map();
 }

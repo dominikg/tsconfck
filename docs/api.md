@@ -287,6 +287,6 @@ export class TSConfckCache {
 	/**
 	 * get parsed tsconfig for file
 	 * */
-	getParseResult(file: string): TSConfckParseResult | TSConfckParseNativeResult;
+	getParseResult(file: string): Promise<TSConfckParseResult | TSConfckParseNativeResult>;
 }
 ```

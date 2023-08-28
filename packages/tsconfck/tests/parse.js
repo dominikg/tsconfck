@@ -86,7 +86,7 @@ describe('parse', () => {
 				filename.endsWith('tsconfig.json') ? 'parse' : '.tsconfig.parse.json'
 			);
 			expect(cache.hasParseResult(filename), `cache exists for ${filename}`).toBe(true);
-			const cached = cache.getParseResult(filename);
+			const cached = await cache.getParseResult(filename);
 			expect(cached.tsconfig, `input: ${filename} cached tsconfig is equal`).toEqual(
 				actual.tsconfig
 			);
@@ -98,7 +98,7 @@ describe('parse', () => {
 					cache.hasParseResult(actual.tsconfigFile),
 					`cache exists for ${actual.tsconfigFile}`
 				).toBe(true);
-				const cachedByResultFilename = cache.getParseResult(actual.tsconfigFile);
+				const cachedByResultFilename = await cache.getParseResult(actual.tsconfigFile);
 				expect(
 					cachedByResultFilename.tsconfig,
 					`cache of ${actual.tsconfigFile} matches for: ${filename}`
@@ -117,7 +117,7 @@ describe('parse', () => {
 			expect(cache.hasParseResult(filename), `cache exists again after clear for ${filename}`).toBe(
 				true
 			);
-			const newCached = cache.getParseResult(filename);
+			const newCached = await cache.getParseResult(filename);
 			expect(newCached, `input: ${filename} new cache different object from old cached`).not.toBe(
 				cached
 			);

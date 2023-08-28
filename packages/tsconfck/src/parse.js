@@ -24,6 +24,14 @@ export async function parse(filename, options) {
 	if (cache?.hasParseResult(filename)) {
 		return cache.getParseResult(filename);
 	}
+	/** @type {(result: import('./public.d.ts').TSConfckParseResult)=>void}*/
+	let resolveConfigPromise;
+	/** @type {Promise<import('./public.d.ts').TSConfckParseResult>}*/
+	const configPromise = new Promise((r) => {
+		resolveConfigPromise = r;
+	});
+	cache?.setParseResult(filename, configPromise);
+
 	let tsconfigFile;
 	if (options?.resolveWithEmptyIfConfigNotFound) {
 		try {
@@ -33,52 +41,56 @@ export async function parse(filename, options) {
 				tsconfigFile: 'no_tsconfig_file_found',
 				tsconfig: {}
 			};
-			cache?.setParseResult(filename, notFoundResult);
-			return notFoundResult;
+			resolveConfigPromise(notFoundResult);
+			return configPromise;
 		}
 	} else {
 		tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename, options));
 	}
 	let result;
-	if (cache?.hasParseResult(tsconfigFile)) {
-		result = cache.getParseResult(tsconfigFile);
+	if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
+		result = await cache.getParseResult(tsconfigFile);
 	} else {
-		result = await parseFile(tsconfigFile, cache);
+		result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
 		await Promise.all([parseExtends(result, cache), parseReferences(result, cache)]);
-		cache?.setParseResult(tsconfigFile, result);
 	}
-	result = resolveSolutionTSConfig(filename, result);
-	cache?.setParseResult(filename, result);
-	return result;
+	resolveConfigPromise(resolveSolutionTSConfig(filename, result));
+	return configPromise;
 }
 
 /**
  *
  * @param {string} tsconfigFile - path to tsconfig file
  * @param {TSConfckCache} cache - cache
+ * @param {boolean} [skipCache] - skip cache
  * @returns {Promise<import('./public.d.ts').TSConfckParseResult>}
  */
-async function parseFile(tsconfigFile, cache) {
-	if (cache?.hasParseResult(tsconfigFile)) {
+async function parseFile(tsconfigFile, cache, skipCache) {
+	if (!skipCache && cache?.hasParseResult(tsconfigFile)) {
 		return cache.getParseResult(tsconfigFile);
 	}
-	try {
-		const tsconfigJson = await fs.readFile(tsconfigFile, 'utf-8');
-		const json = toJson(tsconfigJson);
-		const result = {
-			tsconfigFile,
-			tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
-		};
-		cache?.setParseResult(tsconfigFile, result);
-		return result;
-	} catch (e) {
-		throw new TSConfckParseError(
-			`parsing ${tsconfigFile} failed: ${e}`,
-			'PARSE_FILE',
-			tsconfigFile,
-			e
-		);
+	const promise = fs
+		.readFile(tsconfigFile, 'utf-8')
+		.then(toJson)
+		.then((json) => {
+			return {
+				tsconfigFile,
+				tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
+			};
+		})
+		.catch((e) => {
+			cache?.deleteParseResult(tsconfigFile);
+			throw new TSConfckParseError(
+				`parsing ${tsconfigFile} failed: ${e}`,
+				'PARSE_FILE',
+				tsconfigFile,
+				e
+			);
+		});
+	if (!skipCache) {
+		cache?.setParseResult(tsconfigFile, promise);
 	}
+	return promise;
 }
 
 /**

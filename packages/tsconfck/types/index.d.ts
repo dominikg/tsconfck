@@ -52,9 +52,11 @@ declare module 'tsconfck' {
 		/**
 		 * get parsed tsconfig for file
 		 * */
-		getParseResult(file: string): TSConfckParseResult | TSConfckParseNativeResult;
+		getParseResult(file: string): Promise<TSConfckParseResult | TSConfckParseNativeResult>;
 		
 		private setParseResult;
+		
+		private deleteParseResult;
 		
 		private setTSConfigPath;
 		#private;
