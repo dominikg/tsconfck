@@ -4,6 +4,7 @@ import os from 'os';
 import { findNative } from '../src/find-native.js';
 import { absFixture, absRoot, relFixture } from './util/fixture-paths.js';
 import { native2posix } from '../src/util.js';
+import { TSConfckCache } from '../src/cache.js';
 
 describe('find-native', () => {
 	it('should be a function', () => {
@@ -43,6 +44,47 @@ describe('find-native', () => {
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
 		for (const input of inputs) {
 			expect(await findNative(input), `input: ${input}`).toBe(expected);
+		}
+	});
+
+	it('should stop searching at root', async () => {
+		const fixtureDir = 'find-root/a';
+		const relativeTS = relFixture(`${fixtureDir}/b/foo.ts`);
+		const absoluteTS = absFixture(`${fixtureDir}/b/foo.ts`);
+		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
+
+		for (const input of inputs) {
+			await expect(findNative(input, { root: absFixture(fixtureDir) })).rejects.toThrow(
+				'no tsconfig file found for ' + input
+			);
+		}
+	});
+
+	it('should use provided cache', async () => {
+		const fixtureDir = 'find-root';
+		const relativeTS = relFixture(`${fixtureDir}/a/b/foo.ts`);
+		const absoluteTS = absFixture(`${fixtureDir}/a/b/foo.ts`);
+		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
+		const real = absFixture(`${fixtureDir}/tsconfig.json`);
+		const expected = native2posix(real);
+		const cache = new TSConfckCache();
+		for (const input of inputs) {
+			expect(await findNative(input, { cache }), `input: ${input}`).toBe(expected);
+		}
+		const dir = path.dirname(absoluteTS);
+		expect(cache.hasTSConfigPath(dir)).toBe(true);
+		expect(await cache.getTSConfigPath(dir)).toBe(expected);
+		const parent = path.dirname(dir);
+		expect(cache.hasTSConfigPath(parent)).toBe(true);
+		expect(await cache.getTSConfigPath(parent)).toBe(expected);
+		const root = path.dirname(real);
+		expect(cache.hasTSConfigPath(root)).toBe(true);
+		expect(await cache.getTSConfigPath(root)).toBe(expected);
+		[dir, parent, root].forEach((d) => {
+			cache.setTSConfigPath(d, Promise.resolve('fake'));
+		});
+		for (const input of inputs) {
+			expect(await findNative(input, { cache }), `input: ${input}`).toBe('fake');
 		}
 	});
 

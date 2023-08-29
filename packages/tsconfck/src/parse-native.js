@@ -20,8 +20,8 @@ import { findNative } from './find-native.js';
  */
 export async function parseNative(filename, options) {
 	const cache = options?.cache;
-	if (cache?.has(filename)) {
-		return cache.get(filename);
+	if (cache?.hasParseResult(filename)) {
+		return cache.getParseResult(filename);
 	}
 	let tsconfigFile;
 
@@ -37,7 +37,7 @@ export async function parseNative(filename, options) {
 				tsconfig: {},
 				result: null
 			};
-			cache?.set(filename, notFoundResult);
+			cache?.setParseResult(filename, Promise.resolve(notFoundResult));
 			return notFoundResult;
 		}
 	} else {
@@ -49,19 +49,19 @@ export async function parseNative(filename, options) {
 
 	/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
 	let result;
-	if (cache?.has(tsconfigFile)) {
-		result = cache.get(tsconfigFile);
+	if (cache?.hasParseResult(tsconfigFile)) {
+		result = cache.getParseResult(tsconfigFile);
 	} else {
 		const ts = await loadTS();
 		result = await parseFile(tsconfigFile, ts, options);
 		await parseReferences(result, ts, options);
-		cache?.set(tsconfigFile, result);
+		cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 	}
 
 	//@ts-ignore
 	result = resolveSolutionTSConfig(filename, result);
 	//@ts-ignore
-	cache?.set(filename, result);
+	cache?.setParseResult(filename, Promise.resolve(result));
 	return result;
 }
 
@@ -74,8 +74,8 @@ export async function parseNative(filename, options) {
  */
 async function parseFile(tsconfigFile, ts, options) {
 	const cache = options?.cache;
-	if (cache?.has(tsconfigFile)) {
-		return cache.get(tsconfigFile);
+	if (cache?.hasParseResult(tsconfigFile)) {
+		return cache.getParseResult(tsconfigFile);
 	}
 	const posixTSConfigFile = native2posix(tsconfigFile);
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
@@ -110,7 +110,7 @@ async function parseFile(tsconfigFile, ts, options) {
 		tsconfig: result2tsconfig(nativeResult, ts),
 		result: nativeResult
 	};
-	cache?.set(tsconfigFile, result);
+	cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 	return result;
 }
 

@@ -14,43 +14,24 @@
 export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
 ```
 
-### findAll
+#### TSConfckFindOptions
 
 ```ts
-/**
- * find all tsconfig.json files in dir
- *
- * @param dir - path to dir (absolute or relative to cwd)
- * @param options - options
- * @returns list of absolute paths to all found tsconfig.json files
- */
-export function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
-```
+interface TSConfckFindOptions {
+	/**
+	 * A cache to improve performance for multiple calls in the same project
+	 *
+	 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
+	 */
+	cache?: TSConfckCache;
 
-### toJson
-
-```ts
-/**
- * convert content of tsconfig.json to regular json
- *
- * @param tsconfigJson - content of tsconfig.json
- * @returns content as regular json, comments and dangling commas have been replaced with whitespace
- */
-export function toJson(tsconfigJson: string): string;
-```
-
-### findNative
-
-```ts
-/**
- * find the closest tsconfig.json file using native ts.findConfigFile
- *
- * You must have `typescript` installed to use this
- *
- * @param filename - path to file to find tsconfig for (absolute or relative to cwd)
- * @returns absolute path to closest tsconfig.json
- */
-export function findNative(filename: string): Promise<string>;
+	/**
+	 * project root dir, does not continue scanning outside of this directory.
+	 *
+	 * Improves performance but may lead to different results from native typescript when no tsconfig is found inside root
+	 */
+	root?: string;
+}
 ```
 
 ### parse
@@ -65,126 +46,10 @@ export function findNative(filename: string): Promise<string>;
 export function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
 ```
 
-### TSConfckParseError
-
-```ts
-export class TSConfckParseError extends Error {
-	/**
-	 *
-	 * @param message - error message
-	 * @param code - error code
-	 * @param tsconfigFile - path to tsconfig file
-	 * @param cause - cause of this error
-	 */
-	constructor(message: string, code: string, tsconfigFile: string, cause: Error | null);
-	/**
-	 * error code
-	 * */
-	code: string;
-	/**
-	 * error cause
-	 * */
-	cause: Error | undefined;
-	/**
-	 * absolute path of tsconfig file where the error happened
-	 * */
-	tsconfigFile: string;
-	name: any;
-}
-```
-
-### parseNative
-
-```ts
-/**
- * parse the closest tsconfig.json file with typescript native functions
- *
- * You need to have `typescript` installed to use this
- *
- * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
- * @param options - options
- * */
-export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
-```
-
-### TSConfckParseNativeError
-
-```ts
-export class TSConfckParseNativeError extends Error {
-	/**
-	 *
-	 * @param diagnostic - diagnostics of ts
-	 * @param tsconfigFile - file that errored
-	 * @param result  - parsed result, if any
-	 */
-	constructor(diagnostic: any, tsconfigFile: string, result: any | null);
-	name: any;
-	/**
-	 * code of typescript diagnostic, prefixed with "TS "
-	 * */
-	code: string;
-	/**
-	 * full ts diagnostic that caused this error
-	 * */
-	diagnostic: any;
-	/**
-	 * native result if present, contains all errors in result.errors
-	 * */
-	result: any | undefined;
-	/**
-	 * absolute path of tsconfig file where the error happened
-	 * */
-	tsconfigFile: string;
-}
-```
-
-### TSConfckFindOptions
-
-```ts
-interface TSConfckFindOptions {
-	/**
-	 * Set of known tsconfig file locations to use instead of scanning the file system
-	 *
-	 * This is better for performance in projects like vite where find is called frequently but tsconfig locations rarely change
-	 * You can use `findAll` to build this
-	 */
-	tsconfigPaths?: Set<string>;
-
-	/**
-	 * project root dir, does not continue scanning outside of this directory.
-	 *
-	 * Improves performance but may lead to different results from native typescript when no tsconfig is found inside root
-	 */
-	root?: string;
-}
-```
-
-### TSConfckFindAllOptions
-
-```ts
-interface TSConfckFindAllOptions {
-	/**
-	 * helper to skip subdirectories when scanning for tsconfig.json
-	 *
-	 * eg ` dir => dir === 'node_modules' || dir === '.git'`
-	 */ // eslint-disable-next-line no-unused-vars
-	skip?: (dir: string) => boolean;
-}
-```
-
-### TSConfckParseOptions
+#### TSConfckParseOptions
 
 ```ts
 interface TSConfckParseOptions extends TSConfckFindOptions {
-	/**
-	 * optional cache map to speed up repeated parsing with multiple files
-	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-	 * cache keys are input `filename` and absolute paths to tsconfig.json files
-	 *
-	 * You must not modify cached values.
-	 */
-	cache?: Map<string, TSConfckParseResult>;
-
 	/**
 	 * treat missing tsconfig as empty result instead of an error
 	 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
@@ -193,7 +58,7 @@ interface TSConfckParseOptions extends TSConfckFindOptions {
 }
 ```
 
-### TSConfckParseResult
+#### TSConfckParseResult
 
 ```ts
 interface TSConfckParseResult {
@@ -226,25 +91,66 @@ interface TSConfckParseResult {
 }
 ```
 
-### TSConfckParseNativeOptions
+#### TSConfckParseError
 
 ```ts
-interface TSConfckParseNativeOptions {
+export class TSConfckParseError extends Error {
 	/**
-	 * optional cache map to speed up repeated parsing with multiple files
-	 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-	 * cache keys are input `filename` and absolute paths to tsconfig.json files
 	 *
-	 * You must not modify cached values.
+	 * @param message - error message
+	 * @param code - error code
+	 * @param tsconfigFile - path to tsconfig file
+	 * @param cause - cause of this error
 	 */
-	cache?: Map<string, TSConfckParseNativeResult>;
-
+	constructor(message: string, code: string, tsconfigFile: string, cause: Error | null);
 	/**
-	 * treat missing tsconfig as empty result instead of an error
-	 * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
-	 */
-	resolveWithEmptyIfConfigNotFound?: boolean;
+	 * error code
+	 * */
+	code: string;
+	/**
+	 * error cause
+	 * */
+	cause: Error | undefined;
+	/**
+	 * absolute path of tsconfig file where the error happened
+	 * */
+	tsconfigFile: string;
+}
+```
 
+### findNative
+
+```ts
+/**
+ * find the closest tsconfig.json file using native ts.findConfigFile
+ *
+ * You must have `typescript` installed to use this
+ *
+ * @param filename - path to file to find tsconfig for (absolute or relative to cwd)
+ * @param options - options
+ * @returns absolute path to closest tsconfig.json
+ */
+export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+```
+
+### parseNative
+
+```ts
+/**
+ * parse the closest tsconfig.json file with typescript native functions
+ *
+ * You need to have `typescript` installed to use this
+ *
+ * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param options - options
+ * */
+export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
+```
+
+#### TSConfckParseNativeOptions
+
+```ts
+interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *
@@ -257,7 +163,7 @@ interface TSConfckParseNativeOptions {
 }
 ```
 
-### TSConfckParseNativeResult
+#### TSConfckParseNativeResult
 
 ```ts
 interface TSConfckParseNativeResult {
@@ -286,4 +192,106 @@ interface TSConfckParseNativeResult {
 	 */
 	result: any;
 }
+```
+
+#### TSConfckParseNativeError
+
+```ts
+export class TSConfckParseNativeError extends Error {
+	/**
+	 *
+	 * @param diagnostic - diagnostics of ts
+	 * @param tsconfigFile - file that errored
+	 * @param result  - parsed result, if any
+	 */
+	constructor(diagnostic: any, tsconfigFile: string, result: any | null);
+	/**
+	 * code of typescript diagnostic, prefixed with "TS "
+	 * */
+	code: string;
+	/**
+	 * full ts diagnostic that caused this error
+	 * */
+	diagnostic: any;
+	/**
+	 * native result if present, contains all errors in result.errors
+	 * */
+	result: any | undefined;
+	/**
+	 * absolute path of tsconfig file where the error happened
+	 * */
+	tsconfigFile: string;
+}
+```
+
+### findAll
+
+```ts
+/**
+ * find all tsconfig.json files in dir
+ *
+ * @param dir - path to dir (absolute or relative to cwd)
+ * @param options - options
+ * @returns list of absolute paths to all found tsconfig.json files
+ */
+export function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
+```
+
+#### TSConfckFindAllOptions
+
+```ts
+interface TSConfckFindAllOptions {
+	/**
+	 * helper to skip subdirectories when scanning for tsconfig.json
+	 *
+	 * eg ` dir => dir === 'node_modules' || dir === '.git'`
+	 */ // eslint-disable-next-line no-unused-vars
+	skip?: (dir: string) => boolean;
+}
+```
+
+### toJson
+
+```ts
+/**
+ * convert content of tsconfig.json to regular json
+ *
+ * @param tsconfigJson - content of tsconfig.json
+ * @returns content as regular json, comments and dangling commas have been replaced with whitespace
+ */
+export function toJson(tsconfigJson: string): string;
+```
+
+### TSConfckCache
+
+```ts
+export class TSConfckCache {
+	/**
+	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
+	 * await it to ensure all find and parse calls are settled before continuing
+	 */
+	clear(): Promise<void>;
+	/**
+	 * has cached closest tsconfig for files in dir
+	 * */
+	hasTSConfigPath(dir: string): boolean;
+	/**
+	 * get cached closest tsconfig for files in dir
+	 * */
+	getTSConfigPath(dir: string): Awaitable<string | null>;
+	/**
+	 * has parsed tsconfig for file
+	 * */
+	hasParseResult(file: string): boolean;
+	/**
+	 * get parsed tsconfig for file
+	 * */
+	getParseResult(file: string): Awaitable<TSConfckParseResult | TSConfckParseNativeResult>;
+}
+```
+
+### Awaitable
+
+```ts
+type Awaitable<T> = Promise<T> | T;
 ```

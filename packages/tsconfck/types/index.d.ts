@@ -28,9 +28,40 @@ declare module 'tsconfck' {
 	 * You must have `typescript` installed to use this
 	 *
 	 * @param filename - path to file to find tsconfig for (absolute or relative to cwd)
+	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json
 	 */
-	export function findNative(filename: string): Promise<string>;
+	export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+	export class TSConfckCache {
+		/**
+		 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
+		 * await it to ensure all find and parse calls are settled before continuing
+		 */
+		clear(): Promise<void>;
+		/**
+		 * has cached closest tsconfig for files in dir
+		 * */
+		hasTSConfigPath(dir: string): boolean;
+		/**
+		 * get cached closest tsconfig for files in dir
+		 * */
+		getTSConfigPath(dir: string): Awaitable<string | null>;
+		/**
+		 * has parsed tsconfig for file
+		 * */
+		hasParseResult(file: string): boolean;
+		/**
+		 * get parsed tsconfig for file
+		 * */
+		getParseResult(file: string): Awaitable<TSConfckParseResult | TSConfckParseNativeResult>;
+		
+		private setParseResult;
+		
+		private deleteParseResult;
+		
+		private setTSConfigPath;
+		#private;
+	}
 	/**
 	 * parse the closest tsconfig.json file
 	 *
@@ -59,7 +90,6 @@ declare module 'tsconfck' {
 		 * absolute path of tsconfig file where the error happened
 		 * */
 		tsconfigFile: string;
-		name: any;
 	}
 	/**
 	 * parse the closest tsconfig.json file with typescript native functions
@@ -78,7 +108,6 @@ declare module 'tsconfck' {
 		 * @param result  - parsed result, if any
 		 */
 		constructor(diagnostic: any, tsconfigFile: string, result: any | null);
-		name: any;
 		/**
 		 * code of typescript diagnostic, prefixed with "TS "
 		 * */
@@ -98,12 +127,11 @@ declare module 'tsconfck' {
 	}
 	interface TSConfckFindOptions {
 		/**
-		 * Set of known tsconfig file locations to use instead of scanning the file system
+		 * A cache to improve performance for multiple calls in the same project
 		 *
-		 * This is better for performance in projects like vite where find is called frequently but tsconfig locations rarely change
-		 * You can use `findAll` to build this
+		 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 		 */
-		tsconfigPaths?: Set<string>;
+		cache?: TSConfckCache;
 
 		/**
 		 * project root dir, does not continue scanning outside of this directory.
@@ -123,15 +151,6 @@ declare module 'tsconfck' {
 	}
 
 	interface TSConfckParseOptions extends TSConfckFindOptions {
-		/**
-		 * optional cache map to speed up repeated parsing with multiple files
-		 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-		 * cache keys are input `filename` and absolute paths to tsconfig.json files
-		 *
-		 * You must not modify cached values.
-		 */
-		cache?: Map<string, TSConfckParseResult>;
-
 		/**
 		 * treat missing tsconfig as empty result instead of an error
 		 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
@@ -168,22 +187,7 @@ declare module 'tsconfck' {
 		extended?: TSConfckParseResult[];
 	}
 
-	interface TSConfckParseNativeOptions {
-		/**
-		 * optional cache map to speed up repeated parsing with multiple files
-		 * it is your own responsibility to clear the cache if tsconfig files change during its lifetime
-		 * cache keys are input `filename` and absolute paths to tsconfig.json files
-		 *
-		 * You must not modify cached values.
-		 */
-		cache?: Map<string, TSConfckParseNativeResult>;
-
-		/**
-		 * treat missing tsconfig as empty result instead of an error
-		 * parseNative resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}, result: null} instead of reject with error
-		 */
-		resolveWithEmptyIfConfigNotFound?: boolean;
-
+	interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 		/**
 		 * Set this option to true to force typescript to ignore all source files.
 		 *
@@ -221,6 +225,8 @@ declare module 'tsconfck' {
 		 */
 		result: any;
 	}
+
+	type Awaitable<T> = Promise<T> | T;
 }
 
 //# sourceMappingURL=index.d.ts.map

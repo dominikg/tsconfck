@@ -3,6 +3,7 @@ import path from 'path';
 import os from 'os';
 import { find } from '../src/find.js';
 import { absFixture, absRoot, relFixture } from './util/fixture-paths.js';
+import { TSConfckCache } from '../src/cache.js';
 
 describe('find', () => {
 	it('should be a function', () => {
@@ -56,7 +57,7 @@ describe('find', () => {
 		}
 	});
 
-	it('should use provided tsconfigPaths', async () => {
+	it('should use provided cache', async () => {
 		const fixtureDir = 'find-root';
 		const relativeTS = relFixture(`${fixtureDir}/a/b/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/a/b/foo.ts`);
@@ -64,12 +65,16 @@ describe('find', () => {
 		const real = absFixture(`${fixtureDir}/tsconfig.json`);
 		const fake = absFixture(`${fixtureDir}/a/tsconfig.json`);
 
-		const tsconfigPaths = new Set([fake]);
+		const cache = new TSConfckCache();
+		cache.setTSConfigPath(path.dirname(fake), Promise.resolve(fake));
 
 		for (const input of inputs) {
 			expect(await find(input), `input: ${input}`).toBe(real);
-			expect(await find(input, { tsconfigPaths }), `input: ${input}`).toBe(fake);
+			expect(await find(input, { cache }), `input: ${input}`).toBe(fake);
 		}
+		const added_key = path.dirname(absoluteTS);
+		expect(cache.hasTSConfigPath(added_key)).toBe(true);
+		expect(await cache.getTSConfigPath(added_key)).toBe(fake);
 	});
 
 	it('should reject when no tsconfig file was found', async () => {

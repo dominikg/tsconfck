@@ -35,7 +35,7 @@ export async function expectToMatchSnap(actual, message, inputFile, suffix) {
 	}
 	const normalizedValue = normalizeSnapshot(toJSON ? JSON.stringify(actual, null, '\t') : actual);
 
-	await expect(normalizedValue, message).toMatchFileSnapshot(snapName(inputFile, suffix));
+	await expect(normalizedValue, message).toMatchFileSnapshot(snapName(inputFile, suffix), message);
 }
 
 /**

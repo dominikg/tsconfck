@@ -10,6 +10,7 @@ import glob from 'tiny-glob';
 import { promises as fs } from 'fs';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
+import { TSConfckCache } from '../src/cache.js';
 
 describe('parse', () => {
 	it('should be a function', () => {
@@ -68,9 +69,9 @@ describe('parse', () => {
 			...(await globFixtures('parse/valid/with_extends/**/tsconfig.json')),
 			...(await globFixtures('parse/solution/**/*.ts'))
 		];
-		const cache = new Map();
+		const cache = new TSConfckCache();
 		for (const filename of samples) {
-			expect(cache.has(filename), `cache does not exist for ${filename}`).toBe(false);
+			expect(cache.hasParseResult(filename), `cache does not exist for ${filename}`).toBe(false);
 			const actual = await parseNative(filename, { cache });
 			await expectToMatchSnap(
 				actual.tsconfig,
@@ -78,8 +79,8 @@ describe('parse', () => {
 				filename,
 				filename.endsWith('tsconfig.json') ? 'parse-native' : '.tsconfig.parse-native.json'
 			);
-			expect(cache.has(filename), `cache exists for ${filename}`).toBe(true);
-			const cached = cache.get(filename);
+			expect(cache.hasParseResult(filename), `cache exists for ${filename}`).toBe(true);
+			const cached = cache.getParseResult(filename);
 			expect(cached.tsconfig, `input: ${filename} cached tsconfig is equal`).toEqual(
 				actual.tsconfig
 			);
@@ -87,10 +88,11 @@ describe('parse', () => {
 			expect(reparsedResult, `reparsedResult was returned from cache for ${filename}`).toBe(cached);
 
 			if (filename.endsWith('.ts')) {
-				expect(cache.has(actual.tsconfigFile), `cache exists for ${actual.tsconfigFile}`).toBe(
-					true
-				);
-				const cachedByResultFilename = cache.get(actual.tsconfigFile);
+				expect(
+					cache.hasParseResult(actual.tsconfigFile),
+					`cache exists for ${actual.tsconfigFile}`
+				).toBe(true);
+				const cachedByResultFilename = cache.getParseResult(actual.tsconfigFile);
 				expect(
 					cachedByResultFilename.tsconfig,
 					`cache of ${actual.tsconfigFile} matches for: ${filename}`
@@ -101,13 +103,15 @@ describe('parse', () => {
 					`reparsedByResultFilename was returned from cache for ${actual.tsconfigFile}`
 				).toBe(cachedByResultFilename);
 			}
-			cache.clear();
+			await cache.clear();
 			const newParse = await parseNative(filename, { cache });
 			expect(newParse, `input: ${filename} new parse is different object from old cached`).not.toBe(
 				cached
 			);
-			expect(cache.has(filename), `cache exists again after clear for ${filename}`).toBe(true);
-			const newCached = cache.get(filename);
+			expect(cache.hasParseResult(filename), `cache exists again after clear for ${filename}`).toBe(
+				true
+			);
+			const newCached = cache.getParseResult(filename);
 			expect(newCached, `input: ${filename} new cache different object from old cached`).not.toBe(
 				cached
 			);
