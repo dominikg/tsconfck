@@ -79,7 +79,6 @@ async function parseFile(tsconfigFile, cache, skipCache) {
 			};
 		})
 		.catch((e) => {
-			cache?.deleteParseResult(tsconfigFile);
 			throw new TSConfckParseError(
 				`parsing ${tsconfigFile} failed: ${e}`,
 				'PARSE_FILE',
@@ -110,7 +109,7 @@ function normalizeTSConfig(tsconfig, dir) {
 /**
  *
  * @param {import('./public.d.ts').TSConfckParseResult} result
- * @param {Map<string, import('./public.d.ts').TSConfckParseResult>?} cache
+ * @param {TSConfckCache} [cache]
  * @returns {Promise<void>}
  */
 async function parseReferences(result, cache) {
@@ -125,7 +124,7 @@ async function parseReferences(result, cache) {
 
 /**
  * @param {import('./public.d.ts').TSConfckParseResult} result
- * @param {Map<string, import('./public.d.ts').TSConfckParseResult>?} cache
+ * @param {TSConfckCache} [cache]
  * @returns {Promise<void>}
  */
 async function parseExtends(result, cache) {

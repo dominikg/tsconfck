@@ -37,7 +37,7 @@ export async function parseNative(filename, options) {
 				tsconfig: {},
 				result: null
 			};
-			cache?.setParseResult(filename, notFoundResult);
+			cache?.setParseResult(filename, Promise.resolve(notFoundResult));
 			return notFoundResult;
 		}
 	} else {
@@ -55,13 +55,13 @@ export async function parseNative(filename, options) {
 		const ts = await loadTS();
 		result = await parseFile(tsconfigFile, ts, options);
 		await parseReferences(result, ts, options);
-		cache?.setParseResult(tsconfigFile, result);
+		cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 	}
 
 	//@ts-ignore
 	result = resolveSolutionTSConfig(filename, result);
 	//@ts-ignore
-	cache?.setParseResult(filename, result);
+	cache?.setParseResult(filename, Promise.resolve(result));
 	return result;
 }
 
@@ -110,7 +110,7 @@ async function parseFile(tsconfigFile, ts, options) {
 		tsconfig: result2tsconfig(nativeResult, ts),
 		result: nativeResult
 	};
-	cache?.setParseResult(tsconfigFile, result);
+	cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 	return result;
 }
 

@@ -1,4 +1,6 @@
 export class TSConfckCache {
+	/** @typedef {Promise<T>|T} Awaitable<T> */
+
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
 	 * await it to ensure all find and parse calls are settled before continuing
@@ -29,7 +31,7 @@ export class TSConfckCache {
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * @param {string} dir
-	 * @returns {Promise<string>}
+	 * @returns {Awaitable<string|null>}
 	 */
 	async getTSConfigPath(dir) {
 		return this.#tsconfigPaths.get(dir);
@@ -47,7 +49,7 @@ export class TSConfckCache {
 	/**
 	 * get parsed tsconfig for file
 	 * @param {string} file
-	 * @returns {Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult> }
+	 * @returns {Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
 	 */
 	getParseResult(file) {
 		return this.#parsed.get(file);
@@ -57,10 +59,11 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param file
-	 * @param {Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult> } result
+	 * @param {Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>} result
 	 */
 	setParseResult(file, result) {
 		this.#parsed.set(file, result);
+		result.then((parsed) => this.#parsed.set(file, parsed)).catch(() => this.#parsed.delete(file));
 	}
 
 	/**
@@ -76,17 +79,20 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param {string} dir
-	 * @param {Promise<string>} tsconfigPath
+	 * @param {Promise<string|null>} tsconfigPath
 	 */
 	setTSConfigPath(dir, tsconfigPath) {
 		this.#tsconfigPaths.set(dir, tsconfigPath);
+		tsconfigPath
+			.then((path) => this.#tsconfigPaths.set(dir, path))
+			.catch(() => this.#tsconfigPaths.delete(dir));
 	}
 
 	/**
 	 * map directories to their closest tsconfig.json
 	 * @internal
 	 * @private
-	 * @type{Map<string,Promise<string>>}
+	 * @type{Map<string,Awaitable<string|null>>}
 	 */
 	#tsconfigPaths = new Map();
 
@@ -94,7 +100,7 @@ export class TSConfckCache {
 	 * map files to their parsed tsconfig result
 	 * @internal
 	 * @private
-	 * @type {Map<string,Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>>}
+	 * @type {Map<string,Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>> }
 	 */
 	#parsed = new Map();
 

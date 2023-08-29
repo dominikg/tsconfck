@@ -25,7 +25,12 @@ export async function find(filename, options) {
 	while (dir) {
 		if (cache) {
 			if (cache.hasTSConfigPath(dir)) {
-				cache.getTSConfigPath(dir).then(resolvePathPromise);
+				const cached = cache.getTSConfigPath(dir);
+				if (cached.then) {
+					cached.then(resolvePathPromise);
+				} else {
+					resolvePathPromise(/**@type {string|null} */ (cached));
+				}
 				return pathPromise;
 			} else {
 				cache.setTSConfigPath(dir, pathPromise);
