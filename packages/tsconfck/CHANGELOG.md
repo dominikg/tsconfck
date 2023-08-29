@@ -1,5 +1,15 @@
 # tsconfck
 
+## 3.0.0-next.3
+
+### Major Changes
+
+- breaking(cache): remove tsconfigPaths option from find, add cache option that lazily caches found tsconfig paths. ([#112](https://github.com/dominikg/tsconfck/pull/112))
+
+### Minor Changes
+
+- feat(findNative): add find options (cache, root) ([#112](https://github.com/dominikg/tsconfck/pull/112))
+
 ## 3.0.0-next.2
 
 ### Patch Changes
