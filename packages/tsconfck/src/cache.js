@@ -1,6 +1,4 @@
 export class TSConfckCache {
-	/** @typedef {Promise<T>|T} Awaitable<T> */
-
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
 	 * await it to ensure all find and parse calls are settled before continuing
@@ -10,11 +8,14 @@ export class TSConfckCache {
 			this.#clearing = Promise.allSettled([
 				...this.#tsconfigPaths.values(),
 				...this.#parsed.values()
-			]).then(() => {
-				this.#tsconfigPaths.clear();
-				this.#parsed.clear();
-				this.#clearing = undefined;
-			});
+			])
+				.then(() => {
+					this.#tsconfigPaths.clear();
+					this.#parsed.clear();
+				})
+				.finally(() => {
+					this.#clearing = undefined;
+				});
 		}
 		return this.#clearing;
 	}
@@ -31,7 +32,7 @@ export class TSConfckCache {
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * @param {string} dir
-	 * @returns {Awaitable<string|null>}
+	 * @returns {import('./public.d.ts').Awaitable<string|null>}
 	 */
 	async getTSConfigPath(dir) {
 		return this.#tsconfigPaths.get(dir);
@@ -49,7 +50,7 @@ export class TSConfckCache {
 	/**
 	 * get parsed tsconfig for file
 	 * @param {string} file
-	 * @returns {Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
+	 * @returns {import('./public.d.ts').Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
 	 */
 	getParseResult(file) {
 		return this.#parsed.get(file);
@@ -92,7 +93,7 @@ export class TSConfckCache {
 	 * map directories to their closest tsconfig.json
 	 * @internal
 	 * @private
-	 * @type{Map<string,Awaitable<string|null>>}
+	 * @type{Map<string,import('./public.d.ts').Awaitable<string|null>>}
 	 */
 	#tsconfigPaths = new Map();
 
@@ -100,7 +101,7 @@ export class TSConfckCache {
 	 * map files to their parsed tsconfig result
 	 * @internal
 	 * @private
-	 * @type {Map<string,Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>> }
+	 * @type {Map<string,import('./public.d.ts').Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>> }
 	 */
 	#parsed = new Map();
 

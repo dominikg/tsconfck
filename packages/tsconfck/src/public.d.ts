@@ -100,3 +100,5 @@ export interface TSConfckParseNativeResult {
 	 */
 	result: any;
 }
+
+export type Awaitable<T> = Promise<T> | T;

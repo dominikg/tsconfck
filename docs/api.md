@@ -115,7 +115,6 @@ export class TSConfckParseError extends Error {
 	 * absolute path of tsconfig file where the error happened
 	 * */
 	tsconfigFile: string;
-	name: any;
 }
 ```
 
@@ -206,7 +205,6 @@ export class TSConfckParseNativeError extends Error {
 	 * @param result  - parsed result, if any
 	 */
 	constructor(diagnostic: any, tsconfigFile: string, result: any | null);
-	name: any;
 	/**
 	 * code of typescript diagnostic, prefixed with "TS "
 	 * */
@@ -280,7 +278,7 @@ export class TSConfckCache {
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * */
-	getTSConfigPath(dir: string): Promise<string>;
+	getTSConfigPath(dir: string): Awaitable<string | null>;
 	/**
 	 * has parsed tsconfig for file
 	 * */
@@ -288,6 +286,12 @@ export class TSConfckCache {
 	/**
 	 * get parsed tsconfig for file
 	 * */
-	getParseResult(file: string): Promise<TSConfckParseResult | TSConfckParseNativeResult>;
+	getParseResult(file: string): Awaitable<TSConfckParseResult | TSConfckParseNativeResult>;
 }
+```
+
+### Awaitable
+
+```ts
+type Awaitable<T> = Promise<T> | T;
 ```

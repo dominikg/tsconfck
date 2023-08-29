@@ -45,7 +45,7 @@ declare module 'tsconfck' {
 		/**
 		 * get cached closest tsconfig for files in dir
 		 * */
-		getTSConfigPath(dir: string): Promise<string>;
+		getTSConfigPath(dir: string): Awaitable<string | null>;
 		/**
 		 * has parsed tsconfig for file
 		 * */
@@ -53,7 +53,7 @@ declare module 'tsconfck' {
 		/**
 		 * get parsed tsconfig for file
 		 * */
-		getParseResult(file: string): Promise<TSConfckParseResult | TSConfckParseNativeResult>;
+		getParseResult(file: string): Awaitable<TSConfckParseResult | TSConfckParseNativeResult>;
 		
 		private setParseResult;
 		
@@ -90,7 +90,6 @@ declare module 'tsconfck' {
 		 * absolute path of tsconfig file where the error happened
 		 * */
 		tsconfigFile: string;
-		name: any;
 	}
 	/**
 	 * parse the closest tsconfig.json file with typescript native functions
@@ -109,7 +108,6 @@ declare module 'tsconfck' {
 		 * @param result  - parsed result, if any
 		 */
 		constructor(diagnostic: any, tsconfigFile: string, result: any | null);
-		name: any;
 		/**
 		 * code of typescript diagnostic, prefixed with "TS "
 		 * */
@@ -227,6 +225,8 @@ declare module 'tsconfck' {
 		 */
 		result: any;
 	}
+
+	type Awaitable<T> = Promise<T> | T;
 }
 
 //# sourceMappingURL=index.d.ts.map

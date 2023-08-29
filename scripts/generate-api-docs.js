@@ -7,7 +7,7 @@ const header = '<!-- generated, do not modify -->\n## API \n\n';
 
 function parseBlock(block) {
 	// eslint-disable-next-line no-unused-vars
-	const [_, kind, title] = block.match(/(function|class|interface) ([a-zA-Z]+)/);
+	const [_, kind, title] = block.match(/(function|class|interface|type) ([a-zA-Z]+)/);
 	const heading = '#'.repeat(blockHeadings[title] || 3);
 	return {
 		kind,
@@ -50,7 +50,8 @@ const blockHeadings = {
 	findAll: 3,
 	TSConfckFindAllOptions: 4,
 	toJson: 3,
-	TSConfckCache: 3
+	TSConfckCache: 3,
+	Awaitable: 3
 };
 const order = Object.keys(blockHeadings);
 

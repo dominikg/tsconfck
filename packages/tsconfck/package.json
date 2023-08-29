@@ -44,11 +44,11 @@
 		}
 	},
 	"devDependencies": {
-		"@tsconfig/node18": "^18.2.0",
-		"esbuild": "^0.19.1",
+		"@tsconfig/node18": "^18.2.1",
+		"esbuild": "^0.19.2",
 		"tiny-glob": "^0.2.9",
-		"typescript": "^5.1.6",
-		"vitest": "^0.34.1"
+		"typescript": "^5.2.2",
+		"vitest": "^0.34.3"
 	},
 	"engines": {
 		"node": "^18 || >=20"
