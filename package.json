@@ -22,6 +22,7 @@
 		"@changesets/cli": "^2.26.2",
 		"@svitejs/changesets-changelog-github-compact": "^1.1.0",
 		"dts-buddy": "^0.2.4",
+		"husky": "^8.0.3",
 		"eslint": "^8.48.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-markdown": "^3.0.1",
