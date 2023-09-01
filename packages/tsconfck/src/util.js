@@ -1,5 +1,5 @@
-import path from 'path';
-import { promises as fs } from 'fs';
+import path from 'node:path';
+import { promises as fs } from 'node:fs';
 
 const POSIX_SEP_RE = new RegExp('\\' + path.posix.sep, 'g');
 const NATIVE_SEP_RE = new RegExp('\\' + path.sep, 'g');
@@ -10,6 +10,8 @@ const DEFAULT_EXTENSIONS = ['.ts', '.tsx', '.mts', '.cts'];
 const DEFAULT_EXTENSIONS_RE_GROUP = `\\.(?:${DEFAULT_EXTENSIONS.map((ext) => ext.substring(1)).join(
 	'|'
 )})`;
+
+const IS_POSIX = path.posix.sep === path.sep;
 
 /**
  * loads typescript async to avoid direct dependency
@@ -26,13 +28,19 @@ export async function loadTS() {
 
 /**
  * @param {string} filename
+ * @param {import('./cache.js').TSConfckCache} [cache]
  * @returns {Promise<string|void>}
  */
-export async function resolveTSConfig(filename) {
+export async function resolveTSConfig(filename, cache) {
 	if (path.extname(filename) !== '.json') {
 		return;
 	}
 	const tsconfig = path.resolve(filename);
+	const dir = path.dirname(tsconfig);
+	if (cache?.hasTSConfigPath(dir)) {
+		const cached = await cache.getTSConfigPath(dir);
+		return cached === tsconfig ? tsconfig : undefined;
+	}
 	try {
 		const stat = await fs.stat(tsconfig);
 		if (stat.isFile() || stat.isFIFO()) {
@@ -57,11 +65,13 @@ export async function resolveTSConfig(filename) {
  * @param filename {string} filename with posix separators
  * @returns {string} filename with native separators
  */
-export function posix2native(filename) {
-	return path.posix.sep !== path.sep && filename.includes(path.posix.sep)
-		? filename.replace(POSIX_SEP_RE, path.sep)
-		: filename;
-}
+export const posix2native = IS_POSIX
+	? (s) => s
+	: (filename) => {
+			return filename.includes(path.posix.sep)
+				? filename.replace(POSIX_SEP_RE, path.sep)
+				: filename;
+	  };
 
 /**
  * convert native separator to posix separator
@@ -73,11 +83,13 @@ export function posix2native(filename) {
  * @param filename {string} filename with native separators
  * @returns {string} filename with posix separators
  */
-export function native2posix(filename) {
-	return path.posix.sep !== path.sep && filename.includes(path.sep)
-		? filename.replace(NATIVE_SEP_RE, path.posix.sep)
-		: filename;
-}
+export const native2posix = IS_POSIX
+	? (s) => s
+	: (filename) => {
+			return filename.includes(path.sep)
+				? filename.replace(NATIVE_SEP_RE, path.posix.sep)
+				: filename;
+	  };
 
 /**
  * converts params to native separator, resolves path and converts native back to posix
@@ -89,7 +101,7 @@ export function native2posix(filename) {
  * @returns string
  */
 export function resolve2posix(dir, filename) {
-	if (path.sep === path.posix.sep) {
+	if (IS_POSIX) {
 		return dir ? path.resolve(dir, filename) : path.resolve(filename);
 	}
 	return native2posix(

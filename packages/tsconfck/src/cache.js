@@ -70,15 +70,6 @@ export class TSConfckCache {
 	/**
 	 * @internal
 	 * @private
-	 * @param file
-	 */
-	deleteParseResult(file) {
-		this.#parsed.delete(file);
-	}
-
-	/**
-	 * @internal
-	 * @private
 	 * @param {string} dir
 	 * @param {Promise<string|null>} tsconfigPath
 	 */

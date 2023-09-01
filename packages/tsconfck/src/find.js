@@ -1,5 +1,5 @@
-import path from 'path';
-import { promises as fs } from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 
 /**
  * find the closest tsconfig.json file
@@ -15,61 +15,58 @@ export async function find(filename, options) {
 		return cache.getTSConfigPath(dir);
 	}
 	const root = options?.root ? path.resolve(options.root) : null;
-
-	/** @type {(result: string|null)=>void}*/
-	let resolvePathPromise;
+	/** @type {((result: string|null,err?: ErrnoException)=>void)} */
+	let done;
 	/** @type {Promise<string|null> | string | null}*/
-	const pathPromise = new Promise((r) => {
-		resolvePathPromise = r;
+	const promise = new Promise((resolve, reject) => {
+		done = (result, err) => {
+			if (err) {
+				reject(err);
+			} else if (result === null) {
+				reject(`no tsconfig file found for ${filename}`);
+			} else {
+				resolve(result);
+			}
+		};
 	});
-	while (dir) {
-		if (cache) {
-			if (cache.hasTSConfigPath(dir)) {
-				const cached = cache.getTSConfigPath(dir);
-				if (cached.then) {
-					cached.then(resolvePathPromise);
-				} else {
-					resolvePathPromise(/**@type {string|null} */ (cached));
-				}
-				return pathPromise;
-			} else {
-				cache.setTSConfigPath(dir, pathPromise);
-			}
-		}
-		const tsconfig = await tsconfigInDir(dir);
-		if (tsconfig) {
-			resolvePathPromise(tsconfig);
-			return pathPromise;
-		} else {
-			const parent = path.dirname(dir);
-			if (root === dir || parent === dir) {
-				// reached root
-				break;
-			} else {
-				dir = parent;
-			}
-		}
-	}
-	resolvePathPromise(null);
-	throw new Error(`no tsconfig file found for ${filename}`);
+	findUp(dir, promise, done, options?.cache, root);
+	return promise;
 }
 
 /**
- * test if tsconfig exists in dir
+ *
  * @param {string} dir
- * @returns {Promise<string|undefined>}
+ * @param {Promise<string|null>} promise
+ * @param {((result: string|null,err?: ErrnoException)=>void)} done
+ * @param {import('./cache.js').TSConfckCache}  [cache]
+ * @param {string} [root]
  */
-async function tsconfigInDir(dir) {
+function findUp(dir, promise, done, cache, root) {
 	const tsconfig = path.join(dir, 'tsconfig.json');
-	try {
-		const stat = await fs.stat(tsconfig);
-		if (stat.isFile() || stat.isFIFO()) {
-			return tsconfig;
-		}
-	} catch (e) {
-		// ignore does not exist error
-		if (e.code !== 'ENOENT') {
-			throw e;
+	if (cache) {
+		if (cache.hasTSConfigPath(dir)) {
+			const cached = cache.getTSConfigPath(dir);
+			if (cached.then) {
+				cached.then(done).catch((err) => done(null, err));
+			} else {
+				done(/**@type {string|null} */ (cached));
+			}
+		} else {
+			cache.setTSConfigPath(dir, promise);
 		}
 	}
+	fs.stat(tsconfig, (err, stats) => {
+		if (stats && (stats.isFile() || stats.isFIFO())) {
+			done(tsconfig);
+		} else if (err?.code !== 'ENOENT') {
+			done(null, err);
+		} else {
+			let parent;
+			if (root === dir || (parent = path.dirname(dir)) === dir) {
+				done(null);
+			} else {
+				findUp(parent, promise, done, cache, root);
+			}
+		}
+	});
 }

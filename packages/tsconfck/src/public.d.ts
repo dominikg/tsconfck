@@ -1,4 +1,4 @@
-import { TSConfckCache } from './cache';
+import { TSConfckCache } from './cache.js';
 
 export interface TSConfckFindOptions {
 	/**

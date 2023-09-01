@@ -14,12 +14,13 @@ import {
 /**
  * parse the closest tsconfig.json file
  *
- * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param {string} filename - path to a tsconfig .json or a source file or directory (absolute or relative to cwd)
  * @param {import('./public.d.ts').TSConfckParseOptions} [options] - options
  * @returns {Promise<import('./public.d.ts').TSConfckParseResult>}
  * @throws {TSConfckParseError}
  */
 export async function parse(filename, options) {
+	/** @type {import('./cache.js').TSConfckCache} */
 	const cache = options?.cache;
 	if (cache?.hasParseResult(filename)) {
 		return cache.getParseResult(filename);
@@ -33,9 +34,10 @@ export async function parse(filename, options) {
 	cache?.setParseResult(filename, configPromise);
 
 	let tsconfigFile;
+
 	if (options?.resolveWithEmptyIfConfigNotFound) {
 		try {
-			tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename, options));
+			tsconfigFile = (await resolveTSConfig(filename, cache)) || (await find(filename, options));
 		} catch (e) {
 			const notFoundResult = {
 				tsconfigFile: 'no_tsconfig_file_found',
@@ -45,7 +47,7 @@ export async function parse(filename, options) {
 			return configPromise;
 		}
 	} else {
-		tsconfigFile = (await resolveTSConfig(filename)) || (await find(filename, options));
+		tsconfigFile = (await resolveTSConfig(filename, cache)) || (await find(filename, options));
 	}
 	let result;
 	if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
@@ -61,7 +63,7 @@ export async function parse(filename, options) {
 /**
  *
  * @param {string} tsconfigFile - path to tsconfig file
- * @param {TSConfckCache} cache - cache
+ * @param {import('./cache.js').TSConfckCache} [cache] - cache
  * @param {boolean} [skipCache] - skip cache
  * @returns {Promise<import('./public.d.ts').TSConfckParseResult>}
  */
@@ -124,7 +126,7 @@ async function parseReferences(result, cache) {
 
 /**
  * @param {import('./public.d.ts').TSConfckParseResult} result
- * @param {TSConfckCache} [cache]
+ * @param {import('./cache.js').TSConfckCache}[cache]
  * @returns {Promise<void>}
  */
 async function parseExtends(result, cache) {
