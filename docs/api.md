@@ -40,7 +40,7 @@ interface TSConfckFindOptions {
 /**
  * parse the closest tsconfig.json file
  *
- * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param filename - path to a tsconfig .json or a source file or directory (absolute or relative to cwd)
  * @param options - options
  * */
 export function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
