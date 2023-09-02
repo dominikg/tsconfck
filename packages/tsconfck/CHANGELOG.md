@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.0.0-next.5
+
+### Patch Changes
+
+- fix(find): only call then on promise in cache" ([#117](https://github.com/dominikg/tsconfck/pull/117))
+
 ## 3.0.0-next.4
 
 ### Major Changes
