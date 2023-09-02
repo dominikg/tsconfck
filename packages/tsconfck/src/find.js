@@ -43,8 +43,8 @@ function findUp(dir, promise, done, cache, root) {
 	if (cache) {
 		if (cache.hasTSConfigPath(dir)) {
 			const cached = cache.getTSConfigPath(dir);
-			if (cached.then) {
-				cached.then(done).catch((err) => done(null, err));
+			if (cached?.then) {
+				/** @type Promise<string|null> */ cached.then(done).catch((err) => done(null, err));
 			} else {
 				done(/**@type {string|null} */ (cached));
 			}
