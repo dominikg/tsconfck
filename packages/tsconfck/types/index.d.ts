@@ -6,7 +6,7 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json or null if not found
 	 */
-	export function find(filename: string, options?: any): Promise<string | null>;
+	export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string | null>;
 	/**
 	 * find all tsconfig.json files in dir
 	 *
@@ -31,7 +31,7 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json
 	 */
-	export function findNative(filename: string, options?: any): Promise<string>;
+	export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
 	export class TSConfckCache<T> {
 		/**
 		 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
@@ -180,7 +180,7 @@ declare module 'tsconfck' {
 		extended?: TSConfckParseResult[];
 	}
 
-	interface TSConfckParseNativeOptions {
+	interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 		/**
 		 * Set this option to true to force typescript to ignore all source files.
 		 *
@@ -192,7 +192,7 @@ declare module 'tsconfck' {
 		ignoreSourceFiles?: boolean;
 	}
 
-	interface TSConfckParseNativeResult extends TSConfckParseResult {
+	interface TSConfckParseNativeResult {
 		/**
 		 * absolute path to parsed tsconfig.json
 		 */

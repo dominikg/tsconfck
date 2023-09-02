@@ -11,7 +11,7 @@
  * @param options - options
  * @returns absolute path to closest tsconfig.json or null if not found
  */
-export function find(filename: string, options?: any): Promise<string | null>;
+export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string | null>;
 ```
 
 #### TSConfckFindOptions
@@ -126,7 +126,7 @@ export class TSConfckParseError extends Error {
  * @param options - options
  * @returns absolute path to closest tsconfig.json
  */
-export function findNative(filename: string, options?: any): Promise<string>;
+export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
 ```
 
 ### parseNative
@@ -146,7 +146,7 @@ export function parseNative(filename: string, options?: TSConfckParseNativeOptio
 #### TSConfckParseNativeOptions
 
 ```ts
-interface TSConfckParseNativeOptions {
+interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *
@@ -162,7 +162,7 @@ interface TSConfckParseNativeOptions {
 #### TSConfckParseNativeResult
 
 ```ts
-interface TSConfckParseNativeResult extends TSConfckParseResult {
+interface TSConfckParseNativeResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */

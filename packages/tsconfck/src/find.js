@@ -4,7 +4,7 @@ import fs from 'node:fs';
  * find the closest tsconfig.json file
  *
  * @param {string} filename - path to file to find tsconfig for (absolute or relative to cwd)
- * @param {import('./public.d.ts').TSConfckOptions} [options] - options
+ * @param {import('./public.d.ts').TSConfckFindOptions} [options] - options
  * @returns {Promise<string|null>} absolute path to closest tsconfig.json or null if not found
  */
 export async function find(filename, options) {

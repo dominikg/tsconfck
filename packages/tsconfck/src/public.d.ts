@@ -58,7 +58,7 @@ export interface TSConfckParseResult {
 	extended?: TSConfckParseResult[];
 }
 
-export interface TSConfckParseNativeOptions {
+export interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *
@@ -70,7 +70,7 @@ export interface TSConfckParseNativeOptions {
 	ignoreSourceFiles?: boolean;
 }
 
-export interface TSConfckParseNativeResult extends TSConfckParseResult {
+export interface TSConfckParseNativeResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */

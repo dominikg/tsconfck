@@ -7,7 +7,7 @@ import { loadTS } from './util.js';
  * You must have `typescript` installed to use this
  *
  * @param {string} filename - path to file to find tsconfig for (absolute or relative to cwd)
- * @param {import('./public.d.ts').TSConfckOptions} [options] - options
+ * @param {import('./public.d.ts').TSConfckFindOptions} [options] - options
  * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
 export async function findNative(filename, options) {
