@@ -1,5 +1,17 @@
 # tsconfck
 
+## 3.0.0-next.4
+
+### Major Changes
+
+- breaking(parse): resolve with empty result for missing tsconfig file, remove option resolveWithEmptyIfConfigNotFound ([#115](https://github.com/dominikg/tsconfck/pull/115))
+
+- breaking(types): remove Awaitable type and add result type generic to cache ([#115](https://github.com/dominikg/tsconfck/pull/115))
+
+### Minor Changes
+
+- perf(find): switch to fs.stat callback for async and increase cache usage ([#115](https://github.com/dominikg/tsconfck/pull/115))
+
 ## 3.0.0-next.3
 
 ### Major Changes
