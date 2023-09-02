@@ -4,9 +4,9 @@ declare module 'tsconfck' {
 	 *
 	 * @param filename - path to file to find tsconfig for (absolute or relative to cwd)
 	 * @param options - options
-	 * @returns absolute path to closest tsconfig.json
+	 * @returns absolute path to closest tsconfig.json or null if not found
 	 */
-	export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+	export function find(filename: string, options?: any): Promise<string | null>;
 	/**
 	 * find all tsconfig.json files in dir
 	 *
@@ -31,13 +31,12 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json
 	 */
-	export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
-	export class TSConfckCache {
+	export function findNative(filename: string, options?: any): Promise<string>;
+	export class TSConfckCache<T> {
 		/**
 		 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
-		 * await it to ensure all find and parse calls are settled before continuing
 		 */
-		clear(): Promise<void>;
+		clear(): void;
 		/**
 		 * has cached closest tsconfig for files in dir
 		 * */
@@ -45,7 +44,7 @@ declare module 'tsconfck' {
 		/**
 		 * get cached closest tsconfig for files in dir
 		 * */
-		getTSConfigPath(dir: string): Awaitable<string | null>;
+		getTSConfigPath(dir: string): Promise<string | null> | string | null;
 		/**
 		 * has parsed tsconfig for file
 		 * */
@@ -53,7 +52,7 @@ declare module 'tsconfck' {
 		/**
 		 * get parsed tsconfig for file
 		 * */
-		getParseResult(file: string): Awaitable<TSConfckParseResult | TSConfckParseNativeResult>;
+		getParseResult(file: string): Promise<T> | T;
 		
 		private setParseResult;
 		
@@ -129,7 +128,7 @@ declare module 'tsconfck' {
 		 *
 		 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 		 */
-		cache?: TSConfckCache;
+		cache?: TSConfckCache<TSConfckParseResult | TSConfckParseNativeResult>;
 
 		/**
 		 * project root dir, does not continue scanning outside of this directory.
@@ -139,6 +138,10 @@ declare module 'tsconfck' {
 		root?: string;
 	}
 
+	interface TSConfckParseOptions extends TSConfckFindOptions {
+		// same as find options
+	}
+
 	interface TSConfckFindAllOptions {
 		/**
 		 * helper to skip subdirectories when scanning for tsconfig.json
@@ -146,14 +149,6 @@ declare module 'tsconfck' {
 		 * eg ` dir => dir === 'node_modules' || dir === '.git'`
 		 */ // eslint-disable-next-line no-unused-vars
 		skip?: (dir: string) => boolean;
-	}
-
-	interface TSConfckParseOptions extends TSConfckFindOptions {
-		/**
-		 * treat missing tsconfig as empty result instead of an error
-		 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
-		 */
-		resolveWithEmptyIfConfigNotFound?: boolean;
 	}
 
 	interface TSConfckParseResult {
@@ -185,7 +180,7 @@ declare module 'tsconfck' {
 		extended?: TSConfckParseResult[];
 	}
 
-	interface TSConfckParseNativeOptions extends TSConfckParseOptions {
+	interface TSConfckParseNativeOptions {
 		/**
 		 * Set this option to true to force typescript to ignore all source files.
 		 *
@@ -197,7 +192,7 @@ declare module 'tsconfck' {
 		ignoreSourceFiles?: boolean;
 	}
 
-	interface TSConfckParseNativeResult {
+	interface TSConfckParseNativeResult extends TSConfckParseResult {
 		/**
 		 * absolute path to parsed tsconfig.json
 		 */
@@ -223,8 +218,6 @@ declare module 'tsconfck' {
 		 */
 		result: any;
 	}
-
-	type Awaitable<T> = Promise<T> | T;
 }
 
 //# sourceMappingURL=index.d.ts.map

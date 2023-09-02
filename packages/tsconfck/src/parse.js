@@ -11,6 +11,11 @@ import {
 	resolveTSConfig
 } from './util.js';
 
+const not_found_result = {
+	tsconfigFile: null,
+	tsconfig: {}
+};
+
 /**
  * parse the closest tsconfig.json file
  *
@@ -33,22 +38,12 @@ export async function parse(filename, options) {
 	});
 	cache?.setParseResult(filename, configPromise);
 
-	let tsconfigFile;
-
-	if (options?.resolveWithEmptyIfConfigNotFound) {
-		try {
-			tsconfigFile = (await resolveTSConfig(filename, cache)) || (await find(filename, options));
-		} catch (e) {
-			const notFoundResult = {
-				tsconfigFile: 'no_tsconfig_file_found',
-				tsconfig: {}
-			};
-			resolveConfigPromise(notFoundResult);
-			return configPromise;
-		}
-	} else {
-		tsconfigFile = (await resolveTSConfig(filename, cache)) || (await find(filename, options));
+	let tsconfigFile = (await resolveTSConfig(filename, cache)) || (await find(filename, options));
+	if (!tsconfigFile) {
+		resolveConfigPromise(not_found_result);
+		return configPromise;
 	}
+
 	let result;
 	if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
 		result = await cache.getParseResult(tsconfigFile);

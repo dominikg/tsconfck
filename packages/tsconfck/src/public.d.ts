@@ -6,7 +6,7 @@ export interface TSConfckFindOptions {
 	 *
 	 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 	 */
-	cache?: TSConfckCache;
+	cache?: TSConfckCache<TSConfckParseResult | TSConfckParseNativeResult>;
 
 	/**
 	 * project root dir, does not continue scanning outside of this directory.
@@ -16,6 +16,10 @@ export interface TSConfckFindOptions {
 	root?: string;
 }
 
+export interface TSConfckParseOptions extends TSConfckFindOptions {
+	// same as find options
+}
+
 export interface TSConfckFindAllOptions {
 	/**
 	 * helper to skip subdirectories when scanning for tsconfig.json
@@ -23,14 +27,6 @@ export interface TSConfckFindAllOptions {
 	 * eg ` dir => dir === 'node_modules' || dir === '.git'`
 	 */ // eslint-disable-next-line no-unused-vars
 	skip?: (dir: string) => boolean;
-}
-
-export interface TSConfckParseOptions extends TSConfckFindOptions {
-	/**
-	 * treat missing tsconfig as empty result instead of an error
-	 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
-	 */
-	resolveWithEmptyIfConfigNotFound?: boolean;
 }
 
 export interface TSConfckParseResult {
@@ -62,7 +58,7 @@ export interface TSConfckParseResult {
 	extended?: TSConfckParseResult[];
 }
 
-export interface TSConfckParseNativeOptions extends TSConfckParseOptions {
+export interface TSConfckParseNativeOptions {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *
@@ -74,7 +70,7 @@ export interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 	ignoreSourceFiles?: boolean;
 }
 
-export interface TSConfckParseNativeResult {
+export interface TSConfckParseNativeResult extends TSConfckParseResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */
@@ -100,5 +96,3 @@ export interface TSConfckParseNativeResult {
 	 */
 	result: any;
 }
-
-export type Awaitable<T> = Promise<T> | T;

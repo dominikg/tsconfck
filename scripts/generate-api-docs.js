@@ -50,8 +50,7 @@ const blockHeadings = {
 	findAll: 3,
 	TSConfckFindAllOptions: 4,
 	toJson: 3,
-	TSConfckCache: 3,
-	Awaitable: 3
+	TSConfckCache: 3
 };
 const order = Object.keys(blockHeadings);
 

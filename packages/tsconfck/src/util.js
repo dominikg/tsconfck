@@ -36,11 +36,19 @@ export async function resolveTSConfig(filename, cache) {
 		return;
 	}
 	const tsconfig = path.resolve(filename);
-	const dir = path.dirname(tsconfig);
-	if (cache?.hasTSConfigPath(dir)) {
-		const cached = await cache.getTSConfigPath(dir);
-		return cached === tsconfig ? tsconfig : undefined;
+	if (cache) {
+		if (cache.hasParseResult(tsconfig)) {
+			return tsconfig;
+		}
+		if (path.basename(tsconfig) === 'tsconfig.json') {
+			const dir = path.dirname(tsconfig);
+			if (cache.hasTSConfigPath(dir)) {
+				const cached = await cache.getTSConfigPath(dir);
+				return cached === tsconfig ? tsconfig : undefined;
+			}
+		}
 	}
+
 	try {
 		const stat = await fs.stat(tsconfig);
 		if (stat.isFile() || stat.isFIFO()) {

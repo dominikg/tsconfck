@@ -1,3 +1,4 @@
+/** @template T */
 export class TSConfckCache {
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
@@ -19,9 +20,9 @@ export class TSConfckCache {
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * @param {string} dir
-	 * @returns {import('./public.d.ts').Awaitable<string|null>}
+	 * @returns {Promise<string|null>|string|null}
 	 */
-	async getTSConfigPath(dir) {
+	getTSConfigPath(dir) {
 		return this.#tsconfigPaths.get(dir);
 	}
 
@@ -37,7 +38,7 @@ export class TSConfckCache {
 	/**
 	 * get parsed tsconfig for file
 	 * @param {string} file
-	 * @returns {import('./public.d.ts').Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
+	 * @returns {Promise<T>|T}
 	 */
 	getParseResult(file) {
 		return this.#parsed.get(file);
@@ -47,7 +48,7 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param file
-	 * @param {Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>} result
+	 * @param {Promise<T>|T} result
 	 */
 	setParseResult(file, result) {
 		this.#parsed.set(file, result);
@@ -68,7 +69,7 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param {string} dir
-	 * @param {Promise<string|null>} tsconfigPath
+	 * @param {Promise<string|null>|string|null} tsconfigPath
 	 */
 	setTSConfigPath(dir, tsconfigPath) {
 		this.#tsconfigPaths.set(dir, tsconfigPath);
@@ -89,7 +90,7 @@ export class TSConfckCache {
 	 * map directories to their closest tsconfig.json
 	 * @internal
 	 * @private
-	 * @type{Map<string,import('./public.d.ts').Awaitable<string|null>>}
+	 * @type{Map<string,(Promise<string|null>|string|null)>}
 	 */
 	#tsconfigPaths = new Map();
 
@@ -97,7 +98,7 @@ export class TSConfckCache {
 	 * map files to their parsed tsconfig result
 	 * @internal
 	 * @private
-	 * @type {Map<string,import('./public.d.ts').Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>> }
+	 * @type {Map<string,(Promise<T>|T)> }
 	 */
 	#parsed = new Map();
 }

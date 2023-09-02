@@ -9,9 +9,9 @@
  *
  * @param filename - path to file to find tsconfig for (absolute or relative to cwd)
  * @param options - options
- * @returns absolute path to closest tsconfig.json
+ * @returns absolute path to closest tsconfig.json or null if not found
  */
-export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+export function find(filename: string, options?: any): Promise<string | null>;
 ```
 
 #### TSConfckFindOptions
@@ -23,7 +23,7 @@ interface TSConfckFindOptions {
 	 *
 	 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 	 */
-	cache?: TSConfckCache;
+	cache?: TSConfckCache<TSConfckParseResult | TSConfckParseNativeResult>;
 
 	/**
 	 * project root dir, does not continue scanning outside of this directory.
@@ -50,11 +50,7 @@ export function parse(filename: string, options?: TSConfckParseOptions | undefin
 
 ```ts
 interface TSConfckParseOptions extends TSConfckFindOptions {
-	/**
-	 * treat missing tsconfig as empty result instead of an error
-	 * parse resolves with { filename: 'no_tsconfig_file_found',tsconfig:{}} instead of reject with error
-	 */
-	resolveWithEmptyIfConfigNotFound?: boolean;
+	// same as find options
 }
 ```
 
@@ -130,7 +126,7 @@ export class TSConfckParseError extends Error {
  * @param options - options
  * @returns absolute path to closest tsconfig.json
  */
-export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+export function findNative(filename: string, options?: any): Promise<string>;
 ```
 
 ### parseNative
@@ -150,7 +146,7 @@ export function parseNative(filename: string, options?: TSConfckParseNativeOptio
 #### TSConfckParseNativeOptions
 
 ```ts
-interface TSConfckParseNativeOptions extends TSConfckParseOptions {
+interface TSConfckParseNativeOptions {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *
@@ -166,7 +162,7 @@ interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 #### TSConfckParseNativeResult
 
 ```ts
-interface TSConfckParseNativeResult {
+interface TSConfckParseNativeResult extends TSConfckParseResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */
@@ -265,12 +261,11 @@ export function toJson(tsconfigJson: string): string;
 ### TSConfckCache
 
 ```ts
-export class TSConfckCache {
+export class TSConfckCache<T> {
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
-	 * await it to ensure all find and parse calls are settled before continuing
 	 */
-	clear(): Promise<void>;
+	clear(): void;
 	/**
 	 * has cached closest tsconfig for files in dir
 	 * */
@@ -278,7 +273,7 @@ export class TSConfckCache {
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * */
-	getTSConfigPath(dir: string): Awaitable<string | null>;
+	getTSConfigPath(dir: string): Promise<string | null> | string | null;
 	/**
 	 * has parsed tsconfig for file
 	 * */
@@ -286,12 +281,6 @@ export class TSConfckCache {
 	/**
 	 * get parsed tsconfig for file
 	 * */
-	getParseResult(file: string): Awaitable<TSConfckParseResult | TSConfckParseNativeResult>;
+	getParseResult(file: string): Promise<T> | T;
 }
-```
-
-### Awaitable
-
-```ts
-type Awaitable<T> = Promise<T> | T;
 ```

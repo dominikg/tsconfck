@@ -51,9 +51,7 @@ describe('find', () => {
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
 
 		for (const input of inputs) {
-			await expect(find(input, { root: absFixture(fixtureDir) })).rejects.toThrow(
-				'no tsconfig file found for ' + input
-			);
+			expect(await find(input, { root: absFixture(fixtureDir) })).toBe(null);
 		}
 	});
 
@@ -77,8 +75,18 @@ describe('find', () => {
 		expect(await cache.getTSConfigPath(added_key)).toBe(fake);
 	});
 
-	it('should reject when no tsconfig file was found', async () => {
+	it('should return null when no tsconfig file was found', async () => {
 		const doesntExist = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
-		await expect(find(doesntExist)).rejects.toThrow('no tsconfig file found for ' + doesntExist);
+		expect(await find(doesntExist)).toBe(null);
+	});
+
+	it('should cache and return null when no tsconfig file was found', async () => {
+		const doesntExist = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
+		const cache = new TSConfckCache();
+		expect(await find(doesntExist, { cache })).toBe(null);
+		const parent = path.dirname(doesntExist);
+		expect(cache.hasTSConfigPath(parent)).toBe(true);
+		expect(await cache.getTSConfigPath(parent)).toBe(null);
+		expect(await find(doesntExist, { cache })).toBe(null);
 	});
 });

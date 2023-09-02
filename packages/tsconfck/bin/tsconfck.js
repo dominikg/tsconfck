@@ -50,7 +50,12 @@ async function main() {
 	const command = args[0];
 	const file = args[1];
 	if (command === 'find') {
-		return find(file);
+		return find(file).then((found) => {
+			if (!found) {
+				throw new Error(`no tsconfig found for ${file}`);
+			}
+			return found;
+		});
 	} else if (command === 'parse') {
 		return JSON.stringify((await parse(file)).tsconfig, null, 2);
 	} else if (command === 'parse-result') {
