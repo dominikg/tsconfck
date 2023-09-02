@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { toJson } from '../src/to-json.js';
 import { globFixtures } from './util/fixture-paths.js';
 import { expectToMatchSnap } from './util/expect.js';
