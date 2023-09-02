@@ -1,23 +1,11 @@
+/** @template T */
 export class TSConfckCache {
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
-	 * await it to ensure all find and parse calls are settled before continuing
 	 */
-	async clear() {
-		if (!this.#clearing) {
-			this.#clearing = Promise.allSettled([
-				...this.#tsconfigPaths.values(),
-				...this.#parsed.values()
-			])
-				.then(() => {
-					this.#tsconfigPaths.clear();
-					this.#parsed.clear();
-				})
-				.finally(() => {
-					this.#clearing = undefined;
-				});
-		}
-		return this.#clearing;
+	clear() {
+		this.#tsconfigPaths.clear();
+		this.#parsed.clear();
 	}
 
 	/**
@@ -32,9 +20,9 @@ export class TSConfckCache {
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * @param {string} dir
-	 * @returns {import('./public.d.ts').Awaitable<string|null>}
+	 * @returns {Promise<string|null>|string|null}
 	 */
-	async getTSConfigPath(dir) {
+	getTSConfigPath(dir) {
 		return this.#tsconfigPaths.get(dir);
 	}
 
@@ -50,7 +38,7 @@ export class TSConfckCache {
 	/**
 	 * get parsed tsconfig for file
 	 * @param {string} file
-	 * @returns {import('./public.d.ts').Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>}
+	 * @returns {Promise<T>|T}
 	 */
 	getParseResult(file) {
 		return this.#parsed.get(file);
@@ -60,40 +48,49 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param file
-	 * @param {Promise<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>} result
+	 * @param {Promise<T>|T} result
 	 */
 	setParseResult(file, result) {
 		this.#parsed.set(file, result);
-		result.then((parsed) => this.#parsed.set(file, parsed)).catch(() => this.#parsed.delete(file));
-	}
-
-	/**
-	 * @internal
-	 * @private
-	 * @param file
-	 */
-	deleteParseResult(file) {
-		this.#parsed.delete(file);
+		result
+			.then((parsed) => {
+				if (this.#parsed.get(file) === result) {
+					this.#parsed.set(file, parsed);
+				}
+			})
+			.catch(() => {
+				if (this.#parsed.get(file) === result) {
+					this.#parsed.delete(file);
+				}
+			});
 	}
 
 	/**
 	 * @internal
 	 * @private
 	 * @param {string} dir
-	 * @param {Promise<string|null>} tsconfigPath
+	 * @param {Promise<string|null>|string|null} tsconfigPath
 	 */
 	setTSConfigPath(dir, tsconfigPath) {
 		this.#tsconfigPaths.set(dir, tsconfigPath);
 		tsconfigPath
-			.then((path) => this.#tsconfigPaths.set(dir, path))
-			.catch(() => this.#tsconfigPaths.delete(dir));
+			.then((path) => {
+				if (this.#tsconfigPaths.get(dir) === tsconfigPath) {
+					this.#tsconfigPaths.set(dir, path);
+				}
+			})
+			.catch(() => {
+				if (this.#tsconfigPaths.get(dir) === tsconfigPath) {
+					this.#tsconfigPaths.delete(dir);
+				}
+			});
 	}
 
 	/**
 	 * map directories to their closest tsconfig.json
 	 * @internal
 	 * @private
-	 * @type{Map<string,import('./public.d.ts').Awaitable<string|null>>}
+	 * @type{Map<string,(Promise<string|null>|string|null)>}
 	 */
 	#tsconfigPaths = new Map();
 
@@ -101,10 +98,7 @@ export class TSConfckCache {
 	 * map files to their parsed tsconfig result
 	 * @internal
 	 * @private
-	 * @type {Map<string,import('./public.d.ts').Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>> }
+	 * @type {Map<string,(Promise<T>|T)> }
 	 */
 	#parsed = new Map();
-
-	/** @type{Promise<void>} */
-	#clearing;
 }

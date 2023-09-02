@@ -7,7 +7,7 @@ import { globFixtures } from './util/fixture-paths.js';
 import { expectToMatchErrorSnap, expectToMatchSnap } from './util/expect.js';
 import { copyFixtures } from './util/copy-fixtures.js';
 import glob from 'tiny-glob';
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { TSConfckCache } from '../src/cache.js';
@@ -28,15 +28,10 @@ describe('parse', () => {
 		await expect(parse('str'), `filename string arg`).resolves.toHaveProperty('tsconfigFile');
 	});
 
-	it('should reject when no tsconfig file was found', async () => {
+	it('should resolve with empty result when filename is a tsconfig.json that does not exist', async () => {
 		const doesntExist = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
-		await expect(parse(doesntExist)).rejects.toThrow('no tsconfig file found for ' + doesntExist);
-	});
-
-	it('should resolve with empty result when filename is a tsconfig.json that does not exist and option is set', async () => {
-		const doesntExist = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
-		await expect(parse(doesntExist, { resolveWithEmptyIfConfigNotFound: true })).resolves.toEqual({
-			tsconfigFile: 'no_tsconfig_file_found',
+		await expect(parse(doesntExist)).resolves.toEqual({
+			tsconfigFile: null,
 			tsconfig: {}
 		});
 	});

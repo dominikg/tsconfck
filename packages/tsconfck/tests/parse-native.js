@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import path from 'path';
+import path from 'node:path';
 import { parseNative, TSConfckParseNativeError } from '../src/parse-native.js';
 import os from 'os';
 
@@ -7,7 +7,7 @@ import { globFixtures } from './util/fixture-paths.js';
 import { expectToMatchErrorSnap, expectToMatchSnap } from './util/expect.js';
 import { copyFixtures } from './util/copy-fixtures.js';
 import glob from 'tiny-glob';
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { TSConfckCache } from '../src/cache.js';

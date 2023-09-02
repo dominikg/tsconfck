@@ -1,5 +1,5 @@
 import path from 'path';
-import { readdir } from 'fs';
+import { readdir } from 'node:fs';
 
 /**
  * @typedef WalkState

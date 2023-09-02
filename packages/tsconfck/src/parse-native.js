@@ -19,6 +19,7 @@ import { findNative } from './find-native.js';
  * @throws {TSConfckParseNativeError}
  */
 export async function parseNative(filename, options) {
+	/** @type {import('./cache.js').TSConfckCache} */
 	const cache = options?.cache;
 	if (cache?.hasParseResult(filename)) {
 		return cache.getParseResult(filename);
@@ -27,9 +28,9 @@ export async function parseNative(filename, options) {
 
 	if (options?.resolveWithEmptyIfConfigNotFound) {
 		try {
-			tsconfigFile = await resolveTSConfig(filename);
+			tsconfigFile = await resolveTSConfig(filename, cache);
 			if (!tsconfigFile) {
-				tsconfigFile = await findNative(filename);
+				tsconfigFile = await findNative(filename, options);
 			}
 		} catch (e) {
 			const notFoundResult = {
@@ -41,16 +42,16 @@ export async function parseNative(filename, options) {
 			return notFoundResult;
 		}
 	} else {
-		tsconfigFile = await resolveTSConfig(filename);
+		tsconfigFile = await resolveTSConfig(filename, cache);
 		if (!tsconfigFile) {
-			tsconfigFile = await findNative(filename);
+			tsconfigFile = await findNative(filename, options);
 		}
 	}
 
 	/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
 	let result;
 	if (cache?.hasParseResult(tsconfigFile)) {
-		result = cache.getParseResult(tsconfigFile);
+		result = await cache.getParseResult(tsconfigFile);
 	} else {
 		const ts = await loadTS();
 		result = await parseFile(tsconfigFile, ts, options);
