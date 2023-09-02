@@ -1,23 +1,10 @@
 export class TSConfckCache {
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
-	 * await it to ensure all find and parse calls are settled before continuing
 	 */
-	async clear() {
-		if (!this.#clearing) {
-			this.#clearing = Promise.allSettled([
-				...this.#tsconfigPaths.values(),
-				...this.#parsed.values()
-			])
-				.then(() => {
-					this.#tsconfigPaths.clear();
-					this.#parsed.clear();
-				})
-				.finally(() => {
-					this.#clearing = undefined;
-				});
-		}
-		return this.#clearing;
+	clear() {
+		this.#tsconfigPaths.clear();
+		this.#parsed.clear();
 	}
 
 	/**
@@ -64,7 +51,17 @@ export class TSConfckCache {
 	 */
 	setParseResult(file, result) {
 		this.#parsed.set(file, result);
-		result.then((parsed) => this.#parsed.set(file, parsed)).catch(() => this.#parsed.delete(file));
+		result
+			.then((parsed) => {
+				if (this.#parsed.get(file) === result) {
+					this.#parsed.set(file, parsed);
+				}
+			})
+			.catch(() => {
+				if (this.#parsed.get(file) === result) {
+					this.#parsed.delete(file);
+				}
+			});
 	}
 
 	/**
@@ -76,8 +73,16 @@ export class TSConfckCache {
 	setTSConfigPath(dir, tsconfigPath) {
 		this.#tsconfigPaths.set(dir, tsconfigPath);
 		tsconfigPath
-			.then((path) => this.#tsconfigPaths.set(dir, path))
-			.catch(() => this.#tsconfigPaths.delete(dir));
+			.then((path) => {
+				if (this.#tsconfigPaths.get(dir) === tsconfigPath) {
+					this.#tsconfigPaths.set(dir, path);
+				}
+			})
+			.catch(() => {
+				if (this.#tsconfigPaths.get(dir) === tsconfigPath) {
+					this.#tsconfigPaths.delete(dir);
+				}
+			});
 	}
 
 	/**
@@ -95,7 +100,4 @@ export class TSConfckCache {
 	 * @type {Map<string,import('./public.d.ts').Awaitable<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>> }
 	 */
 	#parsed = new Map();
-
-	/** @type{Promise<void>} */
-	#clearing;
 }
