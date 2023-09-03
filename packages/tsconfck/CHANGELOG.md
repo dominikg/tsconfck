@@ -1,5 +1,15 @@
 # tsconfck
 
+## 3.0.0-next.6
+
+### Major Changes
+
+- breaking(errors): throw ENOENT from parse if input .json filename does not exist. throw custom error if exists but is no file ([#121](https://github.com/dominikg/tsconfck/pull/121))
+
+### Patch Changes
+
+- fix(parseNative): return empty result for not found to align with parse ([#121](https://github.com/dominikg/tsconfck/pull/121))
+
 ## 3.0.0-next.5
 
 ### Patch Changes
