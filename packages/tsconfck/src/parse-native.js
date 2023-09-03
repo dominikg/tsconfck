@@ -4,16 +4,22 @@ import {
 	native2posix,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
-	resolveTSConfig
+	resolveTSConfigJson
 } from './util.js';
 import { findNative } from './find-native.js';
+
+const notFoundResult = {
+	tsconfigFile: null,
+	tsconfig: {},
+	result: null
+};
 
 /**
  * parse the closest tsconfig.json file with typescript native functions
  *
  * You need to have `typescript` installed to use this
  *
- * @param {string} filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+ * @param {string} filename - path to a tsconfig .json or a source file (absolute or relative to cwd)
  * @param {import('./public.d.ts').TSConfckParseNativeOptions} [options] - options
  * @returns {Promise<import('./public.d.ts').TSConfckParseNativeResult>}
  * @throws {TSConfckParseNativeError}
@@ -24,46 +30,33 @@ export async function parseNative(filename, options) {
 	if (cache?.hasParseResult(filename)) {
 		return cache.getParseResult(filename);
 	}
-	let tsconfigFile;
-
-	if (options?.resolveWithEmptyIfConfigNotFound) {
-		try {
-			tsconfigFile = await resolveTSConfig(filename, cache);
-			if (!tsconfigFile) {
-				tsconfigFile = await findNative(filename, options);
-			}
-		} catch (e) {
-			const notFoundResult = {
-				tsconfigFile: 'no_tsconfig_file_found',
-				tsconfig: {},
-				result: null
-			};
-			cache?.setParseResult(filename, Promise.resolve(notFoundResult));
-			return notFoundResult;
-		}
-	} else {
-		tsconfigFile = await resolveTSConfig(filename, cache);
-		if (!tsconfigFile) {
-			tsconfigFile = await findNative(filename, options);
-		}
+	/** @type {(result: import('./public.d.ts').TSConfckParseNativeResult)=>void}*/
+	let resolveConfigPromise;
+	/** @type {Promise<import('./public.d.ts').TSConfckParseNativeResult>}*/
+	const configPromise = new Promise((r) => {
+		resolveConfigPromise = r;
+	});
+	cache?.setParseResult(filename, configPromise);
+	const tsconfigFile =
+		(await resolveTSConfigJson(filename, cache)) || (await findNative(filename, options));
+	if (!tsconfigFile) {
+		resolveConfigPromise(notFoundResult);
+		return configPromise;
 	}
 
 	/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
 	let result;
-	if (cache?.hasParseResult(tsconfigFile)) {
+	if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
 		result = await cache.getParseResult(tsconfigFile);
 	} else {
 		const ts = await loadTS();
-		result = await parseFile(tsconfigFile, ts, options);
+		result = await parseFile(tsconfigFile, ts, options, filename === tsconfigFile);
 		await parseReferences(result, ts, options);
 		cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 	}
-
 	//@ts-ignore
-	result = resolveSolutionTSConfig(filename, result);
-	//@ts-ignore
-	cache?.setParseResult(filename, Promise.resolve(result));
-	return result;
+	resolveConfigPromise(resolveSolutionTSConfig(filename, result));
+	return configPromise;
 }
 
 /**
@@ -71,11 +64,12 @@ export async function parseNative(filename, options) {
  * @param {string} tsconfigFile
  * @param {any} ts
  * @param {import('./public.d.ts').TSConfckParseNativeOptions} [options]
- * @returns {Promise<import('./public.d.ts').TSConfckParseNativeResult>}
+ * @param {boolean} [skipCache]
+ * @returns {import('./public.d.ts').TSConfckParseNativeResult}
  */
-async function parseFile(tsconfigFile, ts, options) {
+function parseFile(tsconfigFile, ts, options, skipCache) {
 	const cache = options?.cache;
-	if (cache?.hasParseResult(tsconfigFile)) {
+	if (!skipCache && cache?.hasParseResult(tsconfigFile)) {
 		return cache.getParseResult(tsconfigFile);
 	}
 	const posixTSConfigFile = native2posix(tsconfigFile);
@@ -111,7 +105,9 @@ async function parseFile(tsconfigFile, ts, options) {
 		tsconfig: result2tsconfig(nativeResult, ts),
 		result: nativeResult
 	};
-	cache?.setParseResult(tsconfigFile, Promise.resolve(result));
+	if (!skipCache) {
+		cache?.setParseResult(tsconfigFile, Promise.resolve(result));
+	}
 	return result;
 }
 
@@ -129,6 +125,7 @@ async function parseReferences(result, ts, options) {
 	result.referenced = await Promise.all(
 		referencedFiles.map((file) => parseFile(file, ts, options))
 	);
+	result.referenced.forEach((ref) => (ref.solution = result));
 }
 
 /**

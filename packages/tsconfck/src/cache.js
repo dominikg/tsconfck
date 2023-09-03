@@ -48,7 +48,7 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param file
-	 * @param {Promise<T>|T} result
+	 * @param {Promise<T>} result
 	 */
 	setParseResult(file, result) {
 		this.#parsed.set(file, result);
@@ -69,7 +69,7 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param {string} dir
-	 * @param {Promise<string|null>|string|null} tsconfigPath
+	 * @param {Promise<string|null>} tsconfigPath
 	 */
 	setTSConfigPath(dir, tsconfigPath) {
 		this.#tsconfigPaths.set(dir, tsconfigPath);

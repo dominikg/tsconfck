@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parseNative, TSConfckParseNativeError } from '../src/parse-native.js';
 import os from 'os';
 
-import { globFixtures } from './util/fixture-paths.js';
+import { absFixture, globFixtures } from './util/fixture-paths.js';
 import { expectToMatchErrorSnap, expectToMatchSnap } from './util/expect.js';
 import { copyFixtures } from './util/copy-fixtures.js';
 import glob from 'tiny-glob';
@@ -20,6 +20,7 @@ describe('parse', () => {
 	it('should return a Promise', () => {
 		expect(parseNative('str')).toBeInstanceOf(Promise);
 	});
+
 	it('should reject for invalid filename arg', async () => {
 		for (const filename of [{}, [], 0, null, undefined]) {
 			await expect(parseNative(filename), `filename type: ${typeof filename}`).rejects.toThrow();
@@ -28,11 +29,23 @@ describe('parse', () => {
 		await expect(parseNative('str'), `filename string arg`).resolves.toHaveProperty('tsconfigFile');
 	});
 
-	it('should reject when no tsconfig file was found', async () => {
-		const doesntExist = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
-		await expect(parseNative(doesntExist)).rejects.toThrow(
-			'no tsconfig file found for ' + doesntExist
+	it('should reject for not existing json file', async () => {
+		await expect(parseNative('doesntexist.json')).rejects.toThrow();
+	});
+
+	it('should reject for directory named tsconfig.json', async () => {
+		await expect(parseNative(absFixture('parse/invalid/tsconfig.json'))).rejects.toThrow(
+			/exists but is not a regular file/
 		);
+	});
+
+	it('should resolve with empty result when no tsconfig is found', async () => {
+		const doesntExist = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
+		expect(await parseNative(doesntExist)).toEqual({
+			tsconfigFile: null,
+			tsconfig: {},
+			result: null
+		});
 	});
 
 	it('should resolve with expected valid tsconfig.json', async () => {
@@ -164,9 +177,11 @@ describe('parse', () => {
 
 	it('should reject with correct error for invalid tsconfig.json', async () => {
 		let samples = await globFixtures('parse/invalid/**/tsconfig.json');
-		samples = samples.filter(
-			(sample) => !sample.includes(path.join('extends-fallback-not-found', 'dir'))
-		);
+		const excluded = [
+			path.join('extends-fallback-not-found', 'dir'),
+			path.join('invalid', 'tsconfig.json') // directory, not a file, does
+		];
+		samples = samples.filter((sample) => !excluded.some((excluded) => sample.includes(excluded)));
 		for (const filename of samples) {
 			try {
 				await parseNative(filename);

@@ -8,7 +8,7 @@ import {
 	resolve2posix,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
-	resolveTSConfig
+	resolveTSConfigJson
 } from './util.js';
 
 const not_found_result = {
@@ -38,7 +38,8 @@ export async function parse(filename, options) {
 	});
 	cache?.setParseResult(filename, configPromise);
 
-	let tsconfigFile = (await resolveTSConfig(filename, cache)) || (await find(filename, options));
+	let tsconfigFile =
+		(await resolveTSConfigJson(filename, cache)) || (await find(filename, options));
 	if (!tsconfigFile) {
 		resolveConfigPromise(not_found_result);
 		return configPromise;
@@ -106,7 +107,7 @@ function normalizeTSConfig(tsconfig, dir) {
 /**
  *
  * @param {import('./public.d.ts').TSConfckParseResult} result
- * @param {TSConfckCache} [cache]
+ * @param {import('./cache.js').TSConfckCache} [cache]
  * @returns {Promise<void>}
  */
 async function parseReferences(result, cache) {
@@ -116,6 +117,9 @@ async function parseReferences(result, cache) {
 	const referencedFiles = resolveReferencedTSConfigFiles(result);
 	const referenced = await Promise.all(referencedFiles.map((file) => parseFile(file, cache)));
 	await Promise.all(referenced.map((ref) => parseExtends(ref, cache)));
+	referenced.forEach((ref) => {
+		ref.solution = result;
+	});
 	result.referenced = referenced;
 }
 

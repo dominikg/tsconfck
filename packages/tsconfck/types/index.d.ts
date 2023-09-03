@@ -93,7 +93,7 @@ declare module 'tsconfck' {
 	 *
 	 * You need to have `typescript` installed to use this
 	 *
-	 * @param filename - path to a tsconfig.json or a .ts source file (absolute or relative to cwd)
+	 * @param filename - path to a tsconfig .json or a source file (absolute or relative to cwd)
 	 * @param options - options
 	 * */
 	export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
