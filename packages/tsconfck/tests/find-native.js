@@ -47,6 +47,17 @@ describe('find-native', () => {
 		}
 	});
 
+	it('should ignore tsconfig in node_modules directory', async () => {
+		const fixtureDir = 'find/a';
+		const expected = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
+		const relativeTS = relFixture(`${fixtureDir}/node_modules/lib/src/foo.ts`);
+		const absoluteTS = absFixture(`${fixtureDir}/node_modules/lib/src/foo.ts`);
+		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
+		for (const input of inputs) {
+			expect(await findNative(input), `input: ${input}`).toBe(expected);
+		}
+	});
+
 	it('should stop searching at root', async () => {
 		const fixtureDir = 'find-root/a';
 		const relativeTS = relFixture(`${fixtureDir}/b/foo.ts`);

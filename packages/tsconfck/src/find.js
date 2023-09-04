@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import { stripNodeModules } from './util.js';
 /**
  * find the closest tsconfig.json file
  *
@@ -9,7 +10,8 @@ import fs from 'node:fs';
  */
 export async function find(filename, options) {
 	const cache = options?.cache;
-	let dir = path.dirname(path.resolve(filename));
+	let dir = stripNodeModules(path.dirname(path.resolve(filename)));
+
 	if (cache?.hasTSConfigPath(dir)) {
 		return cache.getTSConfigPath(dir);
 	}
