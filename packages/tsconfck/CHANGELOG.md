@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.0.0-next.7
+
+### Major Changes
+
+- breaking(find): ignore tsconfig files inside node_modules ([#123](https://github.com/dominikg/tsconfck/pull/123))
+
 ## 3.0.0-next.6
 
 ### Major Changes
