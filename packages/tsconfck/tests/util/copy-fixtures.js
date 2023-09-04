@@ -1,5 +1,5 @@
 import { promises as fs } from 'node:fs';
-import path from 'path';
+import path from 'node:path';
 
 /**
  *

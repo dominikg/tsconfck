@@ -51,6 +51,19 @@ export async function resolveTSConfigJson(filename, cache) {
 }
 
 /**
+ * remove path segments inside node_modules
+ *
+ * @param {string} dir an absolute directory path
+ * @returns {string}  parent dir of node_modules if inside of node_modules, dir if not
+ */
+export const stripNodeModules = IS_POSIX
+	? (dir) => {
+			const i = dir.indexOf('/node_modules/');
+			return i > -1 ? dir.slice(0, i) : dir;
+	  }
+	: (dir) => dir.replace(/[/\\]node_modules[/\\].*$/, '');
+
+/**
  * convert posix separator to native separator
  *
  * eg.

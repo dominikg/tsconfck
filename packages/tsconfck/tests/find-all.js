@@ -23,14 +23,14 @@ describe('find-all', () => {
 	it('should find tsconfig in same directory', async () => {
 		const fixtureDir = 'find/a';
 		const expected = absFixture(`${fixtureDir}/tsconfig.json`);
-		const found = await findAll(absFixture(fixtureDir));
+		const found = await findAll(absFixture(fixtureDir), { skip: (dir) => dir === 'node_modules' });
 		expect(found).toEqual([expected]);
 	});
 
 	it('should find tsconfig in child directory', async () => {
 		const fixtureDir = 'find';
 		const expected = absFixture(`${fixtureDir}/a/tsconfig.json`);
-		const found = await findAll(absFixture(fixtureDir));
+		const found = await findAll(absFixture(fixtureDir), { skip: (dir) => dir === 'node_modules' });
 		expect(found).toEqual([expected]);
 	});
 

@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import path from 'path';
+import path from 'node:path';
 import glob from 'tiny-glob';
 const cwd = process.cwd();
 const root = fileURLToPath(new URL('../..', import.meta.url));

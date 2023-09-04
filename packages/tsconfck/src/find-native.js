@@ -1,5 +1,5 @@
-import path from 'path';
-import { loadTS } from './util.js';
+import path from 'node:path';
+import { loadTS, stripNodeModules } from './util.js';
 
 /**
  * find the closest tsconfig.json file using native ts.findConfigFile
@@ -11,20 +11,23 @@ import { loadTS } from './util.js';
  * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
 export async function findNative(filename, options) {
-	const fileDir = path.dirname(path.resolve(filename));
+	let dir = path.dirname(path.resolve(filename));
+	if (!options?.scanNodeModules) {
+		dir = stripNodeModules(dir);
+	}
 	const cache = options?.cache;
 	const root = options?.root ? path.resolve(options.root) : undefined;
-	if (cache?.hasTSConfigPath(fileDir)) {
-		return cache.getTSConfigPath(fileDir);
+	if (cache?.hasTSConfigPath(dir)) {
+		return cache.getTSConfigPath(dir);
 	}
 	const ts = await loadTS();
 	const { findConfigFile, sys } = ts;
-	let tsconfigFile = findConfigFile(fileDir, sys.fileExists);
+	let tsconfigFile = findConfigFile(dir, sys.fileExists);
 	if (!tsconfigFile || is_out_of_root(tsconfigFile, root)) {
 		tsconfigFile = null;
 	}
 	if (cache) {
-		cache_result(tsconfigFile, fileDir, cache, root);
+		cache_result(tsconfigFile, dir, cache, root);
 	}
 	return tsconfigFile;
 }

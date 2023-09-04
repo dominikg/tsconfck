@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import path from 'path';
+import path from 'node:path';
 import { parse, TSConfckParseError } from '../src/parse.js';
 import os from 'os';
 

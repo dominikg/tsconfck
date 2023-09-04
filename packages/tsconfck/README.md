@@ -60,6 +60,19 @@ see [API-DOCS](docs/api.md)
 
 ## Advanced
 
+### finding tsconfig.json files inside node_modules
+
+By default, tsconfck ignores tsconfig.json files inside node_modules, similar to esbuild.
+If you want to include tsconfig.json files inside node_modules in your find/parse results, set `scanNodeModules`
+
+```js
+import { find } from 'tsconfck';
+// does not return some-lib/tsconfig.json but first tsconfig outside of node_modules
+const fooTSConfig = await find('node_modules/some-lib/src/foo.ts');
+// returns some-lib/tsconfig.json if it exists otherwise continues finding up the tree
+const fooResult = await find('node_modules/some-lib/src/foo.ts', { scanNodeModules: true });
+```
+
 ### caching
 
 a TSConfckCache instance can be created and passed to find and parse functions to reduce overhead when they are called often within the same project
@@ -107,16 +120,24 @@ const barResult = await parse('src/bar.ts', parseOptions);
 
 ### error handling
 
-find and parse reject for all errors they encounter.
+find and parse reject for errors they encounter, but return null or empty result if no config was found
 
-For parse, you can choose to resolve with an empty result instead if no tsconfig file was found
+If you want them to error instead, test the result and throw
 
 ```js
 import { parse } from 'tsconfck';
-const result = await parse('some/path/without/tsconfig/foo.ts', {
-	resolveWithEmptyIfConfigNotFound: true
+find('some/path/without/tsconfig/foo.ts').then((result) => {
+	if (result === null) {
+		throw new Error('not found');
+	}
+	return result;
 });
-// result = { tsconfigFile: 'no_tsconfig_file_found',tsconfig: {} }
+parse('some/path/without/tsconfig/foo.ts').then((result) => {
+	if (result.tsconfigFile === null) {
+		throw new Error('not found');
+	}
+	return result;
+});
 ```
 
 ### TSConfig type (optional, requires typescript as devDependency)
