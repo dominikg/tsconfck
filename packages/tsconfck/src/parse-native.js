@@ -1,5 +1,6 @@
 import path from 'node:path';
 import {
+	makePromise,
 	loadTS,
 	native2posix,
 	resolveReferencedTSConfigFiles,
@@ -30,33 +31,37 @@ export async function parseNative(filename, options) {
 	if (cache?.hasParseResult(filename)) {
 		return cache.getParseResult(filename);
 	}
-	/** @type {(result: import('./public.d.ts').TSConfckParseNativeResult)=>void}*/
-	let resolveConfigPromise;
-	/** @type {Promise<import('./public.d.ts').TSConfckParseNativeResult>}*/
-	const configPromise = new Promise((r) => {
-		resolveConfigPromise = r;
-	});
-	cache?.setParseResult(filename, configPromise);
-	const tsconfigFile =
-		(await resolveTSConfigJson(filename, cache)) || (await findNative(filename, options));
-	if (!tsconfigFile) {
-		resolveConfigPromise(notFoundResult);
-		return configPromise;
+	const {
+		resolve,
+		reject,
+		/** @type {Promise<import('./public.d.ts').TSConfckParseNativeResult>}*/
+		promise
+	} = makePromise();
+	cache?.setParseResult(filename, promise);
+	try {
+		const tsconfigFile =
+			(await resolveTSConfigJson(filename, cache)) || (await findNative(filename, options));
+		if (!tsconfigFile) {
+			resolve(notFoundResult);
+			return promise;
+		}
+		/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
+		let result;
+		if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
+			result = await cache.getParseResult(tsconfigFile);
+		} else {
+			const ts = await loadTS();
+			result = await parseFile(tsconfigFile, ts, options, filename === tsconfigFile);
+			await parseReferences(result, ts, options);
+			cache?.setParseResult(tsconfigFile, Promise.resolve(result));
+		}
+		//@ts-ignore
+		resolve(resolveSolutionTSConfig(filename, result));
+		return promise;
+	} catch (e) {
+		reject(e);
+		return promise;
 	}
-
-	/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
-	let result;
-	if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
-		result = await cache.getParseResult(tsconfigFile);
-	} else {
-		const ts = await loadTS();
-		result = await parseFile(tsconfigFile, ts, options, filename === tsconfigFile);
-		await parseReferences(result, ts, options);
-		cache?.setParseResult(tsconfigFile, Promise.resolve(result));
-	}
-	//@ts-ignore
-	resolveConfigPromise(resolveSolutionTSConfig(filename, result));
-	return configPromise;
 }
 
 /**

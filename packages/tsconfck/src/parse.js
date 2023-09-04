@@ -4,6 +4,7 @@ import { createRequire } from 'module';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
 import {
+	makePromise,
 	native2posix,
 	resolve2posix,
 	resolveReferencedTSConfigFiles,
@@ -30,30 +31,33 @@ export async function parse(filename, options) {
 	if (cache?.hasParseResult(filename)) {
 		return cache.getParseResult(filename);
 	}
-	/** @type {(result: import('./public.d.ts').TSConfckParseResult)=>void}*/
-	let resolveConfigPromise;
-	/** @type {Promise<import('./public.d.ts').TSConfckParseResult>}*/
-	const configPromise = new Promise((r) => {
-		resolveConfigPromise = r;
-	});
-	cache?.setParseResult(filename, configPromise);
-
-	let tsconfigFile =
-		(await resolveTSConfigJson(filename, cache)) || (await find(filename, options));
-	if (!tsconfigFile) {
-		resolveConfigPromise(not_found_result);
-		return configPromise;
+	const {
+		resolve,
+		reject,
+		/** @type {Promise<import('./public.d.ts').TSConfckParseResult>}*/
+		promise
+	} = makePromise();
+	cache?.setParseResult(filename, promise);
+	try {
+		let tsconfigFile =
+			(await resolveTSConfigJson(filename, cache)) || (await find(filename, options));
+		if (!tsconfigFile) {
+			resolve(not_found_result);
+			return promise;
+		}
+		let result;
+		if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
+			result = await cache.getParseResult(tsconfigFile);
+		} else {
+			result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
+			await Promise.all([parseExtends(result, cache), parseReferences(result, cache)]);
+		}
+		resolve(resolveSolutionTSConfig(filename, result));
+		return promise;
+	} catch (e) {
+		reject(e);
+		return promise;
 	}
-
-	let result;
-	if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
-		result = await cache.getParseResult(tsconfigFile);
-	} else {
-		result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
-		await Promise.all([parseExtends(result, cache), parseReferences(result, cache)]);
-	}
-	resolveConfigPromise(resolveSolutionTSConfig(filename, result));
-	return configPromise;
 }
 
 /**
