@@ -14,6 +14,13 @@ export interface TSConfckFindOptions {
 	 * Improves performance but may lead to different results from native typescript when no tsconfig is found inside root
 	 */
 	root?: string;
+
+	/**
+	 * set to true if you want to find tsconfig.json files inside node_modules
+	 *
+	 * @default false
+	 */
+	scanNodeModules?: boolean;
 }
 
 export interface TSConfckParseOptions extends TSConfckFindOptions {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import path from 'path';
+import path from 'node:path';
 import os from 'os';
 import { isGlobMatch, native2posix, resolve2posix } from '../src/util.js';
 

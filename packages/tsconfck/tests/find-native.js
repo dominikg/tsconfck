@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import path from 'path';
+import path from 'node:path';
 import os from 'os';
 import { findNative } from '../src/find-native.js';
 import { absFixture, absRoot, relFixture } from './util/fixture-paths.js';
 import { native2posix } from '../src/util.js';
 import { TSConfckCache } from '../src/cache.js';
+import { find } from '../src/index.js';
 
 describe('find-native', () => {
 	it('should be a function', () => {
@@ -50,11 +51,22 @@ describe('find-native', () => {
 	it('should ignore tsconfig in node_modules directory', async () => {
 		const fixtureDir = 'find/a';
 		const expected = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
-		const relativeTS = relFixture(`${fixtureDir}/node_modules/lib/src/foo.ts`);
-		const absoluteTS = absFixture(`${fixtureDir}/node_modules/lib/src/foo.ts`);
+		const relativeTS = relFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
+		const absoluteTS = absFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
 		for (const input of inputs) {
 			expect(await findNative(input), `input: ${input}`).toBe(expected);
+		}
+	});
+
+	it('should find tsconfig in node_modules directory with scanNodeModules=true', async () => {
+		const fixtureDir = 'find/a';
+		const expected = native2posix(absFixture(`${fixtureDir}/node_modules/some-lib/tsconfig.json`));
+		const relativeTS = relFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
+		const absoluteTS = absFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
+		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
+		for (const input of inputs) {
+			expect(await find(input, { scanNodeModules: true }), `input: ${input}`).toBe(expected);
 		}
 	});
 

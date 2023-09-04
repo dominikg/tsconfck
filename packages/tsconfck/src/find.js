@@ -10,8 +10,10 @@ import { stripNodeModules } from './util.js';
  */
 export async function find(filename, options) {
 	const cache = options?.cache;
-	let dir = stripNodeModules(path.dirname(path.resolve(filename)));
-
+	let dir = path.dirname(path.resolve(filename));
+	if (!options?.scanNodeModules) {
+		dir = stripNodeModules(dir);
+	}
 	if (cache?.hasTSConfigPath(dir)) {
 		return cache.getTSConfigPath(dir);
 	}
