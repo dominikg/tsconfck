@@ -5,7 +5,6 @@ import { findNative } from '../src/find-native.js';
 import { absFixture, absRoot, relFixture } from './util/fixture-paths.js';
 import { native2posix } from '../src/util.js';
 import { TSConfckCache } from '../src/cache.js';
-import { find } from '../src/index.js';
 
 describe('find-native', () => {
 	it('should be a function', () => {
@@ -66,7 +65,7 @@ describe('find-native', () => {
 		const absoluteTS = absFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
 		for (const input of inputs) {
-			expect(await find(input, { scanNodeModules: true }), `input: ${input}`).toBe(expected);
+			expect(await findNative(input, { scanNodeModules: true }), `input: ${input}`).toBe(expected);
 		}
 	});
 
