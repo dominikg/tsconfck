@@ -63,14 +63,14 @@ see [API-DOCS](docs/api.md)
 ### finding tsconfig.json files inside node_modules
 
 By default, tsconfck ignores tsconfig.json files inside node_modules, similar to esbuild.
-If you want to include tsconfig.json files inside node_modules in your find/parse results, set `scanNodeModules`
+If you want to include files inside node_modules in your find/parse results, set `includeNodeModules`
 
 ```js
 import { find } from 'tsconfck';
-// does not return some-lib/tsconfig.json but first tsconfig outside of node_modules
+// returns null because files inside node_modules are ignored by default
 const fooTSConfig = await find('node_modules/some-lib/src/foo.ts');
 // returns some-lib/tsconfig.json if it exists otherwise continues finding up the tree
-const fooResult = await find('node_modules/some-lib/src/foo.ts', { scanNodeModules: true });
+const fooResult = await find('node_modules/some-lib/src/foo.ts', { includeNodeModules: true });
 ```
 
 ### caching

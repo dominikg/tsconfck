@@ -16,11 +16,11 @@ export interface TSConfckFindOptions {
 	root?: string;
 
 	/**
-	 * set to true if you want to find tsconfig.json files inside node_modules
+	 * set to true if you want to find tsconfig for files inside node_modules
 	 *
 	 * @default false
 	 */
-	scanNodeModules?: boolean;
+	includeNodeModules?: boolean;
 }
 
 export interface TSConfckParseOptions extends TSConfckFindOptions {

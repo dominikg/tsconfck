@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { loadTS, stripNodeModules } from './util.js';
+import { isInNodeModules, loadTS } from './util.js';
 
 /**
  * find the closest tsconfig.json file using native ts.findConfigFile
@@ -12,8 +12,8 @@ import { loadTS, stripNodeModules } from './util.js';
  */
 export async function findNative(filename, options) {
 	let dir = path.dirname(path.resolve(filename));
-	if (!options?.scanNodeModules) {
-		dir = stripNodeModules(dir);
+	if (isInNodeModules(dir) && !options?.includeNodeModules) {
+		return null;
 	}
 	const cache = options?.cache;
 	const root = options?.root ? path.resolve(options.root) : undefined;
