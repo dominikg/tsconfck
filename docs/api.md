@@ -279,7 +279,8 @@ export class TSConfckCache<T> {
 	hasTSConfigPath(dir: string): boolean;
 	/**
 	 * get cached closest tsconfig for files in dir
-	 * */
+	 * @throws if cached value is an error
+	 */
 	getTSConfigPath(dir: string): Promise<string | null> | string | null;
 	/**
 	 * has parsed tsconfig for file
@@ -287,7 +288,8 @@ export class TSConfckCache<T> {
 	hasParseResult(file: string): boolean;
 	/**
 	 * get parsed tsconfig for file
-	 * */
+	 * @throws if cached value is an error
+	 */
 	getParseResult(file: string): Promise<T> | T;
 }
 ```

@@ -21,9 +21,15 @@ export class TSConfckCache {
 	 * get cached closest tsconfig for files in dir
 	 * @param {string} dir
 	 * @returns {Promise<string|null>|string|null}
+	 * @throws {unknown} if cached value is an error
 	 */
 	getTSConfigPath(dir) {
-		return this.#tsconfigPaths.get(dir);
+		const value = this.#tsconfigPaths.get(dir);
+		if (value === null || value.length || value.then) {
+			return value;
+		} else {
+			throw value;
+		}
 	}
 
 	/**
@@ -39,9 +45,15 @@ export class TSConfckCache {
 	 * get parsed tsconfig for file
 	 * @param {string} file
 	 * @returns {Promise<T>|T}
+	 * @throws {unknown} if cached value is an error
 	 */
 	getParseResult(file) {
-		return this.#parsed.get(file);
+		const value = this.#parsed.get(file);
+		if (value.then || value.tsconfig) {
+			return value;
+		} else {
+			throw value; // cached error, rethrow
+		}
 	}
 
 	/**
@@ -58,9 +70,9 @@ export class TSConfckCache {
 					this.#parsed.set(file, parsed);
 				}
 			})
-			.catch(() => {
+			.catch((e) => {
 				if (this.#parsed.get(file) === result) {
-					this.#parsed.delete(file);
+					this.#parsed.set(file, e);
 				}
 			});
 	}
@@ -79,9 +91,9 @@ export class TSConfckCache {
 					this.#tsconfigPaths.set(dir, path);
 				}
 			})
-			.catch(() => {
+			.catch((e) => {
 				if (this.#tsconfigPaths.get(dir) === tsconfigPath) {
-					this.#tsconfigPaths.delete(dir);
+					this.#tsconfigPaths.set(dir, e);
 				}
 			});
 	}

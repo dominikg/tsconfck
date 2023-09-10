@@ -14,6 +14,19 @@ const DEFAULT_EXTENSIONS_RE_GROUP = `\\.(?:${DEFAULT_EXTENSIONS.map((ext) => ext
 const IS_POSIX = path.posix.sep === path.sep;
 
 /**
+ * @template T
+ * @returns {{resolve:(result:T)=>void, reject:(error:any)=>void, promise: Promise<T>}}
+ */
+export function makePromise() {
+	let resolve, reject;
+	const promise = new Promise((res, rej) => {
+		resolve = res;
+		reject = rej;
+	});
+	return { promise, resolve, reject };
+}
+
+/**
  * loads typescript async to avoid direct dependency
  * @returns {Promise<any>}
  */

@@ -192,4 +192,33 @@ describe('parse', () => {
 			}
 		}
 	});
+
+	it('should cache error for invalid tsconfig.json', async () => {
+		let samples = await globFixtures('parse/invalid/**/tsconfig.json');
+		const excluded = [
+			path.join('extends-fallback-not-found', 'dir'),
+			path.join('invalid', 'tsconfig.json') // directory, not a file, does
+		];
+		samples = samples.filter((sample) => !excluded.some((excluded) => sample.includes(excluded)));
+		const cache = new TSConfckCache();
+		for (const filename of samples) {
+			expect(cache.hasParseResult(filename)).toBe(false);
+			let error;
+			try {
+				await parse(filename, { cache });
+				expect.unreachable(`parse for ${filename} did not reject`);
+			} catch (e) {
+				expect(e).toBeInstanceOf(TSConfckParseError);
+				expect(e.tsconfigFile).toBe(filename);
+				error = e;
+			}
+			expect(cache.hasParseResult(filename)).toBe(true);
+			try {
+				await cache.getParseResult(filename);
+				expect.unreachable(`cache.getParseResult for ${filename} did not reject`);
+			} catch (e) {
+				expect(e).toBe(error);
+			}
+		}
+	});
 });

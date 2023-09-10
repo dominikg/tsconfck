@@ -43,7 +43,8 @@ declare module 'tsconfck' {
 		hasTSConfigPath(dir: string): boolean;
 		/**
 		 * get cached closest tsconfig for files in dir
-		 * */
+		 * @throws if cached value is an error
+		 */
 		getTSConfigPath(dir: string): Promise<string | null> | string | null;
 		/**
 		 * has parsed tsconfig for file
@@ -51,7 +52,8 @@ declare module 'tsconfck' {
 		hasParseResult(file: string): boolean;
 		/**
 		 * get parsed tsconfig for file
-		 * */
+		 * @throws if cached value is an error
+		 */
 		getParseResult(file: string): Promise<T> | T;
 		
 		private setParseResult;
