@@ -44,24 +44,24 @@ describe('find', () => {
 		}
 	});
 
-	it('should ignore files in node_modules directory', async () => {
+	it('should ignore files in node_modules directory with ignoreNodeModules=true', async () => {
 		const fixtureDir = 'find/a';
 		const relativeTS = relFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
 		for (const input of inputs) {
-			expect(await find(input), `input: ${input}`).toBe(null);
+			expect(await find(input, { ignoreNodeModules: true }), `input: ${input}`).toBe(null);
 		}
 	});
 
-	it('should find tsconfig in node_modules directory with includeNodeModules=true', async () => {
+	it('should find tsconfig in node_modules', async () => {
 		const fixtureDir = 'find/a';
 		const expected = absFixture(`${fixtureDir}/node_modules/some-lib/tsconfig.json`);
 		const relativeTS = relFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
 		for (const input of inputs) {
-			expect(await find(input, { includeNodeModules: true }), `input: ${input}`).toBe(expected);
+			expect(await find(input), `input: ${input}`).toBe(expected);
 		}
 	});
 

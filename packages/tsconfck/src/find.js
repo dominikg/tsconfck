@@ -10,7 +10,7 @@ import { isInNodeModules, makePromise } from './util.js';
  */
 export async function find(filename, options) {
 	let dir = path.dirname(path.resolve(filename));
-	if (isInNodeModules(dir) && !options?.includeNodeModules) {
+	if (options?.ignoreNodeModules && isInNodeModules(dir)) {
 		return null;
 	}
 	const cache = options?.cache;

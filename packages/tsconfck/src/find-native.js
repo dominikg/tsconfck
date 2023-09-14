@@ -12,7 +12,7 @@ import { isInNodeModules, loadTS } from './util.js';
  */
 export async function findNative(filename, options) {
 	let dir = path.dirname(path.resolve(filename));
-	if (isInNodeModules(dir) && !options?.includeNodeModules) {
+	if (options?.ignoreNodeModules && isInNodeModules(dir)) {
 		return null;
 	}
 	const cache = options?.cache;
