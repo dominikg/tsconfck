@@ -59,7 +59,7 @@ describe('find-native', () => {
 
 	it('should find tsconfig in node_modules', async () => {
 		const fixtureDir = 'find/a';
-		const expected = absFixture(`${fixtureDir}/node_modules/some-lib/tsconfig.json`);
+		const expected = native2posix(absFixture(`${fixtureDir}/node_modules/some-lib/tsconfig.json`));
 		const relativeTS = relFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
