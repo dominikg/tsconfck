@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import { makePromise, stripNodeModules } from './util.js';
+import { isInNodeModules, makePromise } from './util.js';
 /**
  * find the closest tsconfig.json file
  *
@@ -9,11 +9,11 @@ import { makePromise, stripNodeModules } from './util.js';
  * @returns {Promise<string|null>} absolute path to closest tsconfig.json or null if not found
  */
 export async function find(filename, options) {
-	const cache = options?.cache;
 	let dir = path.dirname(path.resolve(filename));
-	if (!options?.scanNodeModules) {
-		dir = stripNodeModules(dir);
+	if (options?.ignoreNodeModules && isInNodeModules(dir)) {
+		return null;
 	}
+	const cache = options?.cache;
 	if (cache?.hasTSConfigPath(dir)) {
 		return cache.getTSConfigPath(dir);
 	}

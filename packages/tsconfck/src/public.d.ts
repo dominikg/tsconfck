@@ -16,11 +16,13 @@ export interface TSConfckFindOptions {
 	root?: string;
 
 	/**
-	 * set to true if you want to find tsconfig.json files inside node_modules
+	 * set to true if you don't want to find tsconfig for files inside node_modules
+	 *
+	 * This is useful if you want to use the output with esbuild.transform as esbuild itself also ignores node_modules
 	 *
 	 * @default false
 	 */
-	scanNodeModules?: boolean;
+	ignoreNodeModules?: boolean;
 }
 
 export interface TSConfckParseOptions extends TSConfckFindOptions {
