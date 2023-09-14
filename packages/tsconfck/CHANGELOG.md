@@ -1,5 +1,15 @@
 # tsconfck
 
+## 3.0.0-next.8
+
+### Major Changes
+
+- breaking(find): replace scanNodeModules with ignoreNodeModules ([#128](https://github.com/dominikg/tsconfck/pull/128))
+
+### Patch Changes
+
+- fix(errors): cache errors instead of evicting cache value on error ([#125](https://github.com/dominikg/tsconfck/pull/125))
+
 ## 3.0.0-next.7
 
 ### Major Changes
