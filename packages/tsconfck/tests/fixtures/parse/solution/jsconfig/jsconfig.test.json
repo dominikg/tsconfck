@@ -1,0 +1,7 @@
+{
+  "extends": "./jsconfig.base",
+  "include": ["src/**/*.spec.js"],
+  "compilerOptions": {
+    "strict": false
+  }
+}

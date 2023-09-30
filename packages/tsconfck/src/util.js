@@ -6,11 +6,13 @@ const NATIVE_SEP_RE = new RegExp('\\' + path.sep, 'g');
 /** @type {Map<string,RegExp>}*/
 const PATTERN_REGEX_CACHE = new Map();
 const GLOB_ALL_PATTERN = `**/*`;
-const DEFAULT_EXTENSIONS = ['.ts', '.tsx', '.mts', '.cts'];
-const DEFAULT_EXTENSIONS_RE_GROUP = `\\.(?:${DEFAULT_EXTENSIONS.map((ext) => ext.substring(1)).join(
+const TS_EXTENSIONS = ['.ts', '.tsx', '.mts', '.cts'];
+const JS_EXTENSIONS = ['.js', '.jsx', '.mjs', '.cjs'];
+const TSJS_EXTENSIONS = TS_EXTENSIONS.concat(JS_EXTENSIONS);
+const TS_EXTENSIONS_RE_GROUP = `\\.(?:${TS_EXTENSIONS.map((ext) => ext.substring(1)).join('|')})`;
+const TSJS_EXTENSIONS_RE_GROUP = `\\.(?:${TSJS_EXTENSIONS.map((ext) => ext.substring(1)).join(
 	'|'
 )})`;
-
 const IS_POSIX = path.posix.sep === path.sep;
 
 /**
@@ -121,12 +123,15 @@ export const resolve2posix = IS_POSIX
 /**
  *
  * @param {import('./public.d.ts').TSConfckParseResult} result
+ * @param {import('./public.d.ts').TSConfckParseOptions} [options]
  * @returns {string[]}
  */
-export function resolveReferencedTSConfigFiles(result) {
+export function resolveReferencedTSConfigFiles(result, options) {
 	const dir = path.dirname(result.tsconfigFile);
 	return result.tsconfig.references.map((ref) => {
-		const refPath = ref.path.endsWith('.json') ? ref.path : path.join(ref.path, 'tsconfig.json');
+		const refPath = ref.path.endsWith('.json')
+			? ref.path
+			: path.join(ref.path, options?.configName ?? 'tsconfig.json');
 		return resolve2posix(dir, refPath);
 	});
 }
@@ -137,9 +142,11 @@ export function resolveReferencedTSConfigFiles(result) {
  * @returns {import('./public.d.ts').TSConfckParseResult}
  */
 export function resolveSolutionTSConfig(filename, result) {
+	const allowJs = result.tsconfig.compilerOptions?.allowJs;
+	const extensions = allowJs ? TSJS_EXTENSIONS : TS_EXTENSIONS;
 	if (
 		result.referenced &&
-		DEFAULT_EXTENSIONS.some((ext) => filename.endsWith(ext)) &&
+		extensions.some((ext) => filename.endsWith(ext)) &&
 		!isIncluded(filename, result)
 	) {
 		const solutionTSConfig = result.referenced.find((referenced) =>
@@ -165,13 +172,15 @@ function isIncluded(filename, result) {
 	if (files.includes(filename)) {
 		return true;
 	}
+	const allowJs = result.tsconfig.compilerOptions?.allowJs;
 	const isIncluded = isGlobMatch(
 		absoluteFilename,
 		dir,
-		result.tsconfig.include || (result.tsconfig.files ? [] : [GLOB_ALL_PATTERN])
+		result.tsconfig.include || (result.tsconfig.files ? [] : [GLOB_ALL_PATTERN]),
+		allowJs
 	);
 	if (isIncluded) {
-		const isExcluded = isGlobMatch(absoluteFilename, dir, result.tsconfig.exclude || []);
+		const isExcluded = isGlobMatch(absoluteFilename, dir, result.tsconfig.exclude || [], allowJs);
 		return !isExcluded;
 	}
 	return false;
@@ -183,9 +192,11 @@ function isIncluded(filename, result) {
  * @param filename {string} posix style abolute path to filename to test
  * @param dir {string} posix style absolute path to directory of tsconfig containing patterns
  * @param patterns {string[]} glob patterns to match against
+ * @param allowJs {boolean} allowJs setting in tsconfig to include js extensions in checks
  * @returns {boolean} true when at least one pattern matches filename
  */
-export function isGlobMatch(filename, dir, patterns) {
+export function isGlobMatch(filename, dir, patterns, allowJs) {
+	const extensions = allowJs ? TSJS_EXTENSIONS : TS_EXTENSIONS;
 	return patterns.some((pattern) => {
 		// filename must end with part of pattern that comes after last wildcard
 		let lastWildcardIndex = pattern.length;
@@ -207,7 +218,7 @@ export function isGlobMatch(filename, dir, patterns) {
 		}
 
 		// if pattern ends with *, filename must end with a default extension
-		if (pattern.endsWith('*') && !DEFAULT_EXTENSIONS.some((ext) => filename.endsWith(ext))) {
+		if (pattern.endsWith('*') && !extensions.some((ext) => filename.endsWith(ext))) {
 			return false;
 		}
 
@@ -243,7 +254,7 @@ export function isGlobMatch(filename, dir, patterns) {
 		if (PATTERN_REGEX_CACHE.has(resolvedPattern)) {
 			return PATTERN_REGEX_CACHE.get(resolvedPattern).test(filename);
 		}
-		const regex = pattern2regex(resolvedPattern);
+		const regex = pattern2regex(resolvedPattern, allowJs);
 		PATTERN_REGEX_CACHE.set(resolvedPattern, regex);
 		return regex.test(filename);
 	});
@@ -251,9 +262,10 @@ export function isGlobMatch(filename, dir, patterns) {
 
 /**
  * @param {string} resolvedPattern
+ * @param {boolean} allowJs
  * @returns {RegExp}
  */
-function pattern2regex(resolvedPattern) {
+function pattern2regex(resolvedPattern, allowJs) {
 	let regexStr = '^';
 	for (let i = 0; i < resolvedPattern.length; i++) {
 		const char = resolvedPattern[i];
@@ -278,7 +290,7 @@ function pattern2regex(resolvedPattern) {
 
 	// add known file endings if pattern ends on *
 	if (resolvedPattern.endsWith('*')) {
-		regexStr += DEFAULT_EXTENSIONS_RE_GROUP;
+		regexStr += allowJs ? TSJS_EXTENSIONS_RE_GROUP : TS_EXTENSIONS_RE_GROUP;
 	}
 	regexStr += '$';
 

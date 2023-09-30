@@ -147,6 +147,15 @@ declare module 'tsconfck' {
 		 * @default false
 		 */
 		ignoreNodeModules?: boolean;
+
+		/**
+		 * Override the default name of the config file to find.
+		 *
+		 * Use `jsconfig.json` in projects that have typechecking for js files with jsconfig.json
+		 *
+		 * @default tsconfig.json
+		 */
+		configName?: string;
 	}
 
 	interface TSConfckParseOptions extends TSConfckFindOptions {
@@ -160,6 +169,12 @@ declare module 'tsconfck' {
 		 * eg ` dir => dir === 'node_modules' || dir === '.git'`
 		 */ // eslint-disable-next-line no-unused-vars
 		skip?: (dir: string) => boolean;
+		/**
+		 * list of config filenames to include, use ["tsconfig.json","jsconfig.json"] if you need both
+		 *
+		 * @default ["tsconfig.json"]
+		 */
+		configNames?: string[];
 	}
 
 	interface TSConfckParseResult {

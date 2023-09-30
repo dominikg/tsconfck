@@ -22,7 +22,7 @@ export async function findNative(filename, options) {
 	}
 	const ts = await loadTS();
 	const { findConfigFile, sys } = ts;
-	let tsconfigFile = findConfigFile(dir, sys.fileExists);
+	let tsconfigFile = findConfigFile(dir, sys.fileExists, options?.configName ?? 'tsconfig.json');
 	if (!tsconfigFile || is_out_of_root(tsconfigFile, root)) {
 		tsconfigFile = null;
 	}

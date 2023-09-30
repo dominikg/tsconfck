@@ -41,6 +41,15 @@ describe('find-all', () => {
 		expect(found, `found all tsconfig in ${fixtureDir}`).toEqual(expected);
 	});
 
+	it('should find jsconfig with configNames=["tsconfig.json","jsconfig.json"]', async () => {
+		const fixtureDir = absFixture('find-all/multiple');
+		const expected = await globFixtures('find-all/multiple/**/{t,j}sconfig.json');
+		const found = (
+			await findAll(fixtureDir, { configNames: ['tsconfig.json', 'jsconfig.json'] })
+		).sort();
+		expect(found, `found all tsconfig and jsconfig in ${fixtureDir}`).toEqual(expected);
+	});
+
 	it('should handle directories with recursive symlinks', async () => {
 		const fixtureDir = absFixture('find-all/recursive-symlink');
 

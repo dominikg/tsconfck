@@ -56,6 +56,16 @@ describe('parse', () => {
 			await expectToMatchSnap(actual.tsconfig, `input: ${filename}`, filename, 'parse-native');
 		}
 	});
+
+	it('should resolve with expected valid jsconfig.json with configName=jsconfig.json', async () => {
+		const samples = await globFixtures('parse/valid/**/jsconfig.json');
+		for (const filename of samples) {
+			const actual = await parseNative(filename, { configName: 'jsconfig.json' });
+			expect(actual.tsconfigFile).toBe(filename);
+			await expectToMatchSnap(actual.tsconfig, `input: ${filename}`, filename, 'parse-native');
+		}
+	});
+
 	it('should resolve with expected tsconfig.json for valid tsconfig that is part of a solution', async () => {
 		const samples = await globFixtures('parse/solution/**/tsconfig.json');
 		for (const filename of samples) {
@@ -64,6 +74,16 @@ describe('parse', () => {
 			await expectToMatchSnap(actual.tsconfig, `input: ${filename}`, filename, 'parse-native');
 		}
 	});
+
+	it('should resolve with expected jsconfig.json for valid jsconfig that is part of a solution', async () => {
+		const samples = await globFixtures('parse/solution/jsconfig/**/jsconfig.json');
+		for (const filename of samples) {
+			const actual = await parseNative(filename, { configName: 'jsconfig.json' });
+			expect(actual.tsconfigFile).toBe(filename);
+			await expectToMatchSnap(actual.tsconfig, `input: ${filename}`, filename, 'parse-native');
+		}
+	});
+
 	it('should resolve with expected tsconfig.json for ts file that is part of a solution', async () => {
 		const samples = await globFixtures('/parse/solution/**/*.{ts,mts,cts}');
 		for (const filename of samples) {
@@ -76,6 +96,20 @@ describe('parse', () => {
 			);
 		}
 	});
+
+	it('should resolve with expected tsconfig.json for ts file that is part of a solution', async () => {
+		const samples = await globFixtures('/parse/solution/jsconfig/**/*.{js,mjs,cjs}');
+		for (const filename of samples) {
+			const actual = await parseNative(filename, { configName: 'jsconfig.json' });
+			await expectToMatchSnap(
+				actual.tsconfig,
+				`input: ${filename}`,
+				filename,
+				'jsconfig.parse-native.json'
+			);
+		}
+	});
+
 	it('should work with cache', async () => {
 		// use the more interesting samples with extensions and solution-style
 		const samples = [

@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "allowJs": true, //must be true so that js extensions are globbed correctly
+    "composite": true,
+    "strictNullChecks": true
+  }
+}

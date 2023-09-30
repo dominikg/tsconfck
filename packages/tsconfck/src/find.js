@@ -18,8 +18,10 @@ export async function find(filename, options) {
 		return cache.getTSConfigPath(dir);
 	}
 	const { /** @type {Promise<string|null>} */ promise, resolve, reject } = makePromise();
-	const root = options?.root ? path.resolve(options.root) : null;
-	findUp(dir, { promise, resolve, reject }, options?.cache, root);
+	if (options?.root && !path.isAbsolute(options.root)) {
+		options.root = path.resolve(options.root);
+	}
+	findUp(dir, { promise, resolve, reject }, options);
 	return promise;
 }
 
@@ -27,11 +29,10 @@ export async function find(filename, options) {
  *
  * @param {string} dir
  * @param {{promise:Promise<string|null>,resolve:(result:string|null)=>void,reject:(err:any)=>void}} madePromise
- * @param {import('./cache.js').TSConfckCache}  [cache]
- * @param {string} [root]
+ * @param {import('./public.d.ts').TSConfckFindOptions} [options] - options
  */
-function findUp(dir, { resolve, reject, promise }, cache, root) {
-	const tsconfig = path.join(dir, 'tsconfig.json');
+function findUp(dir, { resolve, reject, promise }, options) {
+	const { cache, root } = options ?? {};
 	if (cache) {
 		if (cache.hasTSConfigPath(dir)) {
 			let cached;
@@ -50,6 +51,7 @@ function findUp(dir, { resolve, reject, promise }, cache, root) {
 			cache.setTSConfigPath(dir, promise);
 		}
 	}
+	const tsconfig = path.join(dir, options?.configName ?? 'tsconfig.json');
 	fs.stat(tsconfig, (err, stats) => {
 		if (stats && (stats.isFile() || stats.isFIFO())) {
 			resolve(tsconfig);
@@ -60,7 +62,7 @@ function findUp(dir, { resolve, reject, promise }, cache, root) {
 			if (root === dir || (parent = path.dirname(dir)) === dir) {
 				resolve(null);
 			} else {
-				findUp(parent, { promise, resolve, reject }, cache, root);
+				findUp(parent, { promise, resolve, reject }, options);
 			}
 		}
 	});

@@ -8,6 +8,7 @@ import { readdir } from 'node:fs';
  * @property {number} calls - number of ongoing calls
  * @property {(dir: string)=>boolean} skip - function to skip dirs
  * @property {boolean} err - error flag
+ * @property {string[]} configNames - config file names
  */
 
 const sep = path.sep;
@@ -25,7 +26,8 @@ export async function findAll(dir, options) {
 		files: [],
 		calls: 0,
 		skip: options?.skip,
-		err: false
+		err: false,
+		configNames: options?.configNames ?? ['tsconfig.json']
 	};
 	return new Promise((resolve, reject) => {
 		walk(path.resolve(dir), state, (err, files) => (err ? reject(err) : resolve(files)));
@@ -55,8 +57,8 @@ function walk(dir, state, done) {
 			for (const ent of entries) {
 				if (ent.isDirectory() && !state.skip?.(ent.name)) {
 					walk(`${dir}${sep}${ent.name}`, state, done);
-				} else if (ent.isFile() && ent.name === 'tsconfig.json') {
-					state.files.push(`${dir}${sep}tsconfig.json`);
+				} else if (ent.isFile() && state.configNames.includes(ent.name)) {
+					state.files.push(`${dir}${sep}${ent.name}`);
 				}
 			}
 			if (--state.calls === 0) {

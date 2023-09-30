@@ -1,0 +1,19 @@
+{
+	"files": [],
+	"include": [],
+	"references": [
+		{
+			"path": "./jsconfig.src.json"
+		},
+		{
+			"path": "./jsconfig.test.json"
+		}
+	],
+	"compilerOptions": {
+		"allowJs": true,
+		"maxNodeModuleJsDepth": 2,
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
+		"noEmit": true
+	}
+}
