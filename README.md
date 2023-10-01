@@ -7,14 +7,15 @@ A utility to find and parse tsconfig files without depending on typescript
 
 # Why
 
-Because no simple official api exists and tsconfig.json isn't actual json.
+Because no simple official api exists and tsconfig isn't actual json.
 
 # Features
 
-- [x] find closest tsconfig.json
-- [x] convert tsconfig.json to actual json and parse it
+- [x] find closest tsconfig (tsconfig.json or jsconfig.json)
+- [x] convert tsconfig to actual json and parse it
 - [x] resolve "extends"
 - [x] resolve "references" of solution-style tsconfig
+- [x] optional caching for improved performance
 - [x] optional findNative and parseNative to use official typescript api
 - [x] zero dependencies (typescript optional)
 - [x] extensive testsuite
@@ -51,17 +52,15 @@ This repo uses
 - [pnpm](https://pnpm.io)
 - [changesets](https://github.com/changesets/changesets)
 
+In every PR you have to add a changeset by running `pnpm changeset` and following the prompts
+
 PRs are going to be squash-merged
 
 ```shell
 # install dependencies
 pnpm install
-
 # run tests
 pnpm test
-
-#run tests in watch mode
-pnpm test:watch
 ```
 
 # License
