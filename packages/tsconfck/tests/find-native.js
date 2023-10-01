@@ -153,13 +153,13 @@ describe('find-native', () => {
 		for (const input of inputs) {
 			expect(await findNative(input, { cache }), `input: ${input}`).toBe(expected);
 		}
-		const dir = path.dirname(absoluteTS);
+		const dir = native2posix(path.dirname(absoluteTS));
 		expect(cache.hasConfigPath(dir)).toBe(true);
 		expect(await cache.getConfigPath(dir)).toBe(expected);
-		const parent = path.dirname(dir);
+		const parent = native2posix(path.dirname(dir));
 		expect(cache.hasConfigPath(parent)).toBe(true);
 		expect(await cache.getConfigPath(parent)).toBe(expected);
-		const root = path.dirname(real);
+		const root = native2posix(path.dirname(real));
 		expect(cache.hasConfigPath(root)).toBe(true);
 		expect(await cache.getConfigPath(root)).toBe(expected);
 		[dir, parent, root].forEach((d) => {
@@ -176,10 +176,10 @@ describe('find-native', () => {
 	});
 
 	it('should cache and return null when no tsconfig file was found', async () => {
-		const doesntExist = path.resolve(os.homedir(), '..', 'foo.ts'); // outside of user home there should not be a tsconfig
+		const doesntExist = native2posix(path.resolve(os.homedir(), '..', 'foo.ts')); // outside of user home there should not be a tsconfig
 		const cache = new TSConfckCache();
 		expect(await findNative(doesntExist, { cache })).toBe(null);
-		const parent = path.dirname(doesntExist);
+		const parent = native2posix(path.dirname(doesntExist));
 		expect(cache.hasConfigPath(parent)).toBe(true);
 		expect(await cache.getConfigPath(parent)).toBe(null);
 		expect(await findNative(doesntExist, { cache })).toBe(null);
