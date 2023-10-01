@@ -17,17 +17,18 @@ export async function findNative(filename, options) {
 	}
 	const cache = options?.cache;
 	const root = options?.root ? path.resolve(options.root) : undefined;
-	if (cache?.hasTSConfigPath(dir)) {
-		return cache.getTSConfigPath(dir);
+	const configName = options?.configName ?? 'tsconfig.json';
+	if (cache?.hasConfigPath(dir, configName)) {
+		return cache.getConfigPath(dir, configName);
 	}
 	const ts = await loadTS();
 	const { findConfigFile, sys } = ts;
-	let tsconfigFile = findConfigFile(dir, sys.fileExists, options?.configName ?? 'tsconfig.json');
+	let tsconfigFile = findConfigFile(dir, sys.fileExists, configName);
 	if (!tsconfigFile || is_out_of_root(tsconfigFile, root)) {
 		tsconfigFile = null;
 	}
 	if (cache) {
-		cache_result(tsconfigFile, dir, cache, root);
+		cache_result(tsconfigFile, dir, cache, root, configName);
 	}
 	return tsconfigFile;
 }
@@ -47,9 +48,10 @@ function is_out_of_root(tsconfigFile, root) {
  * @param {string|null} tsconfigFile
  * @param {string} fileDir
  * @param {import('./cache.js').TSConfckCache} cache
- * @param {string} [root]
+ * @param {string|undefined} root
+ * @param {string} configName
  */
-function cache_result(tsconfigFile, fileDir, cache, root) {
+function cache_result(tsconfigFile, fileDir, cache, root, configName) {
 	const tsconfigDir = tsconfigFile ? path.dirname(tsconfigFile) : root;
 	const directories = [];
 	let dir = fileDir;
@@ -63,6 +65,6 @@ function cache_result(tsconfigFile, fileDir, cache, root) {
 		}
 	}
 	directories.forEach((d) => {
-		cache.setTSConfigPath(d, Promise.resolve(tsconfigFile));
+		cache.setConfigPath(d, Promise.resolve(tsconfigFile), configName);
 	});
 }

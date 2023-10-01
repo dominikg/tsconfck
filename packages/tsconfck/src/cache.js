@@ -4,28 +4,31 @@ export class TSConfckCache {
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
 	 */
 	clear() {
-		this.#tsconfigPaths.clear();
+		this.#configPaths.clear();
 		this.#parsed.clear();
 	}
 
 	/**
-	 * has cached closest tsconfig for files in dir
+	 * has cached closest config for files in dir
 	 * @param {string} dir
+	 * @param {string} [configName=tsconfig.json]
 	 * @returns {boolean}
 	 */
-	hasTSConfigPath(dir) {
-		return this.#tsconfigPaths.has(dir);
+	hasConfigPath(dir, configName = 'tsconfig.json') {
+		return this.#configPaths.has(`${dir}/${configName}`);
 	}
 
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * @param {string} dir
+	 * @param {string} [configName=tsconfig.json]
 	 * @returns {Promise<string|null>|string|null}
 	 * @throws {unknown} if cached value is an error
 	 */
-	getTSConfigPath(dir) {
-		const value = this.#tsconfigPaths.get(dir);
-		if (value === null || value.length || value.then) {
+	getConfigPath(dir, configName = 'tsconfig.json') {
+		const key = `${dir}/${configName}`;
+		const value = this.#configPaths.get(key);
+		if (value == null || value.length || value.then) {
 			return value;
 		} else {
 			throw value;
@@ -81,19 +84,21 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param {string} dir
-	 * @param {Promise<string|null>} tsconfigPath
+	 * @param {Promise<string|null>} configPath
+	 * @param {string} [configName=tsconfig.json]
 	 */
-	setTSConfigPath(dir, tsconfigPath) {
-		this.#tsconfigPaths.set(dir, tsconfigPath);
-		tsconfigPath
+	setConfigPath(dir, configPath, configName = 'tsconfig.json') {
+		const key = `${dir}/${configName}`;
+		this.#configPaths.set(key, configPath);
+		configPath
 			.then((path) => {
-				if (this.#tsconfigPaths.get(dir) === tsconfigPath) {
-					this.#tsconfigPaths.set(dir, path);
+				if (this.#configPaths.get(key) === configPath) {
+					this.#configPaths.set(key, path);
 				}
 			})
 			.catch((e) => {
-				if (this.#tsconfigPaths.get(dir) === tsconfigPath) {
-					this.#tsconfigPaths.set(dir, e);
+				if (this.#configPaths.get(key) === configPath) {
+					this.#configPaths.set(key, e);
 				}
 			});
 	}
@@ -104,7 +109,7 @@ export class TSConfckCache {
 	 * @private
 	 * @type{Map<string,(Promise<string|null>|string|null)>}
 	 */
-	#tsconfigPaths = new Map();
+	#configPaths = new Map();
 
 	/**
 	 * map files to their parsed tsconfig result

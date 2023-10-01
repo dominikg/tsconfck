@@ -14,8 +14,9 @@ export async function find(filename, options) {
 		return null;
 	}
 	const cache = options?.cache;
-	if (cache?.hasTSConfigPath(dir)) {
-		return cache.getTSConfigPath(dir);
+	const configName = options?.configName ?? 'tsconfig.json';
+	if (cache?.hasConfigPath(dir, configName)) {
+		return cache.getConfigPath(dir, configName);
 	}
 	const { /** @type {Promise<string|null>} */ promise, resolve, reject } = makePromise();
 	if (options?.root && !path.isAbsolute(options.root)) {
@@ -32,12 +33,12 @@ export async function find(filename, options) {
  * @param {import('./public.d.ts').TSConfckFindOptions} [options] - options
  */
 function findUp(dir, { resolve, reject, promise }, options) {
-	const { cache, root } = options ?? {};
+	const { cache, root, configName } = options ?? {};
 	if (cache) {
-		if (cache.hasTSConfigPath(dir)) {
+		if (cache.hasConfigPath(dir, configName)) {
 			let cached;
 			try {
-				cached = cache.getTSConfigPath(dir);
+				cached = cache.getConfigPath(dir, configName);
 			} catch (e) {
 				reject(e);
 				return;
@@ -48,7 +49,7 @@ function findUp(dir, { resolve, reject, promise }, options) {
 				resolve(cached);
 			}
 		} else {
-			cache.setTSConfigPath(dir, promise);
+			cache.setConfigPath(dir, promise, configName);
 		}
 	}
 	const tsconfig = path.join(dir, options?.configName ?? 'tsconfig.json');

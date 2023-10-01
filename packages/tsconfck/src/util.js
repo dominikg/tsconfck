@@ -51,10 +51,8 @@ export async function resolveTSConfigJson(filename, cache) {
 		return; // ignore files that are not json
 	}
 	const tsconfig = path.resolve(filename);
-	if (cache) {
-		if (cache.hasParseResult(tsconfig) || cache.hasParseResult(filename)) {
-			return tsconfig;
-		}
+	if (cache && (cache.hasParseResult(tsconfig) || cache.hasParseResult(filename))) {
+		return tsconfig;
 	}
 	return fs.stat(tsconfig).then((stat) => {
 		if (stat.isFile() || stat.isFIFO()) {

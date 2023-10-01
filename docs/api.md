@@ -291,14 +291,14 @@ export class TSConfckCache<T> {
 	 */
 	clear(): void;
 	/**
-	 * has cached closest tsconfig for files in dir
+	 * has cached closest config for files in dir
 	 * */
-	hasTSConfigPath(dir: string): boolean;
+	hasConfigPath(dir: string, configName?: string | undefined): boolean;
 	/**
 	 * get cached closest tsconfig for files in dir
 	 * @throws if cached value is an error
 	 */
-	getTSConfigPath(dir: string): Promise<string | null> | string | null;
+	getConfigPath(dir: string, configName?: string | undefined): Promise<string | null> | string | null;
 	/**
 	 * has parsed tsconfig for file
 	 * */

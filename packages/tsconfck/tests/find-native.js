@@ -156,16 +156,16 @@ describe('find-native', () => {
 			expect(await findNative(input, { cache }), `input: ${input}`).toBe(expected);
 		}
 		const dir = path.dirname(absoluteTS);
-		expect(cache.hasTSConfigPath(dir)).toBe(true);
-		expect(await cache.getTSConfigPath(dir)).toBe(expected);
+		expect(cache.hasConfigPath(dir)).toBe(true);
+		expect(await cache.getConfigPath(dir)).toBe(expected);
 		const parent = path.dirname(dir);
-		expect(cache.hasTSConfigPath(parent)).toBe(true);
-		expect(await cache.getTSConfigPath(parent)).toBe(expected);
+		expect(cache.hasConfigPath(parent)).toBe(true);
+		expect(await cache.getConfigPath(parent)).toBe(expected);
 		const root = path.dirname(real);
-		expect(cache.hasTSConfigPath(root)).toBe(true);
-		expect(await cache.getTSConfigPath(root)).toBe(expected);
+		expect(cache.hasConfigPath(root)).toBe(true);
+		expect(await cache.getConfigPath(root)).toBe(expected);
 		[dir, parent, root].forEach((d) => {
-			cache.setTSConfigPath(d, Promise.resolve('fake'));
+			cache.setConfigPath(d, Promise.resolve('fake'));
 		});
 		for (const input of inputs) {
 			expect(await findNative(input, { cache }), `input: ${input}`).toBe('fake');
@@ -182,8 +182,29 @@ describe('find-native', () => {
 		const cache = new TSConfckCache();
 		expect(await findNative(doesntExist, { cache })).toBe(null);
 		const parent = path.dirname(doesntExist);
-		expect(cache.hasTSConfigPath(parent)).toBe(true);
-		expect(await cache.getTSConfigPath(parent)).toBe(null);
+		expect(cache.hasConfigPath(parent)).toBe(true);
+		expect(await cache.getConfigPath(parent)).toBe(null);
 		expect(await findNative(doesntExist, { cache })).toBe(null);
+	});
+
+	it('should work with different configNames in the same cache', async () => {
+		const fixtureDir = 'find/a';
+		const jsFile = relFixture(`${fixtureDir}/b/c/y.js`);
+		const expectedJSConfig = native2posix(absFixture(`${fixtureDir}/b/c/jsconfig.json`));
+		const tsFile = relFixture(`${fixtureDir}/b/c/x.ts`);
+		const expectedTSConfig = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
+		const cache = new TSConfckCache();
+		const actualJSConfig = await findNative(jsFile, { cache, configName: 'jsconfig.json' });
+		const actualTSConfig = await findNative(tsFile, { cache });
+		expect(actualJSConfig).toBe(expectedJSConfig);
+		expect(actualTSConfig).toBe(expectedTSConfig);
+		expect(cache.getConfigPath(absFixture(`${fixtureDir}`))).toBe(expectedTSConfig);
+		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b`))).toBe(expectedTSConfig);
+		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b/c`))).toBe(expectedTSConfig);
+		expect(cache.getConfigPath(absFixture(`${fixtureDir}`), 'jsconfig.json')).toBe(undefined);
+		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b`), 'jsconfig.json')).toBe(undefined);
+		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b/c`), 'jsconfig.json')).toBe(
+			expectedJSConfig
+		);
 	});
 });

@@ -8,12 +8,12 @@ describe('cache', () => {
 			const result = Promise.resolve(/**@type TSConfckParseResult */ ({}));
 			expect(cache.hasParseResult('file')).toBe(false);
 			cache.setParseResult('file', result);
-			cache.setTSConfigPath('bar', Promise.resolve('bar'));
+			cache.setConfigPath('bar', Promise.resolve('bar'));
 			expect(cache.hasParseResult('file')).toBe(true);
-			expect(cache.hasTSConfigPath('bar')).toBe(true);
+			expect(cache.hasConfigPath('bar')).toBe(true);
 			await cache.clear();
 			expect(cache.hasParseResult('file')).toBe(false);
-			expect(cache.hasTSConfigPath('bar')).toBe(false);
+			expect(cache.hasConfigPath('bar')).toBe(false);
 		});
 	});
 });
