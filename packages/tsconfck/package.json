@@ -31,7 +31,9 @@
 	"keywords": [
 		"typescript",
 		"tsconfig",
-		"tsconfig.json"
+		"tsconfig.json",
+		"jsconfig",
+		"jsconfig.json"
 	],
 	"bugs": {
 		"url": "https://github.com/dominikg/tsconfck/issues"
