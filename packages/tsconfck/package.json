@@ -48,12 +48,12 @@
 		}
 	},
 	"devDependencies": {
-		"@tsconfig/node18": "^18.2.1",
+		"@tsconfig/node18": "^18.2.2",
 		"@vitest/coverage-v8": "^0.34.6",
-		"esbuild": "^0.19.2",
+		"esbuild": "^0.19.4",
 		"tiny-glob": "^0.2.9",
 		"typescript": "^5.2.2",
-		"vitest": "^0.34.3"
+		"vitest": "^0.34.6"
 	},
 	"engines": {
 		"node": "^18 || >=20"
