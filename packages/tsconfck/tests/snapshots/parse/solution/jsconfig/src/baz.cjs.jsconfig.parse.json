@@ -1,0 +1,15 @@
+{
+	"extends": "./jsconfig.base",
+	"include": [
+		"src/**/*"
+	],
+	"exclude": [
+		"src/**/*.spec.js"
+	],
+	"compilerOptions": {
+		"strict": true,
+		"allowJs": true,
+		"composite": true,
+		"strictNullChecks": true
+	}
+}

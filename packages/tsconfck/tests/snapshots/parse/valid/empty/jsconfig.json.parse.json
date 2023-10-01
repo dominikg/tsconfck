@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"maxNodeModuleJsDepth": 2,
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
+		"noEmit": true
+	}
+}

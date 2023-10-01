@@ -14,12 +14,15 @@ export async function find(filename, options) {
 		return null;
 	}
 	const cache = options?.cache;
-	if (cache?.hasTSConfigPath(dir)) {
-		return cache.getTSConfigPath(dir);
+	const configName = options?.configName ?? 'tsconfig.json';
+	if (cache?.hasConfigPath(dir, configName)) {
+		return cache.getConfigPath(dir, configName);
 	}
 	const { /** @type {Promise<string|null>} */ promise, resolve, reject } = makePromise();
-	const root = options?.root ? path.resolve(options.root) : null;
-	findUp(dir, { promise, resolve, reject }, options?.cache, root);
+	if (options?.root && !path.isAbsolute(options.root)) {
+		options.root = path.resolve(options.root);
+	}
+	findUp(dir, { promise, resolve, reject }, options);
 	return promise;
 }
 
@@ -27,16 +30,15 @@ export async function find(filename, options) {
  *
  * @param {string} dir
  * @param {{promise:Promise<string|null>,resolve:(result:string|null)=>void,reject:(err:any)=>void}} madePromise
- * @param {import('./cache.js').TSConfckCache}  [cache]
- * @param {string} [root]
+ * @param {import('./public.d.ts').TSConfckFindOptions} [options] - options
  */
-function findUp(dir, { resolve, reject, promise }, cache, root) {
-	const tsconfig = path.join(dir, 'tsconfig.json');
+function findUp(dir, { resolve, reject, promise }, options) {
+	const { cache, root, configName } = options ?? {};
 	if (cache) {
-		if (cache.hasTSConfigPath(dir)) {
+		if (cache.hasConfigPath(dir, configName)) {
 			let cached;
 			try {
-				cached = cache.getTSConfigPath(dir);
+				cached = cache.getConfigPath(dir, configName);
 			} catch (e) {
 				reject(e);
 				return;
@@ -47,9 +49,10 @@ function findUp(dir, { resolve, reject, promise }, cache, root) {
 				resolve(cached);
 			}
 		} else {
-			cache.setTSConfigPath(dir, promise);
+			cache.setConfigPath(dir, promise, configName);
 		}
 	}
+	const tsconfig = path.join(dir, options?.configName ?? 'tsconfig.json');
 	fs.stat(tsconfig, (err, stats) => {
 		if (stats && (stats.isFile() || stats.isFIFO())) {
 			resolve(tsconfig);
@@ -60,7 +63,7 @@ function findUp(dir, { resolve, reject, promise }, cache, root) {
 			if (root === dir || (parent = path.dirname(dir)) === dir) {
 				resolve(null);
 			} else {
-				findUp(parent, { promise, resolve, reject }, cache, root);
+				findUp(parent, { promise, resolve, reject }, options);
 			}
 		}
 	});

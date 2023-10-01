@@ -126,7 +126,7 @@ async function parseReferences(result, ts, options) {
 	if (!result.tsconfig.references) {
 		return;
 	}
-	const referencedFiles = resolveReferencedTSConfigFiles(result);
+	const referencedFiles = resolveReferencedTSConfigFiles(result, options);
 	result.referenced = await Promise.all(
 		referencedFiles.map((file) => parseFile(file, ts, options))
 	);

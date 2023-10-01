@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { isInNodeModules, loadTS } from './util.js';
+import { isInNodeModules, loadTS, native2posix } from './util.js';
 
 /**
  * find the closest tsconfig.json file using native ts.findConfigFile
@@ -11,23 +11,24 @@ import { isInNodeModules, loadTS } from './util.js';
  * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
 export async function findNative(filename, options) {
-	let dir = path.dirname(path.resolve(filename));
+	let dir = native2posix(path.dirname(path.resolve(filename)));
 	if (options?.ignoreNodeModules && isInNodeModules(dir)) {
 		return null;
 	}
 	const cache = options?.cache;
-	const root = options?.root ? path.resolve(options.root) : undefined;
-	if (cache?.hasTSConfigPath(dir)) {
-		return cache.getTSConfigPath(dir);
+	const root = options?.root ? native2posix(path.resolve(options.root)) : undefined;
+	const configName = options?.configName ?? 'tsconfig.json';
+	if (cache?.hasConfigPath(dir, configName)) {
+		return cache.getConfigPath(dir, configName);
 	}
 	const ts = await loadTS();
 	const { findConfigFile, sys } = ts;
-	let tsconfigFile = findConfigFile(dir, sys.fileExists);
+	let tsconfigFile = findConfigFile(dir, sys.fileExists, configName);
 	if (!tsconfigFile || is_out_of_root(tsconfigFile, root)) {
 		tsconfigFile = null;
 	}
 	if (cache) {
-		cache_result(tsconfigFile, dir, cache, root);
+		cache_result(tsconfigFile, dir, cache, root, configName);
 	}
 	return tsconfigFile;
 }
@@ -47,9 +48,10 @@ function is_out_of_root(tsconfigFile, root) {
  * @param {string|null} tsconfigFile
  * @param {string} fileDir
  * @param {import('./cache.js').TSConfckCache} cache
- * @param {string} [root]
+ * @param {string|undefined} root
+ * @param {string} configName
  */
-function cache_result(tsconfigFile, fileDir, cache, root) {
+function cache_result(tsconfigFile, fileDir, cache, root, configName) {
 	const tsconfigDir = tsconfigFile ? path.dirname(tsconfigFile) : root;
 	const directories = [];
 	let dir = fileDir;
@@ -63,6 +65,6 @@ function cache_result(tsconfigFile, fileDir, cache, root) {
 		}
 	}
 	directories.forEach((d) => {
-		cache.setTSConfigPath(d, Promise.resolve(tsconfigFile));
+		cache.setConfigPath(d, Promise.resolve(tsconfigFile), configName);
 	});
 }

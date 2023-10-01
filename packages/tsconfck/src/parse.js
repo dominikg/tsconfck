@@ -50,7 +50,7 @@ export async function parse(filename, options) {
 			result = await cache.getParseResult(tsconfigFile);
 		} else {
 			result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
-			await Promise.all([parseExtends(result, cache), parseReferences(result, cache)]);
+			await Promise.all([parseExtends(result, cache), parseReferences(result, options)]);
 		}
 		resolve(resolveSolutionTSConfig(filename, result));
 		return promise;
@@ -75,9 +75,11 @@ async function parseFile(tsconfigFile, cache, skipCache) {
 		.readFile(tsconfigFile, 'utf-8')
 		.then(toJson)
 		.then((json) => {
+			const parsed = JSON.parse(json);
+			applyDefaults(parsed, tsconfigFile);
 			return {
 				tsconfigFile,
-				tsconfig: normalizeTSConfig(JSON.parse(json), path.dirname(tsconfigFile))
+				tsconfig: normalizeTSConfig(parsed, path.dirname(tsconfigFile))
 			};
 		})
 		.catch((e) => {
@@ -111,16 +113,18 @@ function normalizeTSConfig(tsconfig, dir) {
 /**
  *
  * @param {import('./public.d.ts').TSConfckParseResult} result
- * @param {import('./cache.js').TSConfckCache} [cache]
+ * @param {import('./public.d.ts').TSConfckParseOptions} [options]
  * @returns {Promise<void>}
  */
-async function parseReferences(result, cache) {
+async function parseReferences(result, options) {
 	if (!result.tsconfig.references) {
 		return;
 	}
-	const referencedFiles = resolveReferencedTSConfigFiles(result);
-	const referenced = await Promise.all(referencedFiles.map((file) => parseFile(file, cache)));
-	await Promise.all(referenced.map((ref) => parseExtends(ref, cache)));
+	const referencedFiles = resolveReferencedTSConfigFiles(result, options);
+	const referenced = await Promise.all(
+		referencedFiles.map((file) => parseFile(file, options?.cache))
+	);
+	await Promise.all(referenced.map((ref) => parseExtends(ref, options?.cache)));
 	referenced.forEach((ref) => {
 		ref.solution = result;
 	});
@@ -370,4 +374,33 @@ export class TSConfckParseError extends Error {
 		this.cause = cause;
 		this.tsconfigFile = tsconfigFile;
 	}
+}
+
+/**
+ *
+ * @param {any} tsconfig
+ * @param {string} tsconfigFile
+ */
+function applyDefaults(tsconfig, tsconfigFile) {
+	if (isJSConfig(tsconfigFile)) {
+		tsconfig.compilerOptions = {
+			...DEFAULT_JSCONFIG_COMPILER_OPTIONS,
+			...tsconfig.compilerOptions
+		};
+	}
+}
+
+const DEFAULT_JSCONFIG_COMPILER_OPTIONS = {
+	allowJs: true,
+	maxNodeModuleJsDepth: 2,
+	allowSyntheticDefaultImports: true,
+	skipLibCheck: true,
+	noEmit: true
+};
+
+/**
+ * @param {string} configFileName
+ */
+function isJSConfig(configFileName) {
+	return path.basename(configFileName) === 'jsconfig.json';
 }
