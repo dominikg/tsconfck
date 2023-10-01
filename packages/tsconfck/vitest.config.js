@@ -5,7 +5,7 @@ export default defineConfig({
 		globals: false,
 		include: ['tests/*.js'],
 		exclude: ['**/fixtures/**', '**/util/**', '**/node_modules/**', '**/temp/**'],
-		testTimeout: 2000000,
+		testTimeout: 20000,
 		reporters: 'dot',
 		maxThreads: process.env.CI ? 1 : undefined,
 		minThreads: process.env.CI ? 1 : undefined
