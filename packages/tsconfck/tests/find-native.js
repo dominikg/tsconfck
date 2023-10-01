@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import path from 'node:path';
 import os from 'os';
 import { findNative } from '../src/find-native.js';
-import { absFixture, absRoot, relFixture } from './util/fixture-paths.js';
+import { absFixture, absRoot, posixAbsFix, relFixture } from './util/fixture-paths.js';
 import { native2posix } from '../src/util.js';
 import { TSConfckCache } from '../src/cache.js';
 
@@ -27,7 +27,7 @@ describe('find-native', () => {
 
 	it('should find tsconfig in same directory', async () => {
 		const fixtureDir = 'find/a';
-		const expected = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
+		const expected = posixAbsFix(`${fixtureDir}/tsconfig.json`);
 		const relativeTS = relFixture(`${fixtureDir}/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
@@ -38,7 +38,7 @@ describe('find-native', () => {
 
 	it('should find tsconfig in parent directory', async () => {
 		const fixtureDir = 'find/a';
-		const expected = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
+		const expected = posixAbsFix(`${fixtureDir}/tsconfig.json`);
 		const relativeTS = relFixture(`${fixtureDir}/b/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/b/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
@@ -49,7 +49,7 @@ describe('find-native', () => {
 
 	it('should find jsconfig with configName=jsconfig.json', async () => {
 		const fixtureDir = 'find/a/b/c';
-		const expected = native2posix(absFixture(`${fixtureDir}/jsconfig.json`));
+		const expected = posixAbsFix(`${fixtureDir}/jsconfig.json`);
 		const relativeTS = relFixture(`${fixtureDir}/y.js`);
 		const absoluteTS = absFixture(`${fixtureDir}/y.js`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
@@ -62,7 +62,7 @@ describe('find-native', () => {
 
 	it('should find jsconfig in parent directory with configName=jsconfig.json', async () => {
 		const fixtureDir = 'find/a';
-		const expected = native2posix(absFixture(`${fixtureDir}/jsconfig.json`));
+		const expected = posixAbsFix(`${fixtureDir}/jsconfig.json`);
 		const relativeTS = relFixture(`${fixtureDir}/b/qoox.js`);
 		const absoluteTS = absFixture(`${fixtureDir}/b/qoox.js`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
@@ -75,7 +75,7 @@ describe('find-native', () => {
 
 	it('should ignore jsconfig without configName=jsconfig.json', async () => {
 		const fixtureDir = 'find/a/b/c';
-		const expected = native2posix(absFixture(`find/a/tsconfig.json`));
+		const expected = posixAbsFix(`find/a/tsconfig.json`);
 		const relativeTS = relFixture(`${fixtureDir}/x.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/x.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
@@ -109,7 +109,7 @@ describe('find-native', () => {
 
 	it('should find tsconfig in node_modules', async () => {
 		const fixtureDir = 'find/a';
-		const expected = native2posix(absFixture(`${fixtureDir}/node_modules/some-lib/tsconfig.json`));
+		const expected = posixAbsFix(`${fixtureDir}/node_modules/some-lib/tsconfig.json`);
 		const relativeTS = relFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const absoluteTS = absFixture(`${fixtureDir}/node_modules/some-lib/src/foo.ts`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
@@ -120,9 +120,7 @@ describe('find-native', () => {
 
 	it('should find jsconfig in node_modules with configName=jsconfig.json', async () => {
 		const fixtureDir = 'find/a';
-		const expected = native2posix(
-			absFixture(`${fixtureDir}/node_modules/some-js-lib/jsconfig.json`)
-		);
+		const expected = posixAbsFix(`${fixtureDir}/node_modules/some-js-lib/jsconfig.json`);
 		const relativeTS = relFixture(`${fixtureDir}/node_modules/some-js-lib/src/foo.js`);
 		const absoluteTS = absFixture(`${fixtureDir}/node_modules/some-js-lib/src/foo.js`);
 		const inputs = [relativeTS, `./${relativeTS}`, absoluteTS];
@@ -190,20 +188,20 @@ describe('find-native', () => {
 	it('should work with different configNames in the same cache', async () => {
 		const fixtureDir = 'find/a';
 		const jsFile = relFixture(`${fixtureDir}/b/c/y.js`);
-		const expectedJSConfig = native2posix(absFixture(`${fixtureDir}/b/c/jsconfig.json`));
+		const expectedJSConfig = posixAbsFix(`${fixtureDir}/b/c/jsconfig.json`);
 		const tsFile = relFixture(`${fixtureDir}/b/c/x.ts`);
-		const expectedTSConfig = native2posix(absFixture(`${fixtureDir}/tsconfig.json`));
+		const expectedTSConfig = posixAbsFix(`${fixtureDir}/tsconfig.json`);
 		const cache = new TSConfckCache();
 		const actualJSConfig = await findNative(jsFile, { cache, configName: 'jsconfig.json' });
 		const actualTSConfig = await findNative(tsFile, { cache });
 		expect(actualJSConfig).toBe(expectedJSConfig);
 		expect(actualTSConfig).toBe(expectedTSConfig);
-		expect(cache.getConfigPath(absFixture(`${fixtureDir}`))).toBe(expectedTSConfig);
-		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b`))).toBe(expectedTSConfig);
-		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b/c`))).toBe(expectedTSConfig);
-		expect(cache.getConfigPath(absFixture(`${fixtureDir}`), 'jsconfig.json')).toBe(undefined);
-		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b`), 'jsconfig.json')).toBe(undefined);
-		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b/c`), 'jsconfig.json')).toBe(
+		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}`))).toBe(expectedTSConfig);
+		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b`))).toBe(expectedTSConfig);
+		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b/c`))).toBe(expectedTSConfig);
+		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}`), 'jsconfig.json')).toBe(undefined);
+		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b`), 'jsconfig.json')).toBe(undefined);
+		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b/c`), 'jsconfig.json')).toBe(
 			expectedJSConfig
 		);
 	});

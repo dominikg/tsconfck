@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { isInNodeModules, loadTS } from './util.js';
+import { isInNodeModules, loadTS, native2posix } from './util.js';
 
 /**
  * find the closest tsconfig.json file using native ts.findConfigFile
@@ -11,12 +11,12 @@ import { isInNodeModules, loadTS } from './util.js';
  * @returns {Promise<string>} absolute path to closest tsconfig.json
  */
 export async function findNative(filename, options) {
-	let dir = path.dirname(path.resolve(filename));
+	let dir = native2posix(path.dirname(path.resolve(filename)));
 	if (options?.ignoreNodeModules && isInNodeModules(dir)) {
 		return null;
 	}
 	const cache = options?.cache;
-	const root = options?.root ? path.resolve(options.root) : undefined;
+	const root = options?.root ? native2posix(path.resolve(options.root)) : undefined;
 	const configName = options?.configName ?? 'tsconfig.json';
 	if (cache?.hasConfigPath(dir, configName)) {
 		return cache.getConfigPath(dir, configName);
