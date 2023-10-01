@@ -1,5 +1,21 @@
 # tsconfck
 
+## 3.0.0-next.9
+
+### Major Changes
+
+- breaking: include js extensions with allowJs: true ([#132](https://github.com/dominikg/tsconfck/pull/132))
+
+- breaking: enable caching paths for multiple configNames in one TSConfckCache, changed cache.getTSConfigPath(dir) to cache.getConfigPath(dir,configName) ([#132](https://github.com/dominikg/tsconfck/pull/132))
+
+### Minor Changes
+
+- feat: add configName option to support jsconfig.json ([#132](https://github.com/dominikg/tsconfck/pull/132))
+
+### Patch Changes
+
+- fix(types): use import condition for types to avoid masquerading as cjs ([#130](https://github.com/dominikg/tsconfck/pull/130))
+
 ## 3.0.0-next.8
 
 ### Major Changes
