@@ -27,3 +27,6 @@ node_modules
 # macos
 .DS_Store
 ._.DS_Store
+
+# benchmark
+.bench

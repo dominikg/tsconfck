@@ -17,6 +17,9 @@ importers:
       dts-buddy:
         specifier: ^0.2.5
         version: 0.2.5
+      esbuild:
+        specifier: ^0.19.4
+        version: 0.19.4
       eslint:
         specifier: ^8.50.0
         version: 8.50.0
@@ -32,6 +35,9 @@ importers:
       eslint-plugin-prettier:
         specifier: ^5.0.0
         version: 5.0.0(eslint-config-prettier@9.0.0)(eslint@8.50.0)(prettier@3.0.3)
+      get-tsconfig:
+        specifier: ^4.7.2
+        version: 4.7.2
       husky:
         specifier: ^8.0.3
         version: 8.0.3
@@ -47,6 +53,18 @@ importers:
       publint:
         specifier: ^0.2.3
         version: 0.2.3
+      tiny-glob:
+        specifier: ^0.2.9
+        version: 0.2.9
+      tinybench:
+        specifier: ^2.5.1
+        version: 2.5.1
+      tsconfck-2:
+        specifier: npm:tsconfck@^2.0.0
+        version: /tsconfck@2.1.2
+      tsconfck-3:
+        specifier: npm:tsconfck@^3.0.0-next.9
+        version: link:packages/tsconfck
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
@@ -3869,6 +3887,17 @@ packages:
       typescript: '>=4.2.0'
     dependencies:
       typescript: 5.0.4
+    dev: true
+
+  /tsconfck@2.1.2:
+    resolution: {integrity: sha512-ghqN1b0puy3MhhviwO2kGF8SeMDNhEbnKxjK7h6+fvY9JAxqvXi8y5NAHSQv687OVboS2uZIByzGd45/YxrRHg==}
+    engines: {node: ^14.13.1 || ^16 || >=18}
+    hasBin: true
+    peerDependencies:
+      typescript: ^4.3.5 || ^5.0.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
     dev: true
 
   /tslib@2.6.2:
