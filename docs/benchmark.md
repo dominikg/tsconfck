@@ -4,7 +4,7 @@
 
 tsconfck is fully async to ensure best performance in high pressure situations like vite dev-server startup where many files are read and cpu heavy work is going on in parallel.
 
-This [benchmark](../scripts/bench.js) transpiles microsoft/typescript/src with esbuild.transform after asyncrounusly reading the files and parsing the config in one huge Promise.all.
+This [benchmark](../scripts/bench.js) transpiles [microsoft/TypeScript](https://github.com/microsoft/TypeScript) /src with [esbuild.transform](https://esbuild.github.io/api/#transform) after asyncrounusly reading the files and parsing the config in one huge Promise.all.
 Each task is run in sequence (1 warmup 20 samples) followed by gc and a 5 second wait to ensure they don't interact with each others timings.
 
 Due to the highly async nature of the tasks, it is hard to measure the exact timings for config parsing alone.
@@ -15,6 +15,8 @@ The `Relative` columns show how much time the task took relative to the fastest 
 Note: get-tsconfig is included because it also has a cache but is synchronous. In a different benchmark setting with less pressure and more synchronous work, the results would likely look different.
 
 To run it yourself, clone this repo and run `pnpm i && pnpm bench`. Note you need `curl` and `tar` installed and it'll download a ~29MB tgz file on first run.
+
+## modes
 
 - `no load` runs only config parse
 - `io load` runs config parse and file read (with fs.promises)
@@ -73,6 +75,8 @@ To run it yourself, clone this repo and run `pnpm i && pnpm bench`. Note you nee
 
 <!-- data end -->
 
+> This data has been recorded on Linux 6.1, node20, 8c/16t ryzen cpu, pcie-3 nvme SSD. (duration ~4.5 min)
+
 ## Observations
 
 ### tsconfck@3 is a lot faster than tsconfck@2
@@ -80,9 +84,11 @@ To run it yourself, clone this repo and run `pnpm i && pnpm bench`. Note you nee
 This is great news and most likely attributed to the rework of the cache and using callbacks instead of adding more promises to the mix.
 The impact on vite however remains to be seen as it isn't clear if it had much of a negative influence before
 
+### tsconfck@3 is within margin of baseline under load
+
+One could say it's background noise. Not completely true but for sure it doesn't get in the way.
+
 ### parseNative with caching is surprisingly competitive
 
-Typescripts own parse does a lot extra work with all files matched by the configs and it is synchronous too.
+TypeScripts own parse does a lot extra work with all files matched by the configs and it is synchronous too.
 But with caching ensuring work is only ever done once, it's almost ok.
-
-###
