@@ -19,6 +19,7 @@ Because no simple official api exists and tsconfig isn't actual json.
 - [x] optional findNative and parseNative to use official typescript api
 - [x] zero dependencies (typescript optional)
 - [x] extensive testsuite
+- [x] completely async and optimized (it's [fast](./docs/benchmark.md))
 
 # Install
 
