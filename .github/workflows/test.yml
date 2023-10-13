@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - version-3
   pull_request:
     branches:
       - main
-      - version-3
 jobs:
   checks:
     timeout-minutes: 5
