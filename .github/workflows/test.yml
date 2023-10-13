@@ -4,10 +4,10 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - version-2
   pull_request:
     branches:
-      - main
+      - version-2
 
 jobs:
   # "checks" job runs on linux + node16 only and checks that install, build, lint, format work
