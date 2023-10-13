@@ -1,110 +1,52 @@
 {
-  "name": "tsconfck",
-  "version": "2.1.2",
-  "description": "A utility to work with tsconfig.json without typescript",
-  "license": "MIT",
-  "author": "dominikg",
-  "files": [
-    "dist",
-    "bin",
-    "src",
-    "README.md",
-    "LICENSE",
-    "package.json"
-  ],
-  "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "bin": "bin/tsconfck.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./package.json": "./package.json"
-  },
-  "scripts": {
-    "dev": "pnpm build:ci --watch src",
-    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --target node14.13.1",
-    "build": "pnpm build:ci --dts --sourcemap && node scripts/generate-api-docs.js",
-    "test": "node --experimental-loader tsm node_modules/uvu/bin.js tests -i fixtures -i temp -i util/",
-    "test:watch": "pnpm test; watchlist tests src -- pnpm test",
-    "test:coverage": "c8 --include=src --clean pnpm test",
-    "test:report": "c8 report --reporter=text-lcov > coverage/coverage.lcov",
-    "lint": "eslint --ignore-path .gitignore '**/*.{cjs,js,ts,md}'",
-    "lint:fix": "pnpm lint --fix",
-    "format": "prettier --ignore-path .gitignore '**/*.{cjs,js,ts,md}' --check",
-    "format:fix": "pnpm format --write",
-    "fixup": "run-s lint:fix format:fix",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -l tsconfck",
-    "release": "node scripts/release.js",
-    "release:dry": "pnpm release --dry",
-    "release:next": "pnpm release --next",
-    "prepare": "husky install"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dominikg/tsconfck.git"
-  },
-  "keywords": [
-    "typescript",
-    "tsconfig",
-    "tsconfig.json"
-  ],
-  "bugs": {
-    "url": "https://github.com/dominikg/tsconfck/issues"
-  },
-  "homepage": "https://github.com/dominikg/tsconfck/tree/main/#readme",
-  "peerDependencies": {
-    "typescript": "^4.3.5 || ^5.0.0"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^17.6.7",
-    "@commitlint/config-conventional": "^17.6.7",
-    "@tsconfig/node14": "^14.1.0",
-    "@types/node": "^20.4.8",
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "c8": "^8.0.1",
-    "chalk": "^5.3.0",
-    "conventional-changelog-cli": "^3.0.0",
-    "enquirer": "^2.4.1",
-    "esbuild": "^0.18.18",
-    "eslint": "^8.46.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-markdown": "^3.0.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "execa": "^7.2.0",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.2.3",
-    "minimist": "^1.2.8",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.0.1",
-    "rimraf": "^5.0.1",
-    "semver": "^7.5.4",
-    "tiny-glob": "^0.2.9",
-    "tsm": "^2.3.0",
-    "tsup": "^7.2.0",
-    "typescript": "^5.1.6",
-    "uvu": "^0.5.6",
-    "watchlist": "^0.3.1"
-  },
-  "lint-staged": {
-    "*.{cjs,js,ts,md}": [
-      "eslint --fix",
-      "prettier --write"
-    ]
-  },
-  "packageManager": "pnpm@8.6.12",
-  "engines": {
-    "node": "^14.13.1 || ^16 || >=18"
-  }
+	"name": "tsconfck-monorepo",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "pnpm -r test",
+		"check": "run-p -c check:*",
+		"check:publint": "pnpm --filter \"./packages/*\" --parallel check:publint",
+		"check:types": "pnpm --filter \"./packages/*\" --parallel check:types",
+		"check:lint": "eslint --cache --ignore-path .gitignore '**/*.{js,md}'",
+		"check:format": "prettier --cache --ignore-path .gitignore --ignore-path .prettierignore --ignore-unknown --check .",
+		"lint": "pnpm check:lint --fix",
+		"format": "pnpm check:format --write",
+		"fixup": "run-s generate lint format",
+		"generate": "run-s generate:types generate:docs",
+		"generate:types": "pnpm --dir packages/tsconfck run dts-buddy",
+		"generate:docs": "node scripts/generate-api-docs.js",
+		"release": "pnpm changeset publish",
+		"prepare": "husky install",
+		"bench": "node --expose-gc -max-old-space-size=4096 scripts/bench.js"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.26.2",
+		"@svitejs/changesets-changelog-github-compact": "^1.1.0",
+		"dts-buddy": "^0.2.5",
+		"esbuild": "^0.19.4",
+		"eslint": "^8.51.0",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-markdown": "^3.0.1",
+		"eslint-plugin-n": "^16.1.0",
+		"eslint-plugin-prettier": "^5.0.0",
+		"get-tsconfig": "^4.7.2",
+		"husky": "^8.0.3",
+		"lint-staged": "^14.0.1",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^3.0.3",
+		"publint": "^0.2.3",
+		"tiny-glob": "^0.2.9",
+		"tinybench": "^2.5.1",
+		"tsconfck-2": "npm:tsconfck@^2.0.0",
+		"tsconfck-3": "npm:tsconfck@^3.0.0-next.9",
+		"vitest": "^0.34.6"
+	},
+	"lint-staged": {
+		"*.{js,md}": "eslint --cache --fix",
+		"*": "prettier --cache --ignore-path .prettierignore --ignore-unknown --write"
+	},
+	"packageManager": "pnpm@8.9.0",
+	"engines": {
+		"node": "^18 || >=20"
+	}
 }

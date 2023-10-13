@@ -1,0 +1,11 @@
+{
+	"include": [
+		"./foo.ts"
+	],
+	"extends": "../tsconfig.base",
+	"compilerOptions": {
+		"composite": true,
+		"strictNullChecks": true,
+		"strict": true
+	}
+}

@@ -1,0 +1,1 @@
+parsing <fixture-dir>/parse/invalid/bom/tsconfig.json failed: SyntaxError: Unexpected token x in JSON at position 14

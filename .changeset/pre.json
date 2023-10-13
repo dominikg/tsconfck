@@ -1,0 +1,32 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "tsconfck": "3.0.0-next.0"
+  },
+  "changesets": [
+    "chatty-garlics-call",
+    "fair-ads-kick",
+    "five-geckos-wonder",
+    "fresh-lions-cough",
+    "gold-singers-cheer",
+    "good-taxis-teach",
+    "lazy-geckos-hide",
+    "mighty-dogs-argue",
+    "olive-readers-cover",
+    "perfect-dryers-smile",
+    "pink-points-hide",
+    "shaggy-cows-look",
+    "shy-lamps-sleep",
+    "six-pillows-return",
+    "sour-gorillas-smash",
+    "sweet-onions-carry",
+    "tall-chicken-chew",
+    "tasty-icons-prove",
+    "tricky-frogs-pull",
+    "tricky-trees-tell",
+    "twelve-rings-bow",
+    "wise-hairs-clean",
+    "witty-dolls-relax"
+  ]
+}

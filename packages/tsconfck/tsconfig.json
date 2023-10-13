@@ -1,0 +1,14 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"lib": ["es2023"],
+		"module": "esnext",
+		"target": "es2022",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"allowJs": true
+	},
+	"include": ["bin/**/*", "src/**/*", "types/**/*"],
+	"exclude": ["node_modules"]
+}

@@ -3,13 +3,10 @@
 *.cpuprofile
 temp
 *.tmp
-
-# build and dist
-build
-dist
+.eslintcache
 
 # test coverage
-/coverage
+coverage
 *.lcov
 
 # env and local
@@ -30,3 +27,6 @@ node_modules
 # macos
 .DS_Store
 ._.DS_Store
+
+# benchmark
+.bench

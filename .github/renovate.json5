@@ -1,16 +1,16 @@
 {
-	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["config:base","group:allNonMajor",":semanticCommits"],
-	"schedule": ["before 5am on the 3rd day of the month"],
-	"labels": ["dependencies"],
-	"rangeStrategy": "bump",
-	"packageRules": [
+	$schema: 'https://docs.renovatebot.com/renovate-schema.json',
+	extends: ['config:base', 'group:allNonMajor', ':semanticCommits'],
+	schedule: ['before 5am on the 3rd day of the month'],
+	labels: ['dependencies'],
+	rangeStrategy: 'bump',
+	packageRules: [
 		{
-			"matchDepTypes": ["peerDependencies","engines"],
-			"enabled": false
+			matchDepTypes: ['peerDependencies', 'engines'],
+			enabled: false
 		}
 	],
-	"ignoreDeps": [
+	ignoreDeps: [
 		// add deps that need manual attention here
 	]
 }

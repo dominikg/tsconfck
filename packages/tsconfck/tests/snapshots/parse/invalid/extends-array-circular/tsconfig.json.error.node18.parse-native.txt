@@ -1,0 +1,1 @@
+TS 18000: Circularity detected while resolving configuration: <fixture-dir>/parse/invalid/extends-array-circular/tsconfig.json -> <fixture-dir>/parse/invalid/extends-array-circular/tsconfig.a.json -> <fixture-dir>/parse/invalid/extends-array-circular/tsconfig.a.b.json -> <fixture-dir>/parse/invalid/extends-array-circular/tsconfig.a.json
