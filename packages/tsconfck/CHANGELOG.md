@@ -1,5 +1,48 @@
 # tsconfck
 
+## 3.0.0
+
+### Major Changes
+
+- breaking(node): minimum supported node version is node18 ([#107](https://github.com/dominikg/tsconfck/pull/107))
+
+- breaking(exports): remove cjs export ([#107](https://github.com/dominikg/tsconfck/pull/107))
+
+- breaking(exports): remove package.json export ([#107](https://github.com/dominikg/tsconfck/pull/107))
+
+- breaking(peerDependencies): minimum supported typescript version for parseNative and findNative is 5.0 ([#107](https://github.com/dominikg/tsconfck/pull/107))
+
+- breaking(parse): include js extensions with allowJs: true ([#132](https://github.com/dominikg/tsconfck/pull/132))
+
+- breaking(parse): resolve with empty result for missing tsconfig file, remove option resolveWithEmptyIfConfigNotFound ([#115](https://github.com/dominikg/tsconfck/pull/115))
+
+- breaking(cache): Replace simple Map cache with a dedicated TSConfckCache ([#132](https://github.com/dominikg/tsconfck/pull/132))
+
+- breaking(find): remove tsconfigPaths option, use cache + ignoreNodeModules instead. ([#112](https://github.com/dominikg/tsconfck/pull/112))
+
+- breaking(find): add ignoreNodeModules option as a replacement for using tsconfigPaths to ignore node_modules ([#128](https://github.com/dominikg/tsconfck/pull/128))
+
+- breaking(errors): throw ENOENT from parse if input .json filename does not exist. throw custom error if exists but is no file ([#121](https://github.com/dominikg/tsconfck/pull/121))
+
+### Minor Changes
+
+- feat(exports): export unbundled esm js ([#107](https://github.com/dominikg/tsconfck/pull/107))
+
+- feat(exports): export types as module declaration, including a .d.ts.map ([#107](https://github.com/dominikg/tsconfck/pull/107))
+
+- perf(find): switch to fs.stat callback for async improve cache usage ([#115](https://github.com/dominikg/tsconfck/pull/115))
+
+- feat(find): add configName option to support jsconfig.json ([#132](https://github.com/dominikg/tsconfck/pull/132))
+
+- feat(findNative): add find options (cache, root) ([#112](https://github.com/dominikg/tsconfck/pull/112))
+
+### Patch Changes
+
+- fix(parseNative): return empty result for not found to align with parse ([#121](https://github.com/dominikg/tsconfck/pull/121))
+
+- fix(types): use import condition for types to avoid masquerading as cjs ([#130](https://github.com/dominikg/tsconfck/pull/130))
+
+
 ## 3.0.0-next.9
 
 ### Major Changes
