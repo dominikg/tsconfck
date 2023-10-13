@@ -21,7 +21,7 @@ const benchDir = fileURLToPath(new URL('../.bench', import.meta.url));
 const srcDir = `${benchDir}/src`;
 
 async function prepare() {
-	if (forceInit) {
+	if (forceInit && fs.existsSync(benchDir)) {
 		fs.rmSync(benchDir, { recursive: true });
 	}
 	if (!fs.existsSync(benchDir)) {
@@ -30,12 +30,28 @@ async function prepare() {
 		execSync(
 			`curl https://github.com/microsoft/TypeScript/archive/refs/tags/v${TS_VERSION}.tar.gz -L -o ${benchDir}/ts.tgz`
 		);
-		execSync(
-			`tar --transform s/TypeScript-${TS_VERSION}\\\\// -xzf ts.tgz TypeScript-${TS_VERSION}/src`,
-			{ cwd: benchDir }
-		);
-		fs.rmSync(`${benchDir}/ts.tgz`);
-		fs.rmSync(`${srcDir}/loc`, { recursive: true }); // localization data
+		try {
+			execSync(
+				`tar --transform s/TypeScript-${TS_VERSION}// -xzf ts.tgz TypeScript-${TS_VERSION}/src`,
+				{ cwd: benchDir }
+			);
+		} catch (e) {
+			if (!fs.existsSync(srcDir)) {
+				throw e; // on windows git-bash tar might still error even after successfully extracting it
+			}
+		}
+
+		if (!fs.existsSync(srcDir)) {
+			throw new Error(
+				`failed to extract ${benchDir}/ts.tgz TypeScript-${TS_VERSION}/src to ${srcDir}`
+			);
+		}
+		if (fs.existsSync(`${benchDir}/ts.tgz`)) {
+			fs.rmSync(`${benchDir}/ts.tgz`);
+		}
+		if (fs.existsSync(`${srcDir}/loc`)) {
+			fs.rmSync(`${srcDir}/loc`, { recursive: true }); // localization data
+		}
 		console.log('preparation done');
 	}
 }
@@ -54,6 +70,8 @@ function getPackageVersions() {
 	};
 }
 
+await prepare();
+const versions = getPackageVersions();
 const allTSFiles = glob(`${srcDir}/**/*.ts`);
 
 async function benchParse({ parseConfig = false, readFiles = false, transformFiles = false }) {
@@ -143,9 +161,6 @@ async function benchParse({ parseConfig = false, readFiles = false, transformFil
 
 	return results;
 }
-
-await prepare();
-const versions = getPackageVersions();
 
 async function executeBenchParse(name, params) {
 	const results = await benchParse(params);
