@@ -19,6 +19,16 @@ Because no simple official api exists and tsconfig isn't actual json.
 - [x] optional findNative and parseNative to use official typescript api
 - [x] zero dependencies (typescript optional)
 - [x] extensive testsuite
+- [x] completely async and optimized (it's [fast](https://github.com/dominikg/tsconfck/blob/main/docs/benchmark.md))
+- [x] tiny [4.7KB gzip](https://pkg-size.dev/tsconfck@%5E3.0.0-next.0)
+- [x] unbundled esm js, no sourcemaps needed
+- [x] [types](https://github.com/dominikg/tsconfck/blob/main//packages/tsconfck/types/index.d.ts) generated with [dts-buddy](https://github.com/Rich-Harris/dts-buddy)
+
+# Users
+
+Used by [vite](https://github.com/vitejs/vite)\*, [vite-tsconfig-paths](https://github.com/aleclarson/vite-tsconfig-paths), [astro](https://github.com/withastro/astro) and [many more](https://github.com/dominikg/tsconfck/network/dependents)
+
+> (\*) vite bundles tsconfck so it is listed as a devDependency
 
 # Install
 
