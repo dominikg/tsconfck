@@ -60,8 +60,8 @@ importers:
         specifier: ^2.5.1
         version: 2.5.1
       tsconfck-2:
-        specifier: npm:tsconfck@^2.0.0
-        version: /tsconfck@2.1.2
+        specifier: npm:tsconfck@^3.0.0
+        version: link:packages/tsconfck
       tsconfck-3:
         specifier: npm:tsconfck@^3.0.0-next.9
         version: link:packages/tsconfck
@@ -3887,17 +3887,6 @@ packages:
       typescript: '>=4.2.0'
     dependencies:
       typescript: 5.0.4
-    dev: true
-
-  /tsconfck@2.1.2:
-    resolution: {integrity: sha512-ghqN1b0puy3MhhviwO2kGF8SeMDNhEbnKxjK7h6+fvY9JAxqvXi8y5NAHSQv687OVboS2uZIByzGd45/YxrRHg==}
-    engines: {node: ^14.13.1 || ^16 || >=18}
-    hasBin: true
-    peerDependencies:
-      typescript: ^4.3.5 || ^5.0.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
     dev: true
 
   /tslib@2.6.2:

@@ -37,7 +37,7 @@
 		"publint": "^0.2.3",
 		"tiny-glob": "^0.2.9",
 		"tinybench": "^2.5.1",
-		"tsconfck-2": "npm:tsconfck@^2.0.0",
+		"tsconfck-2": "npm:tsconfck@^3.0.0",
 		"tsconfck-3": "npm:tsconfck@^3.0.0-next.9",
 		"vitest": "^0.34.6"
 	},
