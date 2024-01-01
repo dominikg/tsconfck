@@ -59,12 +59,12 @@ importers:
       tinybench:
         specifier: ^2.5.1
         version: 2.5.1
+      tsconfck:
+        specifier: workspace:^
+        version: link:packages/tsconfck
       tsconfck-2:
         specifier: npm:tsconfck@^2.1.2
         version: /tsconfck@2.1.2
-      tsconfck-3:
-        specifier: npm:tsconfck@^3.0.0
-        version: link:packages/tsconfck
       vitest:
         specifier: ^1.0.1
         version: 1.0.1

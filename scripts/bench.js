@@ -1,6 +1,6 @@
 import { Bench } from 'tinybench';
 import * as tsconfck2 from 'tsconfck-2';
-import * as tsconfck3 from 'tsconfck-3';
+import * as tsconfck3 from 'tsconfck';
 import { hrtimeNow } from 'tinybench';
 import { execSync } from 'node:child_process';
 
@@ -129,10 +129,6 @@ async function benchParse({ parseConfig = false, readFiles = false, transformFil
 		}, cache);
 	});
 
-	await bench(`tsconfck@${versions.tsconfck3} without cache`, async () => {
-		await work(tsconfck3.parse, {});
-	});
-
 	await bench(`tsconfck@${versions.tsconfck3} parseNative`, async () => {
 		const cache = new tsconfck3.TSConfckCache();
 		await work(tsconfck3.parseNative, { cache });
@@ -141,11 +137,6 @@ async function benchParse({ parseConfig = false, readFiles = false, transformFil
 	await bench(`tsconfck@${versions.tsconfck3} parse`, async () => {
 		const cache = new tsconfck3.TSConfckCache();
 		await work(tsconfck3.parse, { cache });
-	});
-
-	await bench(`tsconfck@${versions.tsconfck2} parse`, async () => {
-		const cache = new Map();
-		await work(tsconfck2.parse, { cache });
 	});
 
 	await bench(`tsconfck@${versions.tsconfck2} parse with findAll`, async () => {
