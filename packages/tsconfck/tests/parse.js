@@ -11,6 +11,7 @@ import { promises as fs } from 'node:fs';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { TSConfckCache } from '../src/cache.js';
+import { posix2native } from '../src/util.js';
 
 describe('parse', () => {
 	it('should be a function', () => {
@@ -119,7 +120,7 @@ describe('parse', () => {
 		for (const filename of samples) {
 			// these 3 directories have extends declarations that lead to the configs being parsed from extends first and cached before explicit access
 			const expectedHasParseResult = ['dotdot', 'nested', 'nested/src'].some((dir) =>
-				filename.endsWith(`with_extends/${dir}/tsconfig.json`)
+				filename.endsWith(posix2native(`with_extends/${dir}/tsconfig.json`))
 			);
 			expect(
 				cache.hasParseResult(filename),
