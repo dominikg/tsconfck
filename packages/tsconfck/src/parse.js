@@ -30,7 +30,10 @@ export async function parse(filename, options) {
 	const cache = options?.cache;
 	if (cache?.hasParseResult(filename)) {
 		const result = await cache.getParseResult(filename);
-		if (result.tsconfig.extends && !result.extended) {
+		if (
+			(result.tsconfig.extends && !result.extended) ||
+			(result.tsconfig.references && !result.referenced)
+		) {
 			const promise = Promise.all([
 				parseExtends(result, cache),
 				parseReferences(result, options)
@@ -169,16 +172,12 @@ async function parseExtends(result, cache) {
 			/** @type {string[]} */
 			let resolvedExtends;
 			if (!Array.isArray(extending.tsconfig.extends)) {
-				resolvedExtends = [
-					await resolveExtends(extending.tsconfig.extends, extending.tsconfigFile)
-				];
+				resolvedExtends = [resolveExtends(extending.tsconfig.extends, extending.tsconfigFile)];
 			} else {
 				// reverse because typescript 5.0 treats ['a','b','c'] as c extends b extends a
-				resolvedExtends = await Promise.all(
-					extending.tsconfig.extends
-						.reverse()
-						.map((ex) => resolveExtends(ex, extending.tsconfigFile))
-				);
+				resolvedExtends = extending.tsconfig.extends
+					.reverse()
+					.map((ex) => resolveExtends(ex, extending.tsconfigFile));
 			}
 
 			const circularExtends = resolvedExtends.find((tsconfigFile) =>
@@ -216,10 +215,11 @@ async function parseExtends(result, cache) {
  *
  * @param {string} extended
  * @param {string} from
- * @returns {Promise<string>}
+ * @returns {string}
  */
-async function resolveExtends(extended, from) {
+function resolveExtends(extended, from) {
 	if (extended === '..') {
+		// see #149
 		extended = '../tsconfig.json';
 	}
 	const req = createRequire(from);
