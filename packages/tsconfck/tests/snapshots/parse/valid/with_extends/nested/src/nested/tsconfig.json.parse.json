@@ -1,0 +1,21 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"strictNullChecks": true,
+		"types": [
+			"bar"
+		],
+		"noImplicitAny": true
+	},
+	"include": [
+		"../../src/**/*"
+	],
+	"watchOptions": {
+		"watchFile": "useFsEvents",
+		"watchDirectory": "useFsEvents",
+		"fallbackPolling": "dynamicPriority"
+	},
+	"exclude": [
+		"../../../**/foo/*"
+	]
+}

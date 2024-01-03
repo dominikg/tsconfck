@@ -11,6 +11,7 @@ import { promises as fs } from 'node:fs';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { TSConfckCache } from '../src/cache.js';
+import { posix2native } from '../src/util.js';
 
 describe('parse', () => {
 	it('should be a function', () => {
@@ -117,7 +118,14 @@ describe('parse', () => {
 		];
 		const cache = new TSConfckCache();
 		for (const filename of samples) {
-			expect(cache.hasParseResult(filename), `cache does not exist for ${filename}`).toBe(false);
+			// these 3 directories have extends declarations that lead to the configs being parsed from extends first and cached before explicit access
+			const expectedHasParseResult = ['dotdot', 'nested', 'nested/src'].some((dir) =>
+				filename.endsWith(posix2native(`with_extends/${dir}/tsconfig.json`))
+			);
+			expect(
+				cache.hasParseResult(filename),
+				`cache does ${!expectedHasParseResult ? 'not ' : ' '}exist for ${filename}`
+			).toBe(expectedHasParseResult);
 			const actual = await parse(filename, { cache });
 			await expectToMatchSnap(
 				actual.tsconfig,
@@ -130,6 +138,22 @@ describe('parse', () => {
 			expect(cached.tsconfig, `input: ${filename} cached tsconfig is equal`).toEqual(
 				actual.tsconfig
 			);
+			if (actual.extended) {
+				for (const extended of actual.extended.map((e) => e.tsconfigFile)) {
+					expect(
+						cache.hasParseResult(extended),
+						`cache exists for extended tsconfig ${extended}`
+					).toBe(true);
+					const parsedExtended = await parse(extended);
+					expect(parsedExtended, `parsing extended ${extended} worked`).toBeTruthy();
+					if (parsedExtended.tsconfig.extends) {
+						expect(
+							parsedExtended.extended.length,
+							`nested extends has been resolved for ${extended}`
+						).toBeGreaterThanOrEqual(1);
+					}
+				}
+			}
 			const reparsedResult = await parse(filename, { cache });
 			expect(reparsedResult, `reparsedResult was returned from cache for ${filename}`).toBe(cached);
 

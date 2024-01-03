@@ -1,0 +1,8 @@
+{
+  "name": "dummy",
+  "private": true,
+  "version": "0.0.0",
+  "//": "main field is found by createRequire",
+  "main": "main.js"
+  
+}

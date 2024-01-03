@@ -29,7 +29,19 @@ export async function parse(filename, options) {
 	/** @type {import('./cache.js').TSConfckCache} */
 	const cache = options?.cache;
 	if (cache?.hasParseResult(filename)) {
-		return cache.getParseResult(filename);
+		const result = await cache.getParseResult(filename);
+		if (
+			(result.tsconfig.extends && !result.extended) ||
+			(result.tsconfig.references && !result.referenced)
+		) {
+			const promise = Promise.all([
+				parseExtends(result, cache),
+				parseReferences(result, options)
+			]).then(() => result);
+			cache.setParseResult(filename, promise);
+			await promise;
+		}
+		return result;
 	}
 	const {
 		resolve,
@@ -53,11 +65,10 @@ export async function parse(filename, options) {
 			await Promise.all([parseExtends(result, cache), parseReferences(result, options)]);
 		}
 		resolve(resolveSolutionTSConfig(filename, result));
-		return promise;
 	} catch (e) {
 		reject(e);
-		return promise;
 	}
+	return promise;
 }
 
 /**
@@ -207,18 +218,20 @@ async function parseExtends(result, cache) {
  * @returns {string}
  */
 function resolveExtends(extended, from) {
+	if (extended === '..') {
+		// see #149
+		extended = '../tsconfig.json';
+	}
+	const req = createRequire(from);
 	let error;
-
 	try {
-		return createRequire(from).resolve(extended);
+		return req.resolve(extended);
 	} catch (e) {
 		error = e;
 	}
-
-	if (!path.isAbsolute(extended) && !extended.startsWith('./') && !extended.startsWith('../')) {
+	if (extended[0] !== '.' && !path.isAbsolute(extended)) {
 		try {
-			const fallbackExtended = path.join(extended, 'tsconfig.json');
-			return createRequire(from).resolve(fallbackExtended);
+			return req.resolve(`${extended}/tsconfig.json`);
 		} catch (e) {
 			error = e;
 		}
