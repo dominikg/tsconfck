@@ -108,9 +108,9 @@ async function benchParse({ parseConfig = false, readFiles = false, transformFil
 								loader: 'ts',
 								tsconfigRaw: { compilerOptions: {} }
 								// don't use parsed config to ensure baseline and actual do the same amount of work
-						  }).catch((e) => {
+							}).catch((e) => {
 								console.log(`transform for ${f} failed`, e);
-						  })
+							})
 						: Promise.resolve({ code: '' });
 				})
 			)
