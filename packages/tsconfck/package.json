@@ -49,11 +49,11 @@
 	},
 	"devDependencies": {
 		"@tsconfig/node18": "^18.2.2",
-		"@vitest/coverage-v8": "^1.0.1",
-		"esbuild": "^0.19.8",
+		"@vitest/coverage-v8": "^1.1.1",
+		"esbuild": "^0.19.11",
 		"tiny-glob": "^0.2.9",
-		"typescript": "^5.3.2",
-		"vitest": "^1.0.1"
+		"typescript": "^5.3.3",
+		"vitest": "^1.1.1"
 	},
 	"engines": {
 		"node": "^18 || >=20"
