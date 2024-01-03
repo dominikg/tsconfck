@@ -1,5 +1,13 @@
 # tsconfck
 
+## 3.0.1
+
+### Patch Changes
+
+- fix(parse): ensure nested extended tsconfig.json files are parsed with extends and references resolved ([#150](https://github.com/dominikg/tsconfck/pull/150))
+
+- fix(parse): add workaround for "extends": ".." see #149 ([#150](https://github.com/dominikg/tsconfck/pull/150))
+
 ## 3.0.0
 
 ### Major Changes
@@ -41,7 +49,6 @@
 - fix(parseNative): return empty result for not found to align with parse ([#121](https://github.com/dominikg/tsconfck/pull/121))
 
 - fix(types): use import condition for types to avoid masquerading as cjs ([#130](https://github.com/dominikg/tsconfck/pull/130))
-
 
 ## 3.0.0-next.9
 
