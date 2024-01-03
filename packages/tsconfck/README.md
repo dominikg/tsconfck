@@ -20,9 +20,9 @@ Because no simple official api exists and tsconfig isn't actual json.
 - [x] zero dependencies (typescript optional)
 - [x] extensive testsuite
 - [x] completely async and optimized (it's [fast](https://github.com/dominikg/tsconfck/blob/main/docs/benchmark.md))
-- [x] tiny [4.7KB gzip](https://pkg-size.dev/tsconfck@%5E3.0.0-next.0)
+- [x] tiny [4.8KB gzip](https://pkg-size.dev/tsconfck)
 - [x] unbundled esm js, no sourcemaps needed
-- [x] [types](https://github.com/dominikg/tsconfck/blob/main//packages/tsconfck/types/index.d.ts) generated with [dts-buddy](https://github.com/Rich-Harris/dts-buddy)
+- [x] [types](https://github.com/dominikg/tsconfck/blob/main/packages/tsconfck/types/index.d.ts) generated with [dts-buddy](https://github.com/Rich-Harris/dts-buddy)
 
 # Users
 

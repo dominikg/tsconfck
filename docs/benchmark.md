@@ -28,48 +28,42 @@ To run it yourself, clone this repo and run `pnpm i && pnpm bench`. Note you nee
 
 ### no load
 
-| Task Name                           | Margin | Avg(total) | Relative(total) |  Avg(\*) | Relative(\*) |
-| ----------------------------------- | -----: | ---------: | --------------: | -------: | -----------: |
-| tsconfck@3.0.0-next.9 parse         | ±0.55% |     4.48ms |            1.00 |   4.12ms |         1.00 |
-| get-tsconfig@4.7.2                  | ±1.04% |    28.78ms |            6.43 |  28.42ms |         6.90 |
-| tsconfck@3.0.0-next.9 parseNative   | ±8.63% |   136.17ms |           30.40 | 135.81ms |        32.98 |
-| tsconfck@2.1.2 parse with findAll   | ±2.84% |   415.02ms |           92.65 | 414.66ms |       100.70 |
-| tsconfck@2.1.2 parse                | ±2.61% |   432.65ms |           96.59 | 432.29ms |       104.98 |
-| tsconfck@3.0.0-next.9 without cache | ±2.62% |   657.76ms |          146.84 | 657.40ms |       159.65 |
+| Task Name                         | Margin | Avg(total) | Relative(total) |  Avg(\*) | Relative(\*) |
+| --------------------------------- | -----: | ---------: | --------------: | -------: | -----------: |
+| tsconfck@3.0.1 parse              | ±0.75% |     3.90ms |            1.00 |   3.56ms |         1.00 |
+| tsconfck@3.0.1 parseNative        | ±8.31% |    24.32ms |            6.24 |  23.99ms |         6.73 |
+| get-tsconfig@4.7.2                | ±1.37% |    25.00ms |            6.41 |  24.66ms |         6.92 |
+| tsconfck@2.1.2 parse with findAll | ±1.71% |   367.03ms |           94.10 | 366.70ms |       102.92 |
 
 | Task Name | Margin | Avg total |
 | --------- | -----: | --------: |
-| baseline  | ±0.63% |    0.36ms |
+| baseline  | ±0.51% |    0.34ms |
 
 ### io load
 
-| Task Name                           | Margin | Avg(total) | Relative(total) |  Avg(\*) | Relative(\*) |
-| ----------------------------------- | -----: | ---------: | --------------: | -------: | -----------: |
-| tsconfck@3.0.0-next.9 parse         | ±2.91% |    36.83ms |            1.00 |   6.83ms |         1.00 |
-| get-tsconfig@4.7.2                  | ±2.96% |    66.57ms |            1.81 |  36.57ms |         5.35 |
-| tsconfck@3.0.0-next.9 parseNative   | ±2.50% |   166.67ms |            4.52 | 136.67ms |        20.00 |
-| tsconfck@2.1.2 parse with findAll   | ±2.67% |   454.37ms |           12.34 | 424.37ms |        62.11 |
-| tsconfck@2.1.2 parse                | ±3.32% |   466.26ms |           12.66 | 436.26ms |        63.85 |
-| tsconfck@3.0.0-next.9 without cache | ±2.51% |   699.39ms |           18.99 | 669.39ms |        97.97 |
+| Task Name                         | Margin | Avg(total) | Relative(total) |  Avg(\*) | Relative(\*) |
+| --------------------------------- | -----: | ---------: | --------------: | -------: | -----------: |
+| tsconfck@3.0.1 parse              | ±2.57% |    33.46ms |            1.00 |   9.28ms |         1.00 |
+| tsconfck@3.0.1 parseNative        | ±2.63% |    52.67ms |            1.57 |  28.48ms |         3.07 |
+| get-tsconfig@4.7.2                | ±2.54% |    57.69ms |            1.72 |  33.51ms |         3.61 |
+| tsconfck@2.1.2 parse with findAll | ±1.62% |   399.88ms |           11.95 | 375.70ms |        40.48 |
 
 | Task Name | Margin | Avg total |
 | --------- | -----: | --------: |
-| baseline  | ±2.75% |   30.00ms |
+| baseline  | ±1.99% |   24.18ms |
 
 ### io and cpu load
 
-| Task Name                           | Margin | Avg(total) | Relative(total) |  Avg(\*) | Relative(\*) |
-| ----------------------------------- | -----: | ---------: | --------------: | -------: | -----------: |
-| tsconfck@3.0.0-next.9 parse         | ±1.36% |   273.98ms |            1.00 |   4.60ms |         1.00 |
-| get-tsconfig@4.7.2                  | ±0.98% |   302.51ms |            1.10 |  33.13ms |         7.21 |
-| tsconfck@3.0.0-next.9 parseNative   | ±1.65% |   408.75ms |            1.49 | 139.37ms |        30.32 |
-| tsconfck@2.1.2 parse with findAll   | ±1.69% |   705.30ms |            2.57 | 435.91ms |        94.85 |
-| tsconfck@2.1.2 parse                | ±1.80% |   714.11ms |            2.61 | 444.72ms |        96.76 |
-| tsconfck@3.0.0-next.9 without cache | ±1.50% |   922.85ms |            3.37 | 653.46ms |       142.18 |
+| Task Name                         | Margin | Avg(total) | Relative(total) |  Avg(\*) | Relative(\*) |
+| --------------------------------- | -----: | ---------: | --------------: | -------: | -----------: |
+| tsconfck@3.0.1 parse              | ±1.38% |   273.87ms |            1.00 |   6.37ms |         1.00 |
+| get-tsconfig@4.7.2                | ±3.57% |   307.58ms |            1.12 |  40.08ms |         6.29 |
+| tsconfck@3.0.1 parseNative        | ±4.12% |   308.89ms |            1.13 |  41.39ms |         6.50 |
+| tsconfck@2.1.2 parse with findAll | ±1.24% |   656.31ms |            2.40 | 388.81ms |        61.03 |
 
 | Task Name | Margin | Avg total |
 | --------- | -----: | --------: |
-| baseline  | ±2.53% |  269.39ms |
+| baseline  | ±2.23% |  267.50ms |
 
 > (\*) total values include time spent reading and transforming files. For a more realistic comparison of these config parse performance, these values have been calculated by subtracting the average duration of the baseline run that does not parse config files.
 
@@ -84,9 +78,9 @@ To run it yourself, clone this repo and run `pnpm i && pnpm bench`. Note you nee
 This is great news and most likely attributed to the rework of the cache and using callbacks instead of adding more promises to the mix.
 The impact on vite however remains to be seen as it isn't clear if it had much of a negative influence before
 
-### tsconfck@3 is within margin of baseline under load
+### tsconfck@3 is hardly outside of margin of baseline under load
 
-One could say it's background noise. Not completely true but for sure it doesn't get in the way.
+It's mostly background noise. Not completely true but for sure it doesn't get in the way.
 
 ### parseNative with caching is surprisingly competitive
 
