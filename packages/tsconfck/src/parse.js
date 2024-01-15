@@ -29,19 +29,7 @@ export async function parse(filename, options) {
 	/** @type {import('./cache.js').TSConfckCache} */
 	const cache = options?.cache;
 	if (cache?.hasParseResult(filename)) {
-		const result = await cache.getParseResult(filename);
-		if (
-			(result.tsconfig.extends && !result.extended) ||
-			(result.tsconfig.references && !result.referenced)
-		) {
-			const promise = Promise.all([
-				parseExtends(result, cache),
-				parseReferences(result, options)
-			]).then(() => result);
-			cache.setParseResult(filename, promise);
-			await promise;
-		}
-		return result;
+		return getParsedDeep(filename, cache, options);
 	}
 	const {
 		resolve,
@@ -59,7 +47,7 @@ export async function parse(filename, options) {
 		}
 		let result;
 		if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
-			result = await cache.getParseResult(tsconfigFile);
+			result = await getParsedDeep(tsconfigFile, cache, options);
 		} else {
 			result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
 			await Promise.all([parseExtends(result, cache), parseReferences(result, options)]);
@@ -69,6 +57,29 @@ export async function parse(filename, options) {
 		reject(e);
 	}
 	return promise;
+}
+
+/**
+ * ensure extends and references are parsed
+ *
+ * @param {string} filename - cached file
+ * @param {import('./cache.js').TSConfckCache} cache - cache
+ * @param {import('./public.d.ts').TSConfckParseOptions} options - options
+ */
+async function getParsedDeep(filename, cache, options) {
+	const result = await cache.getParseResult(filename);
+	if (
+		(result.tsconfig.extends && !result.extended) ||
+		(result.tsconfig.references && !result.referenced)
+	) {
+		const promise = Promise.all([
+			parseExtends(result, cache),
+			parseReferences(result, options)
+		]).then(() => result);
+		cache.setParseResult(filename, promise);
+		return promise;
+	}
+	return result;
 }
 
 /**
