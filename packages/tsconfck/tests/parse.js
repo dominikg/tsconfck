@@ -114,14 +114,22 @@ describe('parse', () => {
 		// use the more interesting samples with extensions and solution-style
 		const samples = [
 			...(await globFixtures('parse/valid/with_extends/**/tsconfig.json')),
-			...(await globFixtures('parse/solution/**/*.ts'))
+			...(await globFixtures('parse/solution/**/*.ts')),
+			...(await globFixtures('parse/solution/**/*.json'))
 		];
 		const cache = new TSConfckCache();
 		for (const filename of samples) {
-			// these 3 directories have extends declarations that lead to the configs being parsed from extends first and cached before explicit access
-			const expectedHasParseResult = ['dotdot', 'nested', 'nested/src'].some((dir) =>
-				filename.endsWith(posix2native(`with_extends/${dir}/tsconfig.json`))
-			);
+			// these configs are expected to exist in cache already
+			// because they have been parsed by being extended in previous samples
+			const extendedSamples = [
+				'with_extends/dotdot/tsconfig.json',
+				'with_extends/nested/tsconfig.json',
+				'with_extends/nested/src/tsconfig.json',
+				'solution/jsconfig/jsconfig.src.json',
+				'solution/mixed/tsconfig.src.json',
+				'solution/referenced-extends-original/tsconfig.json'
+			].map(posix2native);
+			const expectedHasParseResult = extendedSamples.some((sample) => filename.endsWith(sample));
 			expect(
 				cache.hasParseResult(filename),
 				`cache does ${!expectedHasParseResult ? 'not ' : ' '}exist for ${filename}`
@@ -186,6 +194,36 @@ describe('parse', () => {
 				cached
 			);
 			expect(newParse, `input: ${filename} cached again`).toBe(newCached);
+		}
+	});
+
+	it('should not lock up parsing in parallel with cache', async () => {
+		const samples = [
+			...(await globFixtures('parse/valid/**/*.ts')),
+			...(await globFixtures('parse/valid/**/*.json')),
+			...(await globFixtures('parse/solution/**/*.ts')),
+			...(await globFixtures('parse/solution/**/*.json'))
+		];
+		expect(samples.length).toBeGreaterThan(10);
+		const cache = new TSConfckCache();
+		const unfinished = new Set(samples);
+		try {
+			const results = await Promise.race([
+				Promise.all(
+					samples.map((s) => {
+						const sample = s;
+						return parse(sample, { cache }).then(() => unfinished.delete(sample));
+					})
+				),
+				new Promise((_, reject) => setTimeout(reject, 500))
+			]);
+			expect(results.length).toBe(samples.length);
+		} catch (e) {
+			expect.fail(
+				`did not process all files, some of these are blocking each other:\n${[...unfinished].join(
+					'\n'
+				)}\n`
+			);
 		}
 	});
 
