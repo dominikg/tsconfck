@@ -50,7 +50,7 @@
 	"devDependencies": {
 		"@tsconfig/node18": "^18.2.2",
 		"@vitest/coverage-v8": "^1.2.2",
-		"esbuild": "^0.19.12",
+		"esbuild": "^0.20.0",
 		"tiny-glob": "^0.2.9",
 		"typescript": "^5.3.3",
 		"vitest": "^1.2.2"
