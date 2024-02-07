@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.0.2
+
+### Patch Changes
+
+- fix(parse): ensure extends and references are deep parsed also for concurrently parsed siblings ([#153](https://github.com/dominikg/tsconfck/pull/153))
+
 ## 3.0.1
 
 ### Patch Changes
