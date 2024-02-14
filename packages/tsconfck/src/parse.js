@@ -4,6 +4,7 @@ import { createRequire } from 'module';
 import { find } from './find.js';
 import { toJson } from './to-json.js';
 import {
+	isCodeFile,
 	makePromise,
 	native2posix,
 	resolve2posix,
@@ -50,7 +51,7 @@ export async function parse(filename, options) {
 			result = await getParsedDeep(tsconfigFile, cache, options);
 		} else {
 			result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
-			await Promise.all([parseExtends(result, cache), parseReferences(result, options)]);
+			await Promise.all([parseExtends(result, cache), parseReferences(filename, result, options)]);
 		}
 		resolve(resolveSolutionTSConfig(filename, result));
 	} catch (e) {
@@ -68,14 +69,19 @@ export async function parse(filename, options) {
  */
 async function getParsedDeep(filename, cache, options) {
 	const result = await cache.getParseResult(filename);
-	if (
-		(result.tsconfig.extends && !result.extended) ||
-		(result.tsconfig.references && !result.referenced)
-	) {
-		const promise = Promise.all([
-			parseExtends(result, cache),
-			parseReferences(result, options)
-		]).then(() => result);
+	const promises = [];
+	if (result.tsconfig.extends && !result.extended) {
+		promises.push(parseExtends(result, cache));
+	}
+	if (result.tsconfig.references) {
+		if (result.referenced?.then) {
+			promises.push(result.referenced);
+		} else if (!result.referenced) {
+			promises.push(parseReferences(filename, result, options));
+		}
+	}
+	if (promises.length) {
+		const promise = Promise.all(promises).then(() => result);
 		cache.setParseResult(filename, promise);
 		return promise;
 	}
@@ -133,24 +139,26 @@ function normalizeTSConfig(tsconfig, dir) {
 }
 
 /**
- *
+ * @param {string} filename
  * @param {import('./public.d.ts').TSConfckParseResult} result
  * @param {import('./public.d.ts').TSConfckParseOptions} [options]
- * @returns {Promise<void>}
+ * @returns {Promise<TSConfckParseResult[]|void>}
  */
-async function parseReferences(result, options) {
-	if (!result.tsconfig.references) {
+async function parseReferences(filename, result, options) {
+	if (!result.tsconfig.references || !isCodeFile(filename)) {
 		return;
 	}
-	const referencedFiles = resolveReferencedTSConfigFiles(result, options);
-	const referenced = await Promise.all(
-		referencedFiles.map((file) => parseFile(file, options?.cache))
-	);
-	await Promise.all(referenced.map((ref) => parseExtends(ref, options?.cache)));
-	referenced.forEach((ref) => {
-		ref.solution = result;
-	});
-	result.referenced = referenced;
+	if (!result.referenced) {
+		result.referenced = Promise.all(
+			resolveReferencedTSConfigFiles(result, options).map((file) =>
+				parseFile(file, options?.cache).then((ref) => {
+					ref.solution = result;
+					return parseExtends(ref, options?.cache).then(() => ref);
+				})
+			)
+		).then((referenced) => (result.referenced = referenced));
+	}
+	return result.referenced;
 }
 
 /**

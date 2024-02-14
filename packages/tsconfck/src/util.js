@@ -73,6 +73,16 @@ export const isInNodeModules = IS_POSIX
 	: (dir) => dir.match(/[/\\]node_modules[/\\]/);
 
 /**
+ *
+ * @param {string} filename
+ * @returns {boolean} true if filename has an extension that isn't .json
+ */
+export function isCodeFile(filename) {
+	const ext = path.extname(filename);
+	return ext.length > 0 && ext !== '.json';
+}
+
+/**
  * convert posix separator to native separator
  *
  * eg.

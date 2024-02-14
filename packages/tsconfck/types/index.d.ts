@@ -196,7 +196,7 @@ declare module 'tsconfck' {
 		/**
 		 * ParseResults for all tsconfig files referenced in a solution
 		 */
-		referenced?: TSConfckParseResult[];
+		referenced?: Promise<TSConfckParseResult[]>|TSConfckParseResult[];
 
 		/**
 		 * ParseResult for all tsconfig files

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import path from 'node:path';
 import os from 'os';
-import { isGlobMatch, native2posix, resolve2posix } from '../src/util.js';
+import { isGlobMatch, native2posix, resolve2posix, isCodeFile } from '../src/util.js';
 
 const GLOBMATCH_TEST_DATA = [
 	{
@@ -109,6 +109,17 @@ describe('util', () => {
 					);
 				}
 			}
+		});
+	});
+	describe('isCodeFile', () => {
+		it('should return true for files with extension', () => {
+			expect(isCodeFile('foo.ts')).toBe(true);
+		});
+		it('should return false for files without extension', () => {
+			expect(isCodeFile('@tsconfig/node20')).toBe(false);
+		});
+		it('should return false for files with json extension', () => {
+			expect(isCodeFile('/foo/bar/tsconfig.json')).toBe(false);
 		});
 	});
 });

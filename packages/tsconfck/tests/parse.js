@@ -125,8 +125,7 @@ describe('parse', () => {
 				'with_extends/dotdot/tsconfig.json',
 				'with_extends/nested/tsconfig.json',
 				'with_extends/nested/src/tsconfig.json',
-				'solution/jsconfig/jsconfig.src.json',
-				'solution/mixed/tsconfig.src.json',
+				'solution/simple/tsconfig.base.json',
 				'solution/referenced-extends-original/tsconfig.json'
 			].map(posix2native);
 			const expectedHasParseResult = extendedSamples.some((sample) => filename.endsWith(sample));
