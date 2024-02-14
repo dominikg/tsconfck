@@ -206,7 +206,7 @@ async function parseExtends(result, cache) {
 			extended.splice(
 				pos + 1,
 				0,
-				...(await Promise.all(resolvedExtends.map((file) => parseFile(file, cache))))
+				...(await Promise.all(resolvedExtends.map((file) => parseFile(file, cache, true))))
 			);
 		} else {
 			// reached a leaf, backtrack to the last branching point and continue

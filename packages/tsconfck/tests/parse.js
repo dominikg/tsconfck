@@ -122,12 +122,12 @@ describe('parse', () => {
 			// these configs are expected to exist in cache already
 			// because they have been parsed by being extended in previous samples
 			const extendedSamples = [
-				'with_extends/dotdot/tsconfig.json',
-				'with_extends/nested/tsconfig.json',
-				'with_extends/nested/src/tsconfig.json',
+				// 'with_extends/dotdot/tsconfig.json',
+				// 'with_extends/nested/tsconfig.json',
+				// 'with_extends/nested/src/tsconfig.json',
 				'solution/jsconfig/jsconfig.src.json',
-				'solution/mixed/tsconfig.src.json',
-				'solution/referenced-extends-original/tsconfig.json'
+				'solution/mixed/tsconfig.src.json'
+				// 'solution/referenced-extends-original/tsconfig.json'
 			].map(posix2native);
 			const expectedHasParseResult = extendedSamples.some((sample) => filename.endsWith(sample));
 			expect(
@@ -148,10 +148,12 @@ describe('parse', () => {
 			);
 			if (actual.extended) {
 				for (const extended of actual.extended.map((e) => e.tsconfigFile)) {
+					/* we are no longer caching while parsing extended
 					expect(
 						cache.hasParseResult(extended),
 						`cache exists for extended tsconfig ${extended}`
 					).toBe(true);
+					*/
 					const parsedExtended = await parse(extended);
 					expect(parsedExtended, `parsing extended ${extended} worked`).toBeTruthy();
 					if (parsedExtended.tsconfig.extends) {
