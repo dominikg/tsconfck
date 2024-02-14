@@ -49,6 +49,9 @@ export async function parse(filename, options) {
 		let result;
 		if (filename !== tsconfigFile && cache?.hasParseResult(tsconfigFile)) {
 			result = await getParsedDeep(tsconfigFile, cache, options);
+			if (result.referenced?.then) {
+				await result.referenced;
+			}
 		} else {
 			result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
 			await Promise.all([parseExtends(result, cache), parseReferences(filename, result, options)]);
