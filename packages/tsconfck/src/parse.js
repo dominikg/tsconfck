@@ -37,7 +37,7 @@ export async function parse(filename, options) {
 		/** @type {Promise<import('./public.d.ts').TSConfckParseResult>}*/
 		promise
 	} = makePromise();
-	cache?.setParseResult(filename, promise);
+	cache?.setParseResult(filename, promise, true);
 	try {
 		let tsconfigFile =
 			(await resolveTSConfigJson(filename, cache)) || (await find(filename, options));
@@ -76,7 +76,7 @@ async function getParsedDeep(filename, cache, options) {
 			parseExtends(result, cache),
 			parseReferences(result, options)
 		]).then(() => result);
-		cache.setParseResult(filename, promise);
+		cache.setParseResult(filename, promise, true);
 		return promise;
 	}
 	return result;
@@ -90,7 +90,11 @@ async function getParsedDeep(filename, cache, options) {
  * @returns {Promise<import('./public.d.ts').TSConfckParseResult>}
  */
 async function parseFile(tsconfigFile, cache, skipCache) {
-	if (!skipCache && cache?.hasParseResult(tsconfigFile)) {
+	if (
+		!skipCache &&
+		cache?.hasParseResult(tsconfigFile) &&
+		!cache.getParseResult(tsconfigFile)._isRootFile_
+	) {
 		return cache.getParseResult(tsconfigFile);
 	}
 	const promise = fs
@@ -112,7 +116,10 @@ async function parseFile(tsconfigFile, cache, skipCache) {
 				e
 			);
 		});
-	if (!skipCache) {
+	if (
+		!skipCache &&
+		(!cache?.hasParseResult(tsconfigFile) || !cache.getParseResult(tsconfigFile)._isRootFile_)
+	) {
 		cache?.setParseResult(tsconfigFile, promise);
 	}
 	return promise;
