@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.0.3
+
+### Patch Changes
+
+- fix deadlock when referenced tsconfig extends original ([#165](https://github.com/dominikg/tsconfck/pull/165))
+
 ## 3.0.2
 
 ### Patch Changes
