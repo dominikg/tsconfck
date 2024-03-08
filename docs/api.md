@@ -308,5 +308,8 @@ export class TSConfckCache<T> {
 	 * @throws {unknown} if cached value is an error
 	 */
 	getParseResult(file: string): Promise<T> | T;
+	/**
+	 * @param isRootFile a flag to check if current file which involking the parse() api, used to distinguish the normal cache which only parsed by parseFile()
+	 * */
 }
 ```

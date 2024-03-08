@@ -63,9 +63,17 @@ export class TSConfckCache {
 	 * @internal
 	 * @private
 	 * @param file
+	 * @param {boolean} isRootFile a flag to check if current file which involking the parse() api, used to distinguish the normal cache which only parsed by parseFile()
 	 * @param {Promise<T>} result
 	 */
-	setParseResult(file, result) {
+	setParseResult(file, result, isRootFile = false) {
+		// _isRootFile_ is a temporary property for Promise result, used to prevent deadlock with cache
+		Object.defineProperty(result, '_isRootFile_', {
+			value: isRootFile,
+			writable: false,
+			enumerable: false,
+			configurable: false
+		});
 		this.#parsed.set(file, result);
 		result
 			.then((parsed) => {
