@@ -70,9 +70,9 @@ export class TSConfckCache {
 		// _isRootFile_ is a temporary property for Promise result, used to prevent deadlock with cache
 		Object.defineProperty(result, '_isRootFile_', {
 			value: isRootFile,
-			writable: true,
+			writable: false,
 			enumerable: false,
-			configurable: true
+			configurable: false
 		});
 		this.#parsed.set(file, result);
 		result
