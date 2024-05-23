@@ -1,0 +1,1 @@
+parsing <fixture-dir>/parse/invalid/mixed/tsconfig.json failed: SyntaxError: Expected ',' or '}' after property value in JSON at position 297 (line 16 column 5)
