@@ -5,7 +5,8 @@ import {
 	native2posix,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
-	resolveTSConfigJson
+	resolveTSConfigJson,
+	replaceTokens
 } from './util.js';
 import { findNative } from './find-native.js';
 
@@ -102,17 +103,20 @@ function parseFile(tsconfigFile, ts, options, skipCache) {
 		undefined,
 		posixTSConfigFile
 	);
+
 	checkErrors(nativeResult, tsconfigFile);
 
 	/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
 	const result = {
 		tsconfigFile,
-		tsconfig: result2tsconfig(nativeResult, ts),
+		tsconfig: result2tsconfig(nativeResult, ts, tsconfigFile),
 		result: nativeResult
 	};
+
 	if (!skipCache) {
 		cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 	}
+
 	return result;
 }
 
@@ -166,9 +170,10 @@ function checkErrors(nativeResult, tsconfigFile) {
  *
  * @param {any} result
  * @param {any} ts typescript
+ * @param {string} tsconfigFile
  * @returns {object} tsconfig with merged compilerOptions and enums restored to their string form
  */
-function result2tsconfig(result, ts) {
+function result2tsconfig(result, ts, tsconfigFile) {
 	// dereference result.raw so changes below don't modify original
 	const tsconfig = JSON.parse(JSON.stringify(result.raw));
 	// for some reason the extended compilerOptions are not available in result.raw but only in result.options
@@ -243,7 +248,8 @@ function result2tsconfig(result, ts) {
 		// delete if it is false to match content of tsconfig
 		delete tsconfig.compileOnSave;
 	}
-	return tsconfig;
+	// ts itself has not replaced all tokens at this point, make sure they are
+	return replaceTokens(tsconfig, path.dirname(tsconfigFile));
 }
 
 export class TSConfckParseNativeError extends Error {

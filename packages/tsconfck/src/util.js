@@ -294,3 +294,17 @@ function pattern2regex(resolvedPattern, allowJs) {
 
 	return new RegExp(regexStr);
 }
+
+/**
+ * replace tokens like ${configDir}
+ * @param {any} tsconfig
+ * @param {string} configDir
+ * @returns {any}
+ */
+export function replaceTokens(tsconfig, configDir) {
+	return JSON.parse(
+		JSON.stringify(tsconfig)
+			// replace ${configDir}, accounting for rebaseRelative emitted ../${configDir}
+			.replaceAll(/"(?:\.\.\/)*\${configDir}/g, `"${native2posix(configDir)}`)
+	);
+}
