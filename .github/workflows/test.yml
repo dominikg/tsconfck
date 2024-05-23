@@ -90,7 +90,7 @@ jobs:
         run: |
           pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: install ts beta
-        if: ${{ matrix.ts }} == 'beta'
+        if: (${{ matrix.ts == 'beta'}})
         run: pnpm --dir packages/tsconfck install -D typescript@beta
       - name: run tests
         run: pnpm test
