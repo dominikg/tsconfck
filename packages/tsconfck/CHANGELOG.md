@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.1.0
+
+### Minor Changes
+
+- add support for typescript 5.5 ${configDir} replacement ([#172](https://github.com/dominikg/tsconfck/pull/172))
+
 ## 3.0.3
 
 ### Patch Changes
