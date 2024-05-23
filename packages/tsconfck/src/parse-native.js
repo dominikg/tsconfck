@@ -249,7 +249,7 @@ function result2tsconfig(result, ts, tsconfigFile) {
 		delete tsconfig.compileOnSave;
 	}
 	// ts itself has not replaced all tokens at this point, make sure they are
-	return replaceTokens(tsconfig, tsconfigFile.slice(0, tsconfigFile.lastIndexOf('/')));
+	return replaceTokens(tsconfig, path.dirname(tsconfigFile));
 }
 
 export class TSConfckParseNativeError extends Error {

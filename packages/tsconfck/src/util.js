@@ -305,6 +305,6 @@ export function replaceTokens(tsconfig, configDir) {
 	return JSON.parse(
 		JSON.stringify(tsconfig)
 			// replace ${configDir}, accounting for rebaseRelative emitted ../${configDir}
-			.replaceAll(/"(?:\.\.\/)*\${configDir}/g, `"${configDir}`)
+			.replaceAll(/"(?:\.\.\/)*\${configDir}/g, `"${native2posix(configDir)}`)
 	);
 }

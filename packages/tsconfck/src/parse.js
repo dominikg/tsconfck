@@ -138,7 +138,7 @@ function normalizeTSConfig(tsconfig, dir) {
 		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
 	}
 
-	return replaceTokens(tsconfig, native2posix(dir));
+	return replaceTokens(tsconfig, dir);
 }
 
 /**
