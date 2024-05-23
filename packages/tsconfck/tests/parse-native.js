@@ -12,6 +12,9 @@ import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { TSConfckCache } from '../src/cache.js';
 
+const ts_ver = ts.version.slice(3).split('.');
+const IS_TS_5_5 = ts_ver[0] >= 5 && ts_ver[1] >= 5;
+
 describe('parse', () => {
 	it('should be a function', () => {
 		expect(parseNative).toBeTypeOf('function');
@@ -51,6 +54,9 @@ describe('parse', () => {
 	it('should resolve with expected valid tsconfig.json', async () => {
 		const samples = await globFixtures('parse/valid/**/tsconfig.json');
 		for (const filename of samples) {
+			if (!IS_TS_5_5 && filename.includes('configDir')) {
+				continue; // configDir doesn't work in 5.4
+			}
 			const actual = await parseNative(filename);
 			expect(actual.tsconfigFile).toBe(filename);
 			await expectToMatchSnap(actual.tsconfig, `input: ${filename}`, filename, 'parse-native');

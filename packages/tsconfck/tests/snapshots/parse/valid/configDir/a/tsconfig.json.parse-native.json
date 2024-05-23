@@ -1,0 +1,19 @@
+{
+	"extends": [
+		"../tsconfig.base.json"
+	],
+	"include": [
+		"<fixture-dir>/parse/valid/configDir/a/**/*"
+	],
+	"exclude": [
+		"<fixture-dir>/parse/valid/configDir/a/src/**/*.spec.ts"
+	],
+	"compilerOptions": {
+		"paths": {
+			"$src": [
+				"<fixture-dir>/parse/valid/configDir/a/src/**/*"
+			]
+		},
+		"outDir": "<fixture-dir>/parse/valid/configDir/a/build"
+	}
+}

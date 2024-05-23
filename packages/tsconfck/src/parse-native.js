@@ -102,17 +102,20 @@ function parseFile(tsconfigFile, ts, options, skipCache) {
 		undefined,
 		posixTSConfigFile
 	);
+
 	checkErrors(nativeResult, tsconfigFile);
 
 	/** @type {import('./public.d.ts').TSConfckParseNativeResult} */
 	const result = {
 		tsconfigFile,
-		tsconfig: result2tsconfig(nativeResult, ts),
+		tsconfig: result2tsconfig(nativeResult, ts, tsconfigFile),
 		result: nativeResult
 	};
+
 	if (!skipCache) {
 		cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 	}
+
 	return result;
 }
 
@@ -166,9 +169,10 @@ function checkErrors(nativeResult, tsconfigFile) {
  *
  * @param {any} result
  * @param {any} ts typescript
+ * @param {string} tsconfigFile
  * @returns {object} tsconfig with merged compilerOptions and enums restored to their string form
  */
-function result2tsconfig(result, ts) {
+function result2tsconfig(result, ts, tsconfigFile) {
 	// dereference result.raw so changes below don't modify original
 	const tsconfig = JSON.parse(JSON.stringify(result.raw));
 	// for some reason the extended compilerOptions are not available in result.raw but only in result.options
@@ -242,6 +246,22 @@ function result2tsconfig(result, ts) {
 		// ts adds this property even if it isn't present in the actual config
 		// delete if it is false to match content of tsconfig
 		delete tsconfig.compileOnSave;
+	}
+	const cfgDir = tsconfigFile.slice(0, tsconfigFile.lastIndexOf('/'));
+	const placeholder = '${configDir}';
+	for (const field of ['include', 'exclude', 'files']) {
+		const val = tsconfig[field];
+		if (val) {
+			if (Array.isArray(val)) {
+				tsconfig[field] = val.map((item) =>
+					item.startsWith(placeholder) ? item.replace(placeholder, cfgDir) : item
+				);
+			} else {
+				if (val.startsWith(placeholder)) {
+					tsconfig[field] = val.replace(placeholder, cfgDir);
+				}
+			}
+		}
 	}
 	return tsconfig;
 }

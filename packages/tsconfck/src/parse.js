@@ -136,7 +136,8 @@ function normalizeTSConfig(tsconfig, dir) {
 	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
 		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
 	}
-	return tsconfig;
+	// replace ${configDir}, accounting for rebaseRelative emitted ../${configDir}
+	return JSON.parse(JSON.stringify(tsconfig).replaceAll(/(?:\.\.\/)*\${configDir}/g, dir));
 }
 
 /**
