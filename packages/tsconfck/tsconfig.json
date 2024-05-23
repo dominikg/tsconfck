@@ -6,7 +6,6 @@
 		"target": "es2022",
 		"moduleResolution": "bundler",
 		"strict": true,
-		"forceConsistentCasingInFileNames": true,
 		"allowJs": true
 	},
 	"include": ["bin/**/*", "src/**/*", "types/**/*"],
