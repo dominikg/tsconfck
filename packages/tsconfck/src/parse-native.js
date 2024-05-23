@@ -5,7 +5,8 @@ import {
 	native2posix,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
-	resolveTSConfigJson
+	resolveTSConfigJson,
+	replaceTokens
 } from './util.js';
 import { findNative } from './find-native.js';
 
@@ -247,23 +248,8 @@ function result2tsconfig(result, ts, tsconfigFile) {
 		// delete if it is false to match content of tsconfig
 		delete tsconfig.compileOnSave;
 	}
-	const cfgDir = tsconfigFile.slice(0, tsconfigFile.lastIndexOf('/'));
-	const placeholder = '${configDir}';
-	for (const field of ['include', 'exclude', 'files']) {
-		const val = tsconfig[field];
-		if (val) {
-			if (Array.isArray(val)) {
-				tsconfig[field] = val.map((item) =>
-					item.startsWith(placeholder) ? item.replace(placeholder, cfgDir) : item
-				);
-			} else {
-				if (val.startsWith(placeholder)) {
-					tsconfig[field] = val.replace(placeholder, cfgDir);
-				}
-			}
-		}
-	}
-	return tsconfig;
+	// ts itself has not replaced all tokens at this point, make sure they are
+	return replaceTokens(tsconfig, tsconfigFile.slice(0, tsconfigFile.lastIndexOf('/')));
 }
 
 export class TSConfckParseNativeError extends Error {

@@ -7,6 +7,7 @@ import {
 	makePromise,
 	native2posix,
 	resolve2posix,
+	replaceTokens,
 	resolveReferencedTSConfigFiles,
 	resolveSolutionTSConfig,
 	resolveTSConfigJson
@@ -136,10 +137,8 @@ function normalizeTSConfig(tsconfig, dir) {
 	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
 		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
 	}
-	// replace ${configDir}, accounting for rebaseRelative emitted ../${configDir}
-	return JSON.parse(
-		JSON.stringify(tsconfig).replaceAll(/(?:\.\.\/)*\${configDir}/g, native2posix(dir))
-	);
+
+	return replaceTokens(tsconfig, native2posix(dir));
 }
 
 /**
