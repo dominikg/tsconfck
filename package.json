@@ -45,7 +45,7 @@
 		"*.{js,md}": "eslint --cache --fix",
 		"*": "prettier --cache --ignore-path .prettierignore --ignore-unknown --write"
 	},
-	"packageManager": "pnpm@8.15.8",
+	"packageManager": "pnpm@9.3.0",
 	"engines": {
 		"node": "^18 || >=20"
 	}
