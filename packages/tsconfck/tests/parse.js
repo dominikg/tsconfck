@@ -226,6 +226,7 @@ describe('parse', () => {
 				new Promise((_, reject) => setTimeout(reject, 500))
 			]);
 			expect(results.length).toBe(samples.length);
+			// eslint-disable-next-line no-unused-vars
 		} catch (e) {
 			expect.fail(
 				`did not process all files, some of these are blocking each other:\n${[...unfinished].join(

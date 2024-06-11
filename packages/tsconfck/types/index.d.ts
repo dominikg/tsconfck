@@ -169,7 +169,7 @@ declare module 'tsconfck' {
 		 * helper to skip subdirectories when scanning for tsconfig.json
 		 *
 		 * eg ` dir => dir === 'node_modules' || dir === '.git'`
-		 */ // eslint-disable-next-line no-unused-vars
+		 */
 		skip?: (dir: string) => boolean;
 		/**
 		 * list of config filenames to include, use ["tsconfig.json","jsconfig.json"] if you need both
