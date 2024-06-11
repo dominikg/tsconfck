@@ -13,6 +13,7 @@ export async function copyFixtures(from, to, filter) {
 	const dest = path.join('tests', 'temp', to);
 	try {
 		await fs.rm(dest, { recursive: true });
+		// eslint-disable-next-line no-unused-vars
 	} catch (e) {
 		// ignore
 	}

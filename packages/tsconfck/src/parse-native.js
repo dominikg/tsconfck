@@ -56,7 +56,7 @@ export async function parseNative(filename, options) {
 			await parseReferences(result, ts, options);
 			cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 		}
-		//@ts-ignore
+
 		resolve(resolveSolutionTSConfig(filename, result));
 		return promise;
 	} catch (e) {
