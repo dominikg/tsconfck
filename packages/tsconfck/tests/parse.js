@@ -11,6 +11,7 @@ import { promises as fs } from 'node:fs';
 import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { TSConfckCache } from '../src/cache.js';
+import { native2posix } from '../src/util.js';
 
 describe('parse', () => {
 	it('should be a function', () => {
@@ -53,6 +54,17 @@ describe('parse', () => {
 			const actual = await parse(filename);
 			expect(actual.tsconfigFile).toBe(filename);
 			await expectToMatchSnap(actual.tsconfig, `input: ${filename}`, filename, 'parse');
+		}
+	});
+
+	it('should replace configDir', async () => {
+		const samples = await globFixtures('parse/valid/configDir/**/tsconfig.json');
+		for (const filename of samples) {
+			const actual = await parse(filename);
+			expect(actual.tsconfigFile).toBe(filename);
+			expect(actual.tsconfig.compilerOptions.outDir).toBe(
+				native2posix(path.dirname(filename) + '/build')
+			);
 		}
 	});
 
