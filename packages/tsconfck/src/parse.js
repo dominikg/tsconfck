@@ -135,14 +135,10 @@ async function parseFile(tsconfigFile, cache, skipCache) {
  */
 function normalizeTSConfig(tsconfig, dir) {
 	// set baseUrl to absolute path
-	if (
-		tsconfig.compilerOptions?.baseUrl &&
-		!tsconfig.compilerOptions.baseUrl.startsWith('${configDir}') &&
-		!path.isAbsolute(tsconfig.compilerOptions.baseUrl)
-	) {
-		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
+	const baseUrl = tsconfig.compilerOptions?.baseUrl;
+	if (baseUrl && !baseUrl.startsWith('${') && !path.isAbsolute(baseUrl)) {
+		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, baseUrl);
 	}
-
 	return tsconfig;
 }
 
