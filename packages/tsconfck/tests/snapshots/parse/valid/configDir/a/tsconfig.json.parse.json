@@ -14,6 +14,7 @@
 				"<fixture-dir>/parse/valid/configDir/a/src/**/*"
 			]
 		},
+		"baseUrl": "<fixture-dir>/parse/valid/configDir/a/src",
 		"outDir": "<fixture-dir>/parse/valid/configDir/a/build"
 	}
 }
