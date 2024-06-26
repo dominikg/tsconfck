@@ -12,8 +12,8 @@ import { transform as esbuildTransform } from 'esbuild';
 import ts from 'typescript';
 import { TSConfckCache } from '../src/cache.js';
 
-const ts_ver = ts.version.slice(3).split('.');
-const IS_TS_5_5 = ts_ver[0] >= 5 && ts_ver[1] >= 5;
+const ts_ver = ts.version.split('.');
+const IS_TS_5_5 = +ts_ver[0] >= 5 && +ts_ver[1] >= 5;
 
 describe('parse', () => {
 	it('should be a function', () => {
