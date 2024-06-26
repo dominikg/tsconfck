@@ -53,6 +53,7 @@ export async function parse(filename, options) {
 			result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
 			await Promise.all([parseExtends(result, cache), parseReferences(result, options)]);
 		}
+		result.tsconfig = replaceTokens(result.tsconfig, path.dirname(tsconfigFile));
 		resolve(resolveSolutionTSConfig(filename, result));
 	} catch (e) {
 		reject(e);
@@ -138,7 +139,7 @@ function normalizeTSConfig(tsconfig, dir) {
 		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
 	}
 
-	return replaceTokens(tsconfig, dir);
+	return tsconfig;
 }
 
 /**
