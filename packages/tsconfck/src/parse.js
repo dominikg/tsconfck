@@ -53,6 +53,7 @@ export async function parse(filename, options) {
 			result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
 			await Promise.all([parseExtends(result, cache), parseReferences(result, options)]);
 		}
+		result.tsconfig = replaceTokens(result.tsconfig, path.dirname(tsconfigFile));
 		resolve(resolveSolutionTSConfig(filename, result));
 	} catch (e) {
 		reject(e);
@@ -134,11 +135,11 @@ async function parseFile(tsconfigFile, cache, skipCache) {
  */
 function normalizeTSConfig(tsconfig, dir) {
 	// set baseUrl to absolute path
-	if (tsconfig.compilerOptions?.baseUrl && !path.isAbsolute(tsconfig.compilerOptions.baseUrl)) {
-		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, tsconfig.compilerOptions.baseUrl);
+	const baseUrl = tsconfig.compilerOptions?.baseUrl;
+	if (baseUrl && !baseUrl.startsWith('${') && !path.isAbsolute(baseUrl)) {
+		tsconfig.compilerOptions.baseUrl = resolve2posix(dir, baseUrl);
 	}
-
-	return replaceTokens(tsconfig, dir);
+	return tsconfig;
 }
 
 /**

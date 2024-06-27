@@ -3,17 +3,18 @@
 		"../tsconfig.base.json"
 	],
 	"include": [
-		"<fixture-dir>/parse/valid/configDir/**/*"
+		"<fixture-dir>/parse/valid/configDir/a/**/*"
 	],
 	"exclude": [
-		"<fixture-dir>/parse/valid/configDir/src/**/*.spec.ts"
+		"<fixture-dir>/parse/valid/configDir/a/src/**/*.spec.ts"
 	],
 	"compilerOptions": {
 		"paths": {
 			"$src": [
-				"<fixture-dir>/parse/valid/configDir/src/**/*"
+				"<fixture-dir>/parse/valid/configDir/a/src/**/*"
 			]
 		},
-		"outDir": "<fixture-dir>/parse/valid/configDir/build"
+		"baseUrl": "<fixture-dir>/parse/valid/configDir/a/src",
+		"outDir": "<fixture-dir>/parse/valid/configDir/a/build"
 	}
 }
