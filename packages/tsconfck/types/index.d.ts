@@ -6,7 +6,7 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json or null if not found
 	 */
-	export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string | null>;
+	function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string | null>;
 	/**
 	 * find all tsconfig.json files in dir
 	 *
@@ -14,14 +14,14 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns list of absolute paths to all found tsconfig.json files
 	 */
-	export function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
+	function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
 	/**
 	 * convert content of tsconfig.json to regular json
 	 *
 	 * @param tsconfigJson - content of tsconfig.json
 	 * @returns content as regular json, comments and dangling commas have been replaced with whitespace
 	 */
-	export function toJson(tsconfigJson: string): string;
+	function toJson(tsconfigJson: string): string;
 	/**
 	 * find the closest tsconfig.json file using native ts.findConfigFile
 	 *
@@ -31,8 +31,8 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json
 	 */
-	export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
-	export class TSConfckCache<T> {
+	function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+	class TSConfckCache<T> {
 		/**
 		 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
 		 */
@@ -69,8 +69,8 @@ declare module 'tsconfck' {
 	 * @param filename - path to a tsconfig .json or a source file or directory (absolute or relative to cwd)
 	 * @param options - options
 	 * */
-	export function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
-	export class TSConfckParseError extends Error {
+	function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
+	class TSConfckParseError extends Error {
 		/**
 		 *
 		 * @param message - error message
@@ -100,15 +100,15 @@ declare module 'tsconfck' {
 	 * @param filename - path to a tsconfig .json or a source file (absolute or relative to cwd)
 	 * @param options - options
 	 * */
-	export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
-	export class TSConfckParseNativeError extends Error {
+	function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
+	class TSConfckParseNativeError extends Error {
 		/**
 		 *
 		 * @param diagnostic - diagnostics of ts
 		 * @param tsconfigFile - file that errored
 		 * @param result  - parsed result, if any
 		 */
-		constructor(diagnostic: any, tsconfigFile: string, result: any | null);
+		constructor(diagnostic: TSDiagnosticError, tsconfigFile: string, result: any | null);
 		/**
 		 * code of typescript diagnostic, prefixed with "TS "
 		 * */
@@ -116,7 +116,7 @@ declare module 'tsconfck' {
 		/**
 		 * full ts diagnostic that caused this error
 		 * */
-		diagnostic: any;
+		diagnostic: TSDiagnosticError;
 		/**
 		 * native result if present, contains all errors in result.errors
 		 * */
@@ -126,6 +126,15 @@ declare module 'tsconfck' {
 		 * */
 		tsconfigFile: string;
 	}
+	/**
+	 * {
+	 * code: number;
+	 * category: number;
+	 * messageText: string;
+	 * start?: number;
+	 * } TSDiagnosticError
+	 */
+	type TSDiagnosticError = any;
 	interface TSConfckFindOptions {
 		/**
 		 * A cache to improve performance for multiple calls in the same project
@@ -246,6 +255,8 @@ declare module 'tsconfck' {
 		 */
 		result: any;
 	}
+
+	export { find, findAll, toJson, findNative, TSConfckCache, parse, TSConfckParseError, parseNative, TSConfckParseNativeError };
 }
 
 //# sourceMappingURL=index.d.ts.map

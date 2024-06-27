@@ -6,8 +6,21 @@ import fs from 'fs';
 const header = '<!-- generated, do not modify -->\n## API \n\n';
 
 function parseBlock(block) {
+	const m = block.match(/(function|class|interface|type) ([a-zA-Z]+)/);
+	if (!m) {
+		return {
+			kind: 'ignored',
+			md: ''
+		};
+	}
 	// eslint-disable-next-line no-unused-vars
-	const [_, kind, title] = block.match(/(function|class|interface|type) ([a-zA-Z]+)/);
+	const [_, kind, title] = m;
+	if (title === 'TSDiagnosticError') {
+		return {
+			kind: 'ignored',
+			md: ''
+		};
+	}
 	const heading = '#'.repeat(blockHeadings[title] || 3);
 	return {
 		kind,
@@ -25,8 +38,10 @@ const blockSeparator = '\n-- cut here --\n';
 let dts = fs
 	.readFileSync(typesFile, 'utf-8')
 	.replace("declare module 'tsconfck' {\n", '')
+	.replace(/export \{[^}]+}/, '')
 	.replace('}\n\n//# sourceMappingURL=index.d.ts.map', '')
-	.replace(/^\s+export function [a-zA-Z]+\(.*$/gm, `$&${blockSeparator}`)
+	.replace(/^\s*function [a-zA-Z]+\(.*$/gm, `$&${blockSeparator}`)
+	.replace(/^\s*interface [a-zA-Z]+\s*\{.*$/gm, `${blockSeparator}$&`)
 	.replace(/^\s*}\s*$/gm, `$&${blockSeparator}`)
 	.replace(/^\t/gm, '');
 
@@ -70,6 +85,7 @@ const md =
 	header +
 	blocks
 		.map((block) => parseBlock(block))
+		.filter((b) => b.md.length > 0)
 		.sort(sortBlocks)
 		.map((b) => b.md)
 		.join('\n\n') +
