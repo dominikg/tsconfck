@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.1.1
+
+### Patch Changes
+
+- Fix ts 5.5 `${configDir}` expansion ([#179](https://github.com/dominikg/tsconfck/pull/179))
+
 ## 3.1.0
 
 ### Minor Changes
