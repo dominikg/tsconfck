@@ -11,7 +11,7 @@
  * @param options - options
  * @returns absolute path to closest tsconfig.json or null if not found
  */
-function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string | null>;
+export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string | null>;
 ```
 
 #### TSConfckFindOptions
@@ -61,7 +61,7 @@ interface TSConfckFindOptions {
  * @param filename - path to a tsconfig .json or a source file or directory (absolute or relative to cwd)
  * @param options - options
  * */
-function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
+export function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
 ```
 
 #### TSConfckParseOptions
@@ -108,7 +108,7 @@ interface TSConfckParseResult {
 #### TSConfckParseError
 
 ```ts
-class TSConfckParseError extends Error {
+export class TSConfckParseError extends Error {
 	/**
 	 *
 	 * @param message - error message
@@ -144,7 +144,7 @@ class TSConfckParseError extends Error {
  * @param options - options
  * @returns absolute path to closest tsconfig.json
  */
-function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
 ```
 
 ### parseNative
@@ -158,7 +158,7 @@ function findNative(filename: string, options?: TSConfckFindOptions | undefined)
  * @param filename - path to a tsconfig .json or a source file (absolute or relative to cwd)
  * @param options - options
  * */
-function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
+export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
 ```
 
 #### TSConfckParseNativeOptions
@@ -211,7 +211,7 @@ interface TSConfckParseNativeResult {
 #### TSConfckParseNativeError
 
 ```ts
-class TSConfckParseNativeError extends Error {
+export class TSConfckParseNativeError extends Error {
 	/**
 	 *
 	 * @param diagnostic - diagnostics of ts
@@ -248,7 +248,7 @@ class TSConfckParseNativeError extends Error {
  * @param options - options
  * @returns list of absolute paths to all found tsconfig.json files
  */
-function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
+export function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
 ```
 
 #### TSConfckFindAllOptions
@@ -279,13 +279,13 @@ interface TSConfckFindAllOptions {
  * @param tsconfigJson - content of tsconfig.json
  * @returns content as regular json, comments and dangling commas have been replaced with whitespace
  */
-function toJson(tsconfigJson: string): string;
+export function toJson(tsconfigJson: string): string;
 ```
 
 ### TSConfckCache
 
 ```ts
-class TSConfckCache<T> {
+export class TSConfckCache<T> {
 	/**
 	 * clear cache, use this if you have a long running process and tsconfig files have been added,changed or deleted
 	 */
