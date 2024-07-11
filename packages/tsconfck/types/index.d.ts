@@ -246,6 +246,8 @@ declare module 'tsconfck' {
 		 */
 		result: any;
 	}
+
+	export {};
 }
 
 //# sourceMappingURL=index.d.ts.map
