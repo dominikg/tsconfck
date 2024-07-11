@@ -218,7 +218,7 @@ class TSConfckParseNativeError extends Error {
 	 * @param tsconfigFile - file that errored
 	 * @param result  - parsed result, if any
 	 */
-	constructor(diagnostic: TSDiagnosticError, tsconfigFile: string, result: any | null);
+	constructor(diagnostic: any, tsconfigFile: string, result: any | null);
 	/**
 	 * code of typescript diagnostic, prefixed with "TS "
 	 * */
@@ -226,7 +226,7 @@ class TSConfckParseNativeError extends Error {
 	/**
 	 * full ts diagnostic that caused this error
 	 * */
-	diagnostic: TSDiagnosticError;
+	diagnostic: any;
 	/**
 	 * native result if present, contains all errors in result.errors
 	 * */

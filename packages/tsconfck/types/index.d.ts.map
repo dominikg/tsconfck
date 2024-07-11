@@ -11,7 +11,6 @@
 		"TSConfckParseError",
 		"parseNative",
 		"TSConfckParseNativeError",
-		"TSDiagnosticError",
 		"TSConfckFindOptions",
 		"TSConfckParseOptions",
 		"TSConfckFindAllOptions",
@@ -27,7 +26,6 @@
 		"../src/cache.js",
 		"../src/parse.js",
 		"../src/parse-native.js",
-		"../src/parse-native.d.ts",
 		"../src/public.d.ts"
 	],
 	"sourcesContent": [
@@ -38,9 +36,8 @@
 		null,
 		null,
 		null,
-		null,
 		null
 	],
-	"mappings": ";;;;;;;;UAUsBA,IAAIA;;;;;;;;UCYJC,OAAOA;;;;;;;UCTbC,MAAMA;;;;;;;;;;UCDAC,UAAUA;OCXnBC,aAAaA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;UC2BJC,KAAKA;OA6VdC,kBAAkBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;UC7VTC,WAAWA;OAkOpBC,wBAAwBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;MC9MzBC,iBAAiBA;WC9CZC,mBAAmBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;WAkCnBC,oBAAoBA;;;;WAIpBC,sBAAsBA;;;;;;;;;;;;;;;WAetBC,mBAAmBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;WA6BnBC,0BAA0BA;;;;;;;;;;;;WAY1BC,yBAAyBA",
+	"mappings": ";;;;;;;;iBAUsBA,IAAIA;;;;;;;;iBCYJC,OAAOA;;;;;;;iBCTbC,MAAMA;;;;;;;;;;iBCDAC,UAAUA;cCXnBC,aAAaA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;iBC2BJC,KAAKA;cA6VdC,kBAAkBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;iBC7VTC,WAAWA;cAkOpBC,wBAAwBA;;;;;;;;;;;;;;;;;;;;;;;;;WC5PpBC,mBAAmBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;WAkCnBC,oBAAoBA;;;;WAIpBC,sBAAsBA;;;;;;;;;;;;;;;WAetBC,mBAAmBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;WA6BnBC,0BAA0BA;;;;;;;;;;;;WAY1BC,yBAAyBA",
 	"ignoreList": []
 }

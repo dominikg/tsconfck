@@ -40,8 +40,8 @@ let dts = fs
 	.replace("declare module 'tsconfck' {\n", '')
 	.replace(/export \{[^}]+}/, '')
 	.replace('}\n\n//# sourceMappingURL=index.d.ts.map', '')
-	.replace(/^\s*function [a-zA-Z]+\(.*$/gm, `$&${blockSeparator}`)
-	.replace(/^\s*interface [a-zA-Z]+\s*\{.*$/gm, `${blockSeparator}$&`)
+	.replace(/^\s*(?:export )?function [a-zA-Z]+\(.*$/gm, `$&${blockSeparator}`)
+	.replace(/^\s*(?:export )?interface [a-zA-Z]+\s*\{.*$/gm, `${blockSeparator}$&`)
 	.replace(/^\s*}\s*$/gm, `$&${blockSeparator}`)
 	.replace(/^\t/gm, '');
 
