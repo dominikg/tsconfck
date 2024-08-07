@@ -50,9 +50,9 @@
 	"devDependencies": {
 		"@tsconfig/node18": "^18.2.4",
 		"@vitest/coverage-v8": "^1.6.0",
-		"esbuild": "^0.21.5",
+		"esbuild": "^0.23.0",
 		"tiny-glob": "^0.2.9",
-		"typescript": "^5.4.5",
+		"typescript": "^5.5.4",
 		"vitest": "^1.6.0"
 	},
 	"engines": {
