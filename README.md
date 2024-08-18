@@ -15,6 +15,7 @@ Because no simple official api exists and tsconfig isn't actual json.
 - [x] convert tsconfig to actual json and parse it
 - [x] resolve "extends"
 - [x] resolve "references" of solution-style tsconfig
+- [x] resolve ["${configDir}" variable](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-5.html#the-configdir-template-variable-for-configuration-files)
 - [x] optional caching for improved performance
 - [x] optional findNative and parseNative to use official typescript api
 - [x] zero dependencies (typescript optional)
