@@ -108,7 +108,7 @@ declare module 'tsconfck' {
 		 * @param tsconfigFile - file that errored
 		 * @param result  - parsed result, if any
 		 */
-		constructor(diagnostic: any, tsconfigFile: string, result: any | null);
+		constructor(diagnostic: TSDiagnosticError, tsconfigFile: string, result: any | null);
 		/**
 		 * code of typescript diagnostic, prefixed with "TS "
 		 * */
@@ -116,7 +116,7 @@ declare module 'tsconfck' {
 		/**
 		 * full ts diagnostic that caused this error
 		 * */
-		diagnostic: any;
+		diagnostic: TSDiagnosticError;
 		/**
 		 * native result if present, contains all errors in result.errors
 		 * */
@@ -126,6 +126,15 @@ declare module 'tsconfck' {
 		 * */
 		tsconfigFile: string;
 	}
+	/**
+	 * {
+	 * code: number;
+	 * category: number;
+	 * messageText: string;
+	 * start?: number;
+	 * } TSDiagnosticError
+	 */
+	type TSDiagnosticError = any;
 	interface TSConfckFindOptions {
 		/**
 		 * A cache to improve performance for multiple calls in the same project

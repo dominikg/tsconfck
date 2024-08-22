@@ -16,7 +16,7 @@
 		"generate:types": "pnpm --dir packages/tsconfck run dts-buddy",
 		"generate:docs": "node scripts/generate-api-docs.js",
 		"release": "pnpm changeset publish",
-		"prepare": "husky install",
+		"prepare": "husky",
 		"bench": "node --expose-gc -max-old-space-size=4096 scripts/bench.js"
 	},
 	"devDependencies": {
