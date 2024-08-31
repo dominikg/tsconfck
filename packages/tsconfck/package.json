@@ -49,8 +49,10 @@
 	},
 	"devDependencies": {
 		"@tsconfig/node18": "^18.2.4",
+		"@tsconfig/strictest": "^2.0.5",
 		"@vitest/coverage-v8": "^2.0.5",
 		"esbuild": "^0.23.1",
+		"isaacscript-tsconfig": "^6.0.0",
 		"tiny-glob": "^0.2.9",
 		"typescript": "^5.5.4",
 		"vitest": "^2.0.5"
