@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.1.2
+
+### Patch Changes
+
+- correctly replace ${configDir} in tsconfig files loaded from packages in node_modules ([#189](https://github.com/dominikg/tsconfck/pull/189))
+
 ## 3.1.1
 
 ### Patch Changes
