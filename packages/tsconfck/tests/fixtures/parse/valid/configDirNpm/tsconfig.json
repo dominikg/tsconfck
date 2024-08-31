@@ -1,0 +1,9 @@
+// The configuration file for TypeScript.
+{
+  "$schema": "https://raw.githubusercontent.com/complete-ts/complete/main/packages/complete-tsconfig/schemas/tsconfig-strict-schema.json",
+
+  "extends": [
+    // https://github.com/IsaacScript/isaacscript/blob/main/packages/isaacscript-tsconfig/tsconfig.base.json
+    "isaacscript-tsconfig/tsconfig.base.json",
+  ],
+}

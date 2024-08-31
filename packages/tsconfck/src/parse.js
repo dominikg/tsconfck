@@ -367,7 +367,7 @@ function rebaseRelative(key, value, prependPath) {
  * @returns {string}
  */
 function rebasePath(value, prependPath) {
-	if (path.isAbsolute(value)) {
+	if (path.isAbsolute(value) || value.startsWith('${configDir}')) {
 		return value;
 	} else {
 		// relative paths use posix syntax in tsconfig

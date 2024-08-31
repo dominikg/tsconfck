@@ -1,0 +1,28 @@
+{
+	"$schema": "https://raw.githubusercontent.com/complete-ts/complete/main/packages/complete-tsconfig/schemas/tsconfig-strict-schema.json",
+	"extends": [
+		"isaacscript-tsconfig/tsconfig.base.json"
+	],
+	"include": [
+		"<fixture-dir>/parse/valid/configDirNpm/src/**/*.ts",
+		"<fixture-dir>/parse/valid/configDirNpm/src/**/*.tsx"
+	],
+	"compilerOptions": {
+		"strict": true,
+		"allowUnusedLabels": false,
+		"allowUnreachableCode": false,
+		"exactOptionalPropertyTypes": false,
+		"noFallthroughCasesInSwitch": false,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"isolatedModules": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"outDir": "<fixture-dir>/parse/valid/configDirNpm/dist"
+	}
+}
