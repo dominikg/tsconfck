@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.1.3
+
+### Patch Changes
+
+- fix missing types issue in 3.1.2 ([#191](https://github.com/dominikg/tsconfck/pull/191))
+
 ## 3.1.2
 
 ### Patch Changes
