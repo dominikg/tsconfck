@@ -17,7 +17,7 @@ export function find(filename: string, options?: TSConfckFindOptions | undefined
 #### TSConfckFindOptions
 
 ```ts
-interface TSConfckFindOptions {
+export interface TSConfckFindOptions {
 	/**
 	 * A cache to improve performance for multiple calls in the same project
 	 *
@@ -67,7 +67,7 @@ export function parse(filename: string, options?: TSConfckParseOptions | undefin
 #### TSConfckParseOptions
 
 ```ts
-interface TSConfckParseOptions extends TSConfckFindOptions {
+export interface TSConfckParseOptions extends TSConfckFindOptions {
 	// same as find options
 }
 ```
@@ -75,7 +75,7 @@ interface TSConfckParseOptions extends TSConfckFindOptions {
 #### TSConfckParseResult
 
 ```ts
-interface TSConfckParseResult {
+export interface TSConfckParseResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */
@@ -164,7 +164,7 @@ export function parseNative(filename: string, options?: TSConfckParseNativeOptio
 #### TSConfckParseNativeOptions
 
 ```ts
-interface TSConfckParseNativeOptions extends TSConfckParseOptions {
+export interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *
@@ -180,7 +180,7 @@ interface TSConfckParseNativeOptions extends TSConfckParseOptions {
 #### TSConfckParseNativeResult
 
 ```ts
-interface TSConfckParseNativeResult {
+export interface TSConfckParseNativeResult {
 	/**
 	 * absolute path to parsed tsconfig.json
 	 */
@@ -254,7 +254,7 @@ export function findAll(dir: string, options?: TSConfckFindAllOptions | undefine
 #### TSConfckFindAllOptions
 
 ```ts
-interface TSConfckFindAllOptions {
+export interface TSConfckFindAllOptions {
 	/**
 	 * helper to skip subdirectories when scanning for tsconfig.json
 	 *
