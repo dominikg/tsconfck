@@ -6,7 +6,7 @@ const NATIVE_SEP_RE = new RegExp('\\' + path.sep, 'g');
 /** @type {Map<string,RegExp>}*/
 const PATTERN_REGEX_CACHE = new Map();
 const GLOB_ALL_PATTERN = `**/*`;
-const TS_EXTENSIONS = ['.ts', '.tsx', '.mts', '.cts', '.vue'];
+const TS_EXTENSIONS = ['.ts', '.tsx', '.mts', '.cts', '.vue', '.svelte'];
 const JS_EXTENSIONS = ['.js', '.jsx', '.mjs', '.cjs'];
 const TSJS_EXTENSIONS = TS_EXTENSIONS.concat(JS_EXTENSIONS);
 const TS_EXTENSIONS_RE_GROUP = `\\.(?:${TS_EXTENSIONS.map((ext) => ext.substring(1)).join('|')})`;
