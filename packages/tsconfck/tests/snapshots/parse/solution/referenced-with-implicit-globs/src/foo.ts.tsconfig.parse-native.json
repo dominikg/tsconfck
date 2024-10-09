@@ -1,0 +1,9 @@
+{
+	"include": [
+		"src"
+	],
+	"compilerOptions": {
+		"composite": true,
+		"strict": true
+	}
+}
