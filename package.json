@@ -20,33 +20,33 @@
 		"bench": "node --expose-gc -max-old-space-size=4096 scripts/bench.js"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.27.8",
-		"@eslint/js": "^9.10.0",
+		"@changesets/cli": "^2.27.9",
+		"@eslint/js": "^9.12.0",
 		"@svitejs/changesets-changelog-github-compact": "^1.1.0",
 		"dts-buddy": "^0.5.3",
-		"esbuild": "^0.23.1",
-		"eslint": "^9.10.0",
+		"esbuild": "^0.24.0",
+		"eslint": "^9.12.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-markdown": "^5.1.0",
-		"eslint-plugin-n": "^17.10.2",
+		"eslint-plugin-n": "^17.11.1",
 		"eslint-plugin-prettier": "^5.2.1",
-		"get-tsconfig": "^4.8.0",
-		"husky": "^9.1.5",
+		"get-tsconfig": "^4.8.1",
+		"husky": "^9.1.6",
 		"lint-staged": "^15.2.10",
-		"npm-run-all2": "^6.2.2",
+		"npm-run-all2": "^6.2.3",
 		"prettier": "^3.3.3",
-		"publint": "^0.2.10",
+		"publint": "^0.2.11",
 		"tiny-glob": "^0.2.9",
 		"tinybench": "^2.9.0",
 		"tsconfck": "workspace:^",
 		"tsconfck-2": "npm:tsconfck@^2.1.2",
-		"vitest": "^2.0.5"
+		"vitest": "^2.1.2"
 	},
 	"lint-staged": {
 		"*.{js,md}": "eslint --cache --fix",
 		"*": "prettier --cache --ignore-path .prettierignore --ignore-unknown --write"
 	},
-	"packageManager": "pnpm@9.10.0",
+	"packageManager": "pnpm@9.12.1",
 	"engines": {
 		"node": "^18 || >=20"
 	}
