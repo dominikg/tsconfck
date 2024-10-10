@@ -199,12 +199,34 @@ export function isGlobMatch(filename, dir, patterns, allowJs) {
 		// filename must end with part of pattern that comes after last wildcard
 		let lastWildcardIndex = pattern.length;
 		let hasWildcard = false;
+		let hasExtension = false;
+		let hasSlash = false;
+		let lastSlashIndex = -1;
 		for (let i = pattern.length - 1; i > -1; i--) {
-			if (pattern[i] === '*' || pattern[i] === '?') {
-				lastWildcardIndex = i;
-				hasWildcard = true;
+			const c = pattern[i];
+			if (!hasWildcard) {
+				if (c === '*' || c === '?') {
+					lastWildcardIndex = i;
+					hasWildcard = true;
+				}
+			}
+			if (!hasSlash) {
+				if (c === '.') {
+					hasExtension = true;
+				} else if (c === '/') {
+					lastSlashIndex = i;
+					hasSlash = true;
+				}
+			}
+			if (hasWildcard && hasSlash) {
 				break;
 			}
+		}
+		if (!hasExtension && (!hasWildcard || lastWildcardIndex < lastSlashIndex)) {
+			// add implicit glob
+			pattern += `${pattern.endsWith('/') ? '' : '/'}${GLOB_ALL_PATTERN}`;
+			lastWildcardIndex = pattern.length - 1;
+			hasWildcard = true;
 		}
 
 		// if pattern does not end with wildcard, filename must end with pattern after last wildcard
@@ -243,11 +265,18 @@ export function isGlobMatch(filename, dir, patterns, allowJs) {
 			return false;
 		}
 
-		// if no wildcard in pattern, filename must be equal to resolved pattern
 		if (!hasWildcard) {
+			//  no wildcard in pattern, filename must be equal to resolved pattern
 			return filename === resolvedPattern;
+		} else if (
+			firstWildcardIndex + GLOB_ALL_PATTERN.length ===
+				resolvedPattern.length - (pattern.length - 1 - lastWildcardIndex) &&
+			resolvedPattern.slice(firstWildcardIndex, firstWildcardIndex + GLOB_ALL_PATTERN.length) ===
+				GLOB_ALL_PATTERN
+		) {
+			// singular glob-all pattern and we already validated prefix and suffix matches
+			return true;
 		}
-
 		// complex pattern, use regex to check it
 		if (PATTERN_REGEX_CACHE.has(resolvedPattern)) {
 			return PATTERN_REGEX_CACHE.get(resolvedPattern).test(filename);

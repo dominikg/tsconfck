@@ -1,0 +1,7 @@
+{
+  "include": ["tests"],
+  "compilerOptions": {
+    "composite": true,
+    "strict": false
+  }
+}
