@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.1.4
+
+### Patch Changes
+
+- fix(glob-matching): add implicit `**/*` to path patterns that do not have an extension or wildcard in their last segment, eg `src` becomes `src/**/*` for matching. ([#200](https://github.com/dominikg/tsconfck/pull/200))
+
 ## 3.1.3
 
 ### Patch Changes
