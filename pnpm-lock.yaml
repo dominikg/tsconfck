@@ -87,8 +87,8 @@ importers:
         specifier: ^0.24.0
         version: 0.24.0
       isaacscript-tsconfig:
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^7.0.1
+        version: 7.0.1
       tiny-glob:
         specifier: ^0.2.9
         version: 0.2.9
@@ -1242,8 +1242,8 @@ packages:
     resolution: {integrity: sha512-eXK1UInq2bPmjyX6e3VHIzMLobc4J94i4AWn+Hpq3OU5KkrRC96OAcR3PRJ/pGu6m8TRnBHP9dkXQVsT/COVIA==}
     engines: {node: '>=0.10.0'}
 
-  isaacscript-tsconfig@6.0.0:
-    resolution: {integrity: sha512-FM9+2qGT7qgDWuAukFSrd5Xx2rlbybTLakjwSY30rUbLqXvfa8NKhSD7WJnFSXLaQtc7xgFbLNoIa6LpDK6kAw==}
+  isaacscript-tsconfig@7.0.1:
+    resolution: {integrity: sha512-E0K3g+31vjy0nDNc8G7xNKY48xw/vOXPBOvQ1f6pumA0PzPkMm8QU2Z1VJKbxOKyNI/VUS3Ml9ElRdNlYgzkBg==}
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
@@ -3072,7 +3072,7 @@ snapshots:
 
   is-windows@1.0.2: {}
 
-  isaacscript-tsconfig@6.0.0:
+  isaacscript-tsconfig@7.0.1:
     dependencies:
       '@tsconfig/node-lts': 20.1.3
       '@tsconfig/strictest': 2.0.5
