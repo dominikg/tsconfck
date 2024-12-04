@@ -310,6 +310,9 @@ function extendTSConfig(extending, extended) {
 				extendingConfig.compilerOptions.paths !== undefined &&
 				extendingConfig.compilerOptions.paths === extendedConfig.compilerOptions.paths
 			) {
+				// copy paths to avoid mutating the original.
+				extendingConfig.compilerOptions.paths = { ...extendingConfig.compilerOptions.paths };
+
 				for (const pattern of Object.keys(extendingConfig.compilerOptions.paths)) {
 					const paths = extendingConfig.compilerOptions.paths[pattern];
 					if (Array.isArray(paths)) {
