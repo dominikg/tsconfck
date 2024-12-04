@@ -1,0 +1,29 @@
+{
+	"extends": "../tsconfig.base",
+	"compilerOptions": {
+		"types": [
+			"foo"
+		],
+		"strictNullChecks": true,
+		"noImplicitAny": true,
+		"paths": {
+			"$lib": [
+				"*",
+				"./lib"
+			],
+			"$src": [
+				"./src"
+			]
+		}
+	},
+	"files": [],
+	"include": [],
+	"exclude": [
+		"../../**/foo/*"
+	],
+	"watchOptions": {
+		"watchFile": "useFsEvents",
+		"watchDirectory": "useFsEvents",
+		"fallbackPolling": "dynamicPriority"
+	}
+}

@@ -299,11 +299,28 @@ function extendTSConfig(extending, extended) {
 				if (Object.prototype.hasOwnProperty.call(extendingConfig.compilerOptions, option)) {
 					continue; // already set
 				}
+				if (option === 'paths') {
+					extendingConfig.compilerOptions.paths = extendedConfig.compilerOptions.paths;
+					continue; // rebased below
+				}
 				extendingConfig.compilerOptions[option] = rebaseRelative(
 					option,
 					extendedConfig.compilerOptions[option],
 					relativePath
 				);
+			}
+			if (
+				extendingConfig.compilerOptions.baseUrl === undefined &&
+				extendingConfig.compilerOptions.paths !== undefined &&
+				extendingConfig.compilerOptions.paths === extendedConfig.compilerOptions.paths
+			) {
+				for (const pattern of Object.keys(extendingConfig.compilerOptions.paths)) {
+					extendingConfig.compilerOptions.paths[pattern] = rebaseRelative(
+						'paths',
+						extendedConfig.compilerOptions.paths[pattern],
+						relativePath
+					);
+				}
 			}
 		} else if (extendingConfig[key] === undefined) {
 			if (key === 'watchOptions') {
@@ -329,6 +346,7 @@ const REBASE_KEYS = [
 	'exclude',
 	// compilerOptions
 	'baseUrl',
+	'paths',
 	'rootDir',
 	'rootDirs',
 	'typeRoots',
