@@ -299,10 +299,6 @@ function extendTSConfig(extending, extended) {
 				if (Object.prototype.hasOwnProperty.call(extendingConfig.compilerOptions, option)) {
 					continue; // already set
 				}
-				if (option === 'paths') {
-					extendingConfig.compilerOptions.paths = extendedConfig.compilerOptions.paths;
-					continue; // rebased below
-				}
 				extendingConfig.compilerOptions[option] = rebaseRelative(
 					option,
 					extendedConfig.compilerOptions[option],
@@ -315,11 +311,12 @@ function extendTSConfig(extending, extended) {
 				extendingConfig.compilerOptions.paths === extendedConfig.compilerOptions.paths
 			) {
 				for (const pattern of Object.keys(extendingConfig.compilerOptions.paths)) {
-					extendingConfig.compilerOptions.paths[pattern] = rebaseRelative(
-						'paths',
-						extendedConfig.compilerOptions.paths[pattern],
-						relativePath
-					);
+					const paths = extendingConfig.compilerOptions.paths[pattern];
+					if (Array.isArray(paths)) {
+						extendingConfig.compilerOptions.paths[pattern] = paths.map((x) =>
+							rebasePath(x, relativePath)
+						);
+					}
 				}
 			}
 		} else if (extendingConfig[key] === undefined) {
@@ -346,7 +343,6 @@ const REBASE_KEYS = [
 	'exclude',
 	// compilerOptions
 	'baseUrl',
-	'paths',
 	'rootDir',
 	'rootDirs',
 	'typeRoots',
