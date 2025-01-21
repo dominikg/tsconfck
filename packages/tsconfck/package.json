@@ -50,12 +50,12 @@
 	"devDependencies": {
 		"@tsconfig/node18": "^18.2.4",
 		"@tsconfig/strictest": "^2.0.5",
-		"@vitest/coverage-v8": "^2.1.2",
-		"esbuild": "^0.24.0",
+		"@vitest/coverage-v8": "^2.1.8",
+		"esbuild": "^0.24.2",
 		"isaacscript-tsconfig": "^6.0.0",
 		"tiny-glob": "^0.2.9",
-		"typescript": "^5.6.3",
-		"vitest": "^2.1.2"
+		"typescript": "^5.7.3",
+		"vitest": "^2.1.8"
 	},
 	"engines": {
 		"node": "^18 || >=20"
