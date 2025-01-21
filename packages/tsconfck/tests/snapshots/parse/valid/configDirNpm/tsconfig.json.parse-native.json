@@ -1,28 +1,19 @@
 {
 	"$schema": "https://raw.githubusercontent.com/complete-ts/complete/main/packages/complete-tsconfig/schemas/tsconfig-strict-schema.json",
 	"extends": [
-		"isaacscript-tsconfig/tsconfig.base.json"
-	],
-	"include": [
-		"<fixture-dir>/parse/valid/configDirNpm/src/**/*.ts",
-		"<fixture-dir>/parse/valid/configDirNpm/src/**/*.tsx"
+		"isaacscript-tsconfig/tsconfig.mod.json"
 	],
 	"compilerOptions": {
-		"strict": true,
-		"allowUnusedLabels": false,
-		"allowUnreachableCode": false,
-		"exactOptionalPropertyTypes": false,
-		"noFallthroughCasesInSwitch": false,
-		"noImplicitOverride": true,
-		"noImplicitReturns": true,
-		"noPropertyAccessFromIndexSignature": true,
-		"noUncheckedIndexedAccess": true,
-		"noUnusedLocals": false,
-		"noUnusedParameters": false,
-		"isolatedModules": true,
-		"checkJs": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"outDir": "<fixture-dir>/parse/valid/configDirNpm/dist"
+		"target": "esnext",
+		"lib": [
+			"esnext"
+		],
+		"moduleResolution": "node",
+		"types": [
+			"isaac-typescript-definitions"
+		],
+		"resolveJsonModule": true,
+		"experimentalDecorators": true,
+		"outDir": "<fixture-dir>/parse/valid/configDirNpm/mod"
 	}
 }
