@@ -60,8 +60,8 @@ importers:
         specifier: ^0.2.9
         version: 0.2.9
       tinybench:
-        specifier: ^2.9.0
-        version: 2.9.0
+        specifier: ^3.1.0
+        version: 3.1.0
       tsconfck:
         specifier: workspace:^
         version: link:packages/tsconfck
@@ -1776,6 +1776,10 @@ packages:
 
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
+
+  tinybench@3.1.0:
+    resolution: {integrity: sha512-Km+oMh2xqNCxuyoUsqbRmHgFSd8sATh7v7xreP+kHN6x67w28Pawr83WmBxcaORvxkc0Ex6zgqK951yBnTFaaQ==}
+    engines: {node: '>=18.0.0'}
 
   tinyexec@0.3.2:
     resolution: {integrity: sha512-KQQR9yN7R5+OSwaK0XQoj22pwHoTlgYqmUscPYoknOoWCWfj/5/ABTMRi69FrKU5ffPVh5QcFikpWJI/P1ocHA==}
@@ -3564,6 +3568,8 @@ snapshots:
       globrex: 0.1.2
 
   tinybench@2.9.0: {}
+
+  tinybench@3.1.0: {}
 
   tinyexec@0.3.2: {}
 
