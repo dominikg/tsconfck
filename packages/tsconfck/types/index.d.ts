@@ -127,12 +127,12 @@ declare module 'tsconfck' {
 		/**
 		 * has cached closest config for files in dir
 		 * */
-		hasConfigPath(dir: string, configName?: string | undefined): boolean;
+		hasConfigPath(dir: string, configName?: string): boolean;
 		/**
 		 * get cached closest tsconfig for files in dir
 		 * @throws {unknown} if cached value is an error
 		 */
-		getConfigPath(dir: string, configName?: string | undefined): Promise<string | null> | string | null;
+		getConfigPath(dir: string, configName?: string): Promise<string | null> | string | null;
 		/**
 		 * has parsed tsconfig for file
 		 * */
@@ -157,7 +157,7 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json or null if not found
 	 */
-	export function find(filename: string, options?: TSConfckFindOptions | undefined): Promise<string | null>;
+	export function find(filename: string, options?: TSConfckFindOptions): Promise<string | null>;
 	/**
 	 * find all tsconfig.json files in dir
 	 *
@@ -165,7 +165,7 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns list of absolute paths to all found tsconfig.json files
 	 */
-	export function findAll(dir: string, options?: TSConfckFindAllOptions | undefined): Promise<string[]>;
+	export function findAll(dir: string, options?: TSConfckFindAllOptions): Promise<string[]>;
 	/**
 	 * convert content of tsconfig.json to regular json
 	 *
@@ -182,14 +182,14 @@ declare module 'tsconfck' {
 	 * @param options - options
 	 * @returns absolute path to closest tsconfig.json
 	 */
-	export function findNative(filename: string, options?: TSConfckFindOptions | undefined): Promise<string>;
+	export function findNative(filename: string, options?: TSConfckFindOptions): Promise<string>;
 	/**
 	 * parse the closest tsconfig.json file
 	 *
 	 * @param filename - path to a tsconfig .json or a source file or directory (absolute or relative to cwd)
 	 * @param options - options
 	 * */
-	export function parse(filename: string, options?: TSConfckParseOptions | undefined): Promise<TSConfckParseResult>;
+	export function parse(filename: string, options?: TSConfckParseOptions): Promise<TSConfckParseResult>;
 	export class TSConfckParseError extends Error {
 		/**
 		 *
@@ -220,7 +220,7 @@ declare module 'tsconfck' {
 	 * @param filename - path to a tsconfig .json or a source file (absolute or relative to cwd)
 	 * @param options - options
 	 * */
-	export function parseNative(filename: string, options?: TSConfckParseNativeOptions | undefined): Promise<TSConfckParseNativeResult>;
+	export function parseNative(filename: string, options?: TSConfckParseNativeOptions): Promise<TSConfckParseNativeResult>;
 	export class TSConfckParseNativeError extends Error {
 		/**
 		 *
