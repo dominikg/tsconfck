@@ -53,9 +53,7 @@ export async function parse(filename, options) {
 			result = await parseFile(tsconfigFile, cache, filename === tsconfigFile);
 			await Promise.all([parseExtends(result, cache), parseReferences(result, options)]);
 		}
-		const dir = path.dirname(tsconfigFile);
-		result.tsconfig = replaceTokens(result.tsconfig, dir);
-		result.referenced?.forEach((ref) => (ref.tsconfig = replaceTokens(ref.tsconfig, dir)));
+		replaceTokens(result);
 		resolve(resolveSolutionTSConfig(filename, result));
 	} catch (e) {
 		reject(e);
@@ -161,6 +159,7 @@ async function parseReferences(result, options) {
 	await Promise.all(referenced.map((ref) => parseExtends(ref, options?.cache)));
 	referenced.forEach((ref) => {
 		ref.solution = result;
+		replaceTokens(ref);
 	});
 	result.referenced = referenced;
 }

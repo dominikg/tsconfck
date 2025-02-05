@@ -1,0 +1,13 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"module": "ES2022",
+		"moduleResolution": "bundler",
+		"noUnusedLocals": true,
+		"skipLibCheck": true,
+		"experimentalDecorators": true
+	},
+	"include": [
+		"<fixture-dir>/parse/solution/referenced-with-configDir-and-extends/packages/foo/src/*"
+	]
+}
