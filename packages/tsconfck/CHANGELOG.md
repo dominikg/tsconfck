@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.1.5
+
+### Patch Changes
+
+- resolve ${configDir} in referenced tsconfig files ([#211](https://github.com/dominikg/tsconfck/pull/211))
+
 ## 3.1.4
 
 ### Patch Changes
