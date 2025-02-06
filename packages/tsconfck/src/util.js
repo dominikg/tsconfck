@@ -326,14 +326,14 @@ function pattern2regex(resolvedPattern, allowJs) {
 
 /**
  * replace tokens like ${configDir}
- * @param {any} tsconfig
- * @param {string} configDir
- * @returns {any}
+ * @param {import('./public.d.ts').TSConfckParseResult} result
  */
-export function replaceTokens(tsconfig, configDir) {
-	return JSON.parse(
-		JSON.stringify(tsconfig)
-			// replace ${configDir}
-			.replaceAll(/"\${configDir}/g, `"${native2posix(configDir)}`)
-	);
+export function replaceTokens(result) {
+	if (result.tsconfig) {
+		result.tsconfig = JSON.parse(
+			JSON.stringify(result.tsconfig)
+				// replace ${configDir}
+				.replaceAll(/"\${configDir}/g, `"${native2posix(path.dirname(result.tsconfigFile))}`)
+		);
+	}
 }
