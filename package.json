@@ -24,7 +24,7 @@
 		"@eslint/js": "^9.19.0",
 		"@svitejs/changesets-changelog-github-compact": "^1.2.0",
 		"dts-buddy": "^0.5.4",
-		"esbuild": "^0.24.2",
+		"esbuild": "^0.25.0",
 		"eslint": "^9.19.0",
 		"eslint-config-prettier": "^10.0.1",
 		"eslint-plugin-markdown": "^5.1.0",
