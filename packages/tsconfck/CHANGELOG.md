@@ -1,5 +1,11 @@
 # tsconfck
 
+## 3.1.6
+
+### Patch Changes
+
+- fix: support extends `.` edge case ([#221](https://github.com/dominikg/tsconfck/pull/221))
+
 ## 3.1.5
 
 ### Patch Changes
