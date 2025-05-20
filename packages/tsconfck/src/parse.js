@@ -240,9 +240,9 @@ async function parseExtends(result, cache) {
  * @returns {string}
  */
 function resolveExtends(extended, from) {
-	if (extended === '..') {
-		// see #149
-		extended = '../tsconfig.json';
+	// see #149 and #220
+	if (['.', '..'].includes(extended)) {
+		extended = extended + '/tsconfig.json';
 	}
 	const req = createRequire(from);
 	let error;
