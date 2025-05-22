@@ -1,0 +1,1 @@
+Circular dependency in "extends": <fixture-dir>/parse/invalid/extends-circular/tsconfig.json -> <fixture-dir>/parse/invalid/extends-circular/tsconfig.circular.json -> <fixture-dir>/parse/invalid/extends-circular/deep/tsconfig.circular2.json -> <fixture-dir>/parse/invalid/extends-circular/tsconfig.json
