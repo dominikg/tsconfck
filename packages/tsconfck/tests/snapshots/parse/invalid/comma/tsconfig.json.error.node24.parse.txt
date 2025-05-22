@@ -1,0 +1,1 @@
+parsing <fixture-dir>/parse/invalid/comma/tsconfig.json failed: SyntaxError: Expected double-quoted property name in JSON at position 69 (line 5 column 6)
