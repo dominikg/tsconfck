@@ -62,8 +62,8 @@ jobs:
         ts: ['current']
         include:
           - node: 18
-          - os: ubuntu-latest
-          - ts: 'current'
+            os: ubuntu-latest
+            ts: 'current'
           - node: 20
             os: ubuntu-latest
             ts: 'current'
