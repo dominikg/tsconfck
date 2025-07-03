@@ -32,7 +32,7 @@
 		"eslint-plugin-prettier": "^5.4.0",
 		"get-tsconfig": "^4.10.1",
 		"husky": "^9.1.7",
-		"lint-staged": "^15.5.2",
+		"lint-staged": "^16.1.2",
 		"npm-run-all2": "^8.0.3",
 		"prettier": "^3.5.3",
 		"publint": "^0.3.12",
