@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: write # to create release (changesets/action)
       pull-requests: write # to create pull request (changesets/action)
+      id-token: write # to allow oidc publish
     # prevents this action from running on forks
     if: github.repository == 'dominikg/tsconfck'
     name: Release
@@ -19,7 +20,7 @@ jobs:
     strategy:
       matrix:
         # pseudo-matrix for convenience, NEVER use more than a single combination
-        node: [22]
+        node: [24]
         os: [ubuntu-latest]
     steps:
       - name: checkout
@@ -47,13 +48,6 @@ jobs:
         run: pnpm check:publint
       - name: generated files are up to date
         run: pnpm generate && [ "`git status --porcelain=v1`" == "" ]
-      - name: Creating .npmrc
-        run: |
-          cat << EOF > "$HOME/.npmrc"
-            //registry.npmjs.org/:_authToken=$NPM_TOKEN
-          EOF
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
@@ -62,7 +56,4 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: remove generated .npmrc
-        if: ${{ always() }}
-        run: rm -f "$HOME/.npmrc"
+          NPM_CONFIG_PROVENANCE: true
