@@ -1,2 +1,7 @@
 packages:
-  - 'packages/*'
+  - packages/*
+
+minimumReleaseAge: 4320 #3 days
+
+onlyBuiltDependencies:
+  - esbuild

@@ -15,6 +15,7 @@
 		"generate": "run-s generate:types generate:docs",
 		"generate:types": "pnpm --dir packages/tsconfck run dts-buddy -m tsconfck:src/public.d.ts",
 		"generate:docs": "node scripts/generate-api-docs.js",
+		"generate:staged": "pnpm generate:types && pnpm generate:docs && :",
 		"release": "pnpm changeset publish",
 		"prepare": "husky",
 		"bench": "node --expose-gc -max-old-space-size=4096 scripts/bench.js"
@@ -44,9 +45,10 @@
 	},
 	"lint-staged": {
 		"*.{js,md}": "eslint --cache --fix",
-		"*": "prettier --cache --ignore-path .prettierignore --ignore-unknown --write"
+		"*": "prettier --cache --ignore-path .prettierignore --ignore-unknown --write",
+		"packages/tsconfck/src/**/*": "pnpm generate:staged"
 	},
-	"packageManager": "pnpm@10.16.0",
+	"packageManager": "pnpm@10.17.1",
 	"engines": {
 		"node": "^20 || ^22 || >=24"
 	}
