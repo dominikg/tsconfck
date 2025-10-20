@@ -16,8 +16,7 @@
 		"parse",
 		"TSConfckParseError",
 		"parseNative",
-		"TSConfckParseNativeError",
-		"TSDiagnosticError"
+		"TSConfckParseNativeError"
 	],
 	"sources": [
 		"../src/public.d.ts",
@@ -27,8 +26,7 @@
 		"../src/to-json.js",
 		"../src/find-native.js",
 		"../src/parse.js",
-		"../src/parse-native.js",
-		"../src/parse-native.d.ts"
+		"../src/parse-native.js"
 	],
 	"sourcesContent": [
 		null,
@@ -38,9 +36,8 @@
 		null,
 		null,
 		null,
-		null,
 		null
 	],
-	"mappings": ";kBAEiBA,mBAAmBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;kBAkCnBC,oBAAoBA;;;;kBAIpBC,sBAAsBA;;;;;;;;;;;;;;;kBAetBC,mBAAmBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;kBA6BnBC,0BAA0BA;;;;;;;;;;;;kBAY1BC,yBAAyBA;;;;;;;;;;;;;;;;;;;;;;;;;;cC/F7BC,aAAaA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;iBCSJC,IAAIA;;;;;;;;iBCYJC,OAAOA;;;;;;;iBCTbC,MAAMA;;;;;;;;;;iBCDAC,UAAUA;;;;;;;iBCgBVC,KAAKA;cA8VdC,kBAAkBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;iBC9VTC,WAAWA;cAoOpBC,wBAAwBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;MChNzBC,iBAAiBA",
+	"mappings": ";kBAEiBA,mBAAmBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;kBAkCnBC,oBAAoBA;;;;kBAIpBC,sBAAsBA;;;;;;;;;;;;;;;kBAetBC,mBAAmBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;kBA6BnBC,0BAA0BA;;;;;;;;;;;;kBAY1BC,yBAAyBA;;;;;;;;;;;;;;;;;;;;;;;;;;cC/F7BC,aAAaA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;iBCSJC,IAAIA;;;;;;;;iBCWJC,OAAOA;;;;;;;iBCRbC,MAAMA;;;;;;;;;;iBCDAC,UAAUA;;;;;;;iBCkBVC,KAAKA;cAiWdC,kBAAkBA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;iBCjWTC,WAAWA;cAwOpBC,wBAAwBA",
 	"ignoreList": []
 }

@@ -17,13 +17,13 @@ export function find(filename: string, options?: TSConfckFindOptions): Promise<s
 #### TSConfckFindOptions
 
 ```ts
-export interface TSConfckFindOptions {
+export interface TSConfckFindOptions<T = TSConfckParseResult | TSConfckParseNativeResult> {
 	/**
 	 * A cache to improve performance for multiple calls in the same project
 	 *
 	 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 	 */
-	cache?: TSConfckCache<TSConfckParseResult | TSConfckParseNativeResult>;
+	cache?: TSConfckCache<T>;
 
 	/**
 	 * project root dir, does not continue scanning outside of this directory.
@@ -67,7 +67,7 @@ export function parse(filename: string, options?: TSConfckParseOptions): Promise
 #### TSConfckParseOptions
 
 ```ts
-export interface TSConfckParseOptions extends TSConfckFindOptions {
+export interface TSConfckParseOptions extends TSConfckFindOptions<TSConfckParseResult> {
 	// same as find options
 }
 ```
@@ -116,7 +116,7 @@ export class TSConfckParseError extends Error {
 	 * @param tsconfigFile - path to tsconfig file
 	 * @param cause - cause of this error
 	 */
-	constructor(message: string, code: string, tsconfigFile: string, cause: Error | null);
+	constructor(message: string, code: string, tsconfigFile: string, cause?: Error);
 	/**
 	 * error code
 	 * */
@@ -164,7 +164,7 @@ export function parseNative(filename: string, options?: TSConfckParseNativeOptio
 #### TSConfckParseNativeOptions
 
 ```ts
-export interface TSConfckParseNativeOptions extends TSConfckParseOptions {
+export interface TSConfckParseNativeOptions extends TSConfckFindOptions<TSConfckParseNativeResult> {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *

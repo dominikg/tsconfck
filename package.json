@@ -24,6 +24,7 @@
 		"@changesets/cli": "^2.29.7",
 		"@eslint/js": "^9.35.0",
 		"@svitejs/changesets-changelog-github-compact": "^1.2.0",
+		"@types/node": "^24.8.1",
 		"dts-buddy": "^0.6.2",
 		"esbuild": "^0.25.9",
 		"eslint": "^9.35.0",

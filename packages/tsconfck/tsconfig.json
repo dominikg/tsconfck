@@ -6,7 +6,9 @@
 		"target": "es2022",
 		"moduleResolution": "bundler",
 		"strict": true,
-		"allowJs": true
+		"allowJs": true,
+		"checkJs": true,
+		"noEmit": true
 	},
 	"include": ["bin/**/*", "src/**/*", "types/**/*"],
 	"exclude": ["node_modules"]

@@ -13,6 +13,8 @@ import {
 	resolveTSConfigJson
 } from './util.js';
 
+/** @typedef {import('./cache.js').TSConfckCache<import('./public.d.ts').TSConfckParseResult>} ParseCache  */
+
 const not_found_result = {
 	tsconfigFile: null,
 	tsconfig: {}
@@ -27,22 +29,21 @@ const not_found_result = {
  * @throws {TSConfckParseError}
  */
 export async function parse(filename, options) {
-	/** @type {import('./cache.js').TSConfckCache} */
+	/** @type {ParseCache | undefined} */
 	const cache = options?.cache;
 	if (cache?.hasParseResult(filename)) {
 		return getParsedDeep(filename, cache, options);
 	}
-	const {
-		resolve,
-		reject,
-		/** @type {Promise<import('./public.d.ts').TSConfckParseResult>}*/
-		promise
-	} = makePromise();
+	/** @type {import('./util.js').PromiseWithResolvers<import('./public.d.ts').TSConfckParseResult>} */
+	const { resolve, reject, promise } = makePromise();
+	// @ts-expect-error accessing private method because dts-buddy can't strip internal types for some reason
 	cache?.setParseResult(filename, promise, true);
 	try {
 		let tsconfigFile =
 			(await resolveTSConfigJson(filename, cache)) || (await find(filename, options));
 		if (!tsconfigFile) {
+			// TODO: This returns a different type than the function signature says. Fix this in another PR.
+			// @ts-expect-error
 			resolve(not_found_result);
 			return promise;
 		}
@@ -65,8 +66,8 @@ export async function parse(filename, options) {
  * ensure extends and references are parsed
  *
  * @param {string} filename - cached file
- * @param {import('./cache.js').TSConfckCache} cache - cache
- * @param {import('./public.d.ts').TSConfckParseOptions} options - options
+ * @param {ParseCache} cache - cache
+ * @param {import('./public.d.ts').TSConfckParseOptions} [options] - options
  */
 async function getParsedDeep(filename, cache, options) {
 	const result = await cache.getParseResult(filename);
@@ -78,6 +79,7 @@ async function getParsedDeep(filename, cache, options) {
 			parseExtends(result, cache),
 			parseReferences(result, options)
 		]).then(() => result);
+		// @ts-expect-error accessing private method because dts-buddy can't strip internal types for some reason
 		cache.setParseResult(filename, promise, true);
 		return promise;
 	}
@@ -87,7 +89,7 @@ async function getParsedDeep(filename, cache, options) {
 /**
  *
  * @param {string} tsconfigFile - path to tsconfig file
- * @param {import('./cache.js').TSConfckCache} [cache] - cache
+ * @param {ParseCache} [cache] - cache
  * @param {boolean} [skipCache] - skip cache
  * @returns {Promise<import('./public.d.ts').TSConfckParseResult>}
  */
@@ -95,7 +97,7 @@ async function parseFile(tsconfigFile, cache, skipCache) {
 	if (
 		!skipCache &&
 		cache?.hasParseResult(tsconfigFile) &&
-		!cache.getParseResult(tsconfigFile)._isRootFile_
+		!('_isRootFile_' in cache.getParseResult(tsconfigFile))
 	) {
 		return cache.getParseResult(tsconfigFile);
 	}
@@ -120,8 +122,10 @@ async function parseFile(tsconfigFile, cache, skipCache) {
 		});
 	if (
 		!skipCache &&
-		(!cache?.hasParseResult(tsconfigFile) || !cache.getParseResult(tsconfigFile)._isRootFile_)
+		(!cache?.hasParseResult(tsconfigFile) ||
+			!('_isRootFile_' in cache.getParseResult(tsconfigFile)))
 	) {
+		// @ts-expect-error accessing private method because dts-buddy can't strip internal types for some reason
 		cache?.setParseResult(tsconfigFile, promise);
 	}
 	return promise;
@@ -166,7 +170,7 @@ async function parseReferences(result, options) {
 
 /**
  * @param {import('./public.d.ts').TSConfckParseResult} result
- * @param {import('./cache.js').TSConfckCache}[cache]
+ * @param {ParseCache} [cache]
  * @returns {Promise<void>}
  */
 async function parseExtends(result, cache) {
@@ -199,7 +203,7 @@ async function parseExtends(result, cache) {
 				// reverse because typescript 5.0 treats ['a','b','c'] as c extends b extends a
 				resolvedExtends = extending.tsconfig.extends
 					.reverse()
-					.map((ex) => resolveExtends(ex, extending.tsconfigFile));
+					.map((/** @type {string} */ ex) => resolveExtends(ex, extending.tsconfigFile));
 			}
 
 			const circularExtends = resolvedExtends.find((tsconfigFile) =>
@@ -245,17 +249,18 @@ function resolveExtends(extended, from) {
 		extended = extended + '/tsconfig.json';
 	}
 	const req = createRequire(from);
+	/** @type {Error | undefined} */
 	let error;
 	try {
 		return req.resolve(extended);
 	} catch (e) {
-		error = e;
+		error = /** @type {Error} */ (e);
 	}
 	if (extended[0] !== '.' && !path.isAbsolute(extended)) {
 		try {
 			return req.resolve(`${extended}/tsconfig.json`);
 		} catch (e) {
-			error = e;
+			error = /** @type {Error} */ (e);
 		}
 	}
 
@@ -398,7 +403,7 @@ export class TSConfckParseError extends Error {
 	 * @param {string} message - error message
 	 * @param {string} code - error code
 	 * @param {string} tsconfigFile - path to tsconfig file
-	 * @param {Error?} cause - cause of this error
+	 * @param {Error} [cause] - cause of this error
 	 */
 	constructor(message, code, tsconfigFile, cause) {
 		super(message);

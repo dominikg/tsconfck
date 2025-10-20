@@ -84,8 +84,8 @@ function isEscaped(jsonString, quotePosition) {
 /**
  *
  * @param {string} string
- * @param {number?} start
- * @param {number?} end
+ * @param {number} [start]
+ * @param {number} [end]
  */
 function strip(string, start, end) {
 	return string.slice(start, end).replace(/\S/g, ' ');

@@ -2,11 +2,10 @@ import path from 'node:path';
 import { readdir } from 'node:fs';
 
 /**
- * @typedef WalkState
- * @interface
+ * @typedef {Object} WalkState
  * @property {string[]} files - files
  * @property {number} calls - number of ongoing calls
- * @property {(dir: string)=>boolean} skip - function to skip dirs
+ * @property {(dir: string)=>boolean} [skip] - function to skip dirs
  * @property {boolean} err - error flag
  * @property {string[]} configNames - config file names
  */
@@ -38,7 +37,7 @@ export async function findAll(dir, options) {
  *
  * @param {string} dir
  * @param {WalkState} state
- * @param {(err: NodeJS.ErrnoException | null, files?: string[]) => void} done
+ * @param {(err: NodeJS.ErrnoException | null, files: string[]) => void} done
  */
 function walk(dir, state, done) {
 	if (state.err) {
@@ -52,7 +51,7 @@ function walk(dir, state, done) {
 		// skip deleted or inaccessible directories
 		if (err && !(err.code === 'ENOENT' || err.code === 'EACCES' || err.code === 'EPERM')) {
 			state.err = true;
-			done(err);
+			done(err, []);
 		} else {
 			for (const ent of entries) {
 				if (ent.isDirectory() && !state.skip?.(ent.name)) {

@@ -23,6 +23,9 @@ parse tsconfig for a file
 const HELP_ARGS = ['-h', '--help', '-?', 'help'];
 const JS_ARG = '-js';
 const COMMANDS = ['find', 'find-all', 'find-all', 'parse', 'parse-result'];
+/**
+ * @param {string[]} args
+ */
 function needsHelp(args) {
 	if (args.some((arg) => HELP_ARGS.includes(arg))) {
 		return HELP_TEXT;
@@ -65,7 +68,7 @@ async function main() {
 
 main().then(
 	(result) => {
-		process.stdout.write(result);
+		process.stdout.write(result ?? '');
 		process.stdout.write('\n');
 	},
 	(err) => {

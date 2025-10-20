@@ -13,12 +13,15 @@ import { isInNodeModules, loadTS, native2posix } from './util.js';
 export async function findNative(filename, options) {
 	let dir = native2posix(path.dirname(path.resolve(filename)));
 	if (options?.ignoreNodeModules && isInNodeModules(dir)) {
+		// TODO: This returns a different type than the function signature says. Fix this in another PR.
+		// @ts-expect-error
 		return null;
 	}
 	const cache = options?.cache;
 	const root = options?.root ? native2posix(path.resolve(options.root)) : undefined;
 	const configName = options?.configName ?? 'tsconfig.json';
 	if (cache?.hasConfigPath(dir, configName)) {
+		// @ts-expect-error This never returns null
 		return cache.getConfigPath(dir, configName);
 	}
 	const ts = await loadTS();
@@ -36,7 +39,7 @@ export async function findNative(filename, options) {
 /**
  *
  * @param {string} tsconfigFile
- * @param {string} root
+ * @param {string} [root]
  */
 function is_out_of_root(tsconfigFile, root) {
 	return root && !tsconfigFile.startsWith(root);
@@ -47,7 +50,7 @@ function is_out_of_root(tsconfigFile, root) {
  * if no tsconfig was found, go up until root
  * @param {string|null} tsconfigFile
  * @param {string} fileDir
- * @param {import('./cache.js').TSConfckCache} cache
+ * @param {import('./cache.js').TSConfckCache<import('./public.d.ts').TSConfckParseResult | import('./public.d.ts').TSConfckParseNativeResult>} cache
  * @param {string|undefined} root
  * @param {string} configName
  */
@@ -65,6 +68,7 @@ function cache_result(tsconfigFile, fileDir, cache, root, configName) {
 		}
 	}
 	directories.forEach((d) => {
+		// @ts-expect-error accessing private method because dts-buddy can't strip internal types for some reason
 		cache.setConfigPath(d, Promise.resolve(tsconfigFile), configName);
 	});
 }
