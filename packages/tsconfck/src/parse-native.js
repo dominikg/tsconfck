@@ -10,6 +10,8 @@ import {
 } from './util.js';
 import { findNative } from './find-native.js';
 
+/** @typedef {import('./cache.js').TSConfckCache<import('./public.d.ts').TSConfckParseNativeResult>} ParseNativeCache  */
+
 const notFoundResult = {
 	tsconfigFile: null,
 	tsconfig: {},
@@ -27,7 +29,7 @@ const notFoundResult = {
  * @throws {TSConfckParseNativeError}
  */
 export async function parseNative(filename, options) {
-	/** @type {import('./cache.js').TSConfckCache} */
+	/** @type {ParseNativeCache | undefined} */
 	const cache = options?.cache;
 	if (cache?.hasParseResult(filename)) {
 		return cache.getParseResult(filename);
@@ -38,6 +40,7 @@ export async function parseNative(filename, options) {
 		/** @type {Promise<import('./public.d.ts').TSConfckParseNativeResult>}*/
 		promise
 	} = makePromise();
+	// @ts-expect-error accessing private method because dts-buddy can't strip internal types for some reason
 	cache?.setParseResult(filename, promise);
 	try {
 		const tsconfigFile =
@@ -54,6 +57,7 @@ export async function parseNative(filename, options) {
 			const ts = await loadTS();
 			result = await parseFile(tsconfigFile, ts, options, filename === tsconfigFile);
 			await parseReferences(result, ts, options);
+			// @ts-expect-error accessing private method because dts-buddy can't strip internal types for some reason
 			cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 		}
 
@@ -71,12 +75,12 @@ export async function parseNative(filename, options) {
  * @param {any} ts
  * @param {import('./public.d.ts').TSConfckParseNativeOptions} [options]
  * @param {boolean} [skipCache]
- * @returns {import('./public.d.ts').TSConfckParseNativeResult}
+ * @returns {Promise<import('./public.d.ts').TSConfckParseNativeResult>}
  */
-function parseFile(tsconfigFile, ts, options, skipCache) {
+async function parseFile(tsconfigFile, ts, options, skipCache) {
 	const cache = options?.cache;
 	if (!skipCache && cache?.hasParseResult(tsconfigFile)) {
-		return cache.getParseResult(tsconfigFile);
+		return await cache.getParseResult(tsconfigFile);
 	}
 	const posixTSConfigFile = native2posix(tsconfigFile);
 	const { parseJsonConfigFileContent, readConfigFile, sys } = ts;
@@ -114,6 +118,7 @@ function parseFile(tsconfigFile, ts, options, skipCache) {
 	};
 
 	if (!skipCache) {
+		// @ts-expect-error accessing private method because dts-buddy can't strip internal types for some reason
 		cache?.setParseResult(tsconfigFile, Promise.resolve(result));
 	}
 
@@ -154,7 +159,8 @@ function checkErrors(nativeResult, tsconfigFile) {
 		18003 // no inputs
 	];
 	const criticalError = nativeResult.errors?.find(
-		(error) => error.category === 1 && !ignoredErrorCodes.includes(error.code)
+		(/** @type {TSDiagnosticError} */ error) =>
+			error.category === 1 && !ignoredErrorCodes.includes(error.code)
 	);
 	if (criticalError) {
 		throw new TSConfckParseNativeError(criticalError, tsconfigFile, nativeResult);
@@ -192,7 +198,7 @@ function result2tsconfig(result, ts, tsconfigFile) {
 	if (compilerOptions) {
 		if (compilerOptions.lib != null) {
 			// remove lib. and .dts from lib.es2019.d.ts etc
-			compilerOptions.lib = compilerOptions.lib.map((x) =>
+			compilerOptions.lib = compilerOptions.lib.map((/** @type {string} */ x) =>
 				x.replace(/^lib\./, '').replace(/\.d\.ts$/, '')
 			);
 		}
@@ -297,9 +303,9 @@ export class TSConfckParseNativeError extends Error {
 	result;
 }
 
-/** @typedef TSDiagnosticError {
+/** @typedef {{
 	code: number;
 	category: number;
 	messageText: string;
 	start?: number;
-} TSDiagnosticError */
+}} TSDiagnosticError */

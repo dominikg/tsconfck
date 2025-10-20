@@ -1,12 +1,12 @@
 import { TSConfckCache } from './cache.js';
 
-export interface TSConfckFindOptions {
+export interface TSConfckFindOptions<T = TSConfckParseResult | TSConfckParseNativeResult> {
 	/**
 	 * A cache to improve performance for multiple calls in the same project
 	 *
 	 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 	 */
-	cache?: TSConfckCache<TSConfckParseResult | TSConfckParseNativeResult>;
+	cache?: TSConfckCache<T>;
 
 	/**
 	 * project root dir, does not continue scanning outside of this directory.
@@ -34,7 +34,7 @@ export interface TSConfckFindOptions {
 	configName?: string;
 }
 
-export interface TSConfckParseOptions extends TSConfckFindOptions {
+export interface TSConfckParseOptions extends TSConfckFindOptions<TSConfckParseResult> {
 	// same as find options
 }
 
@@ -82,7 +82,7 @@ export interface TSConfckParseResult {
 	extended?: TSConfckParseResult[];
 }
 
-export interface TSConfckParseNativeOptions extends TSConfckParseOptions {
+export interface TSConfckParseNativeOptions extends TSConfckFindOptions<TSConfckParseNativeResult> {
 	/**
 	 * Set this option to true to force typescript to ignore all source files.
 	 *

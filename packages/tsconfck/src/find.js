@@ -43,12 +43,15 @@ function findUp(dir, { resolve, reject, promise }, options) {
 				reject(e);
 				return;
 			}
+
+			// @ts-expect-error loosely check promise
 			if (cached?.then) {
-				cached.then(resolve).catch(reject);
+				/** @type {Promise<string | null>} */ (cached).then(resolve).catch(reject);
 			} else {
-				resolve(cached);
+				resolve(/** @type {string | null} */ (cached));
 			}
 		} else {
+			// @ts-expect-error accessing private method because dts-buddy can't strip internal types for some reason
 			cache.setConfigPath(dir, promise, configName);
 		}
 	}

@@ -199,8 +199,8 @@ describe('find-native', () => {
 		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}`))).toBe(expectedTSConfig);
 		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b`))).toBe(expectedTSConfig);
 		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b/c`))).toBe(expectedTSConfig);
-		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}`), 'jsconfig.json')).toBe(undefined);
-		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b`), 'jsconfig.json')).toBe(undefined);
+		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}`), 'jsconfig.json')).toBe(null);
+		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b`), 'jsconfig.json')).toBe(null);
 		expect(cache.getConfigPath(posixAbsFix(`${fixtureDir}/b/c`), 'jsconfig.json')).toBe(
 			expectedJSConfig
 		);

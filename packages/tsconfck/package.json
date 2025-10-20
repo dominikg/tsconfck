@@ -62,10 +62,10 @@
 	},
 	"scripts": {
 		"check:publint": "publint --strict",
-		"check:types": "tsc --noEmit",
+		"check:types": "tsc",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest",
-		"dts-buddy": "dts-buddy -m \"tsconfck:src/index.js\""
+		"dts-buddy": "dts-buddy -m tsconfck:src/public.d.ts"
 	}
 }

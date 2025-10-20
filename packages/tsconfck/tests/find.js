@@ -185,8 +185,8 @@ describe('find', () => {
 		expect(cache.getConfigPath(absFixture(`${fixtureDir}`))).toBe(expectedTSConfig);
 		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b`))).toBe(expectedTSConfig);
 		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b/c`))).toBe(expectedTSConfig);
-		expect(cache.getConfigPath(absFixture(`${fixtureDir}`), 'jsconfig.json')).toBe(undefined);
-		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b`), 'jsconfig.json')).toBe(undefined);
+		expect(cache.getConfigPath(absFixture(`${fixtureDir}`), 'jsconfig.json')).toBe(null);
+		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b`), 'jsconfig.json')).toBe(null);
 		expect(cache.getConfigPath(absFixture(`${fixtureDir}/b/c`), 'jsconfig.json')).toBe(
 			expectedJSConfig
 		);

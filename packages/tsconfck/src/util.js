@@ -15,16 +15,29 @@ const TSJS_EXTENSIONS_RE_GROUP = `\\.(?:${TSJS_EXTENSIONS.map((ext) => ext.subst
 )})`;
 const IS_POSIX = path.posix.sep === path.sep;
 
+// https://github.com/microsoft/TypeScript/blob/d3be7e171bf3149fe93c3ce5a85280f1eba3ef8d/src/lib/es2024.promise.d.ts#L1-L5
 /**
  * @template T
- * @returns {{resolve:(result:T)=>void, reject:(error:any)=>void, promise: Promise<T>}}
+ * @typedef {Object} PromiseWithResolvers
+ * @property {Promise<T>} promise
+ * @property {(value: T | PromiseLike<T>) => void} resolve
+ * @property {(reason?: any) => void} reject
+ */
+
+/**
+ * @template T
+ * @returns {PromiseWithResolvers<T>}
  */
 export function makePromise() {
-	let resolve, reject;
+	/** @type {(value: T | PromiseLike<T>) => void} */
+	let resolve;
+	/** @type {(reason?: any) => void} */
+	let reject;
 	const promise = new Promise((res, rej) => {
 		resolve = res;
 		reject = rej;
 	});
+	// @ts-expect-error we know `resolve` and `reject` are assigned in the constructor
 	return { promise, resolve, reject };
 }
 
@@ -43,7 +56,8 @@ export async function loadTS() {
 
 /**
  * @param {string} filename
- * @param {import('./cache.js').TSConfckCache} [cache]
+ * @param {import('./cache.js').TSConfckCache<T>} [cache]
+ * @template T
  * @returns {Promise<string|void>}
  */
 export async function resolveTSConfigJson(filename, cache) {
@@ -69,8 +83,8 @@ export async function resolveTSConfigJson(filename, cache) {
  * @returns {boolean}  if dir path includes a node_modules segment
  */
 export const isInNodeModules = IS_POSIX
-	? (dir) => dir.includes('/node_modules/')
-	: (dir) => dir.match(/[/\\]node_modules[/\\]/);
+	? (/** @type {string} */ dir) => dir.includes('/node_modules/')
+	: (/** @type {string} */ dir) => dir.match(/[/\\]node_modules[/\\]/);
 
 /**
  * convert posix separator to native separator
@@ -82,9 +96,9 @@ export const isInNodeModules = IS_POSIX
  * @param {string} filename with posix separators
  * @returns {string} filename with native separators
  */
-export const posix2native = IS_POSIX
-	? (filename) => filename
-	: (filename) => filename.replace(POSIX_SEP_RE, path.sep);
+export const posix2native = (filename) => {
+	return IS_POSIX ? filename : filename.replace(POSIX_SEP_RE, path.sep);
+};
 
 /**
  * convert native separator to posix separator
@@ -96,9 +110,9 @@ export const posix2native = IS_POSIX
  * @param {string} filename - filename with native separators
  * @returns {string} filename with posix separators
  */
-export const native2posix = IS_POSIX
-	? (filename) => filename
-	: (filename) => filename.replace(NATIVE_SEP_RE, path.posix.sep);
+export const native2posix = (filename) => {
+	return IS_POSIX ? filename : filename.replace(NATIVE_SEP_RE, path.posix.sep);
+};
 
 /**
  * converts params to native separator, resolves path and converts native back to posix
@@ -109,14 +123,17 @@ export const native2posix = IS_POSIX
  * @param filename {string} filename or pattern to resolve
  * @returns string
  */
-export const resolve2posix = IS_POSIX
-	? (dir, filename) => (dir ? path.resolve(dir, filename) : path.resolve(filename))
-	: (dir, filename) =>
-			native2posix(
-				dir
-					? path.resolve(posix2native(dir), posix2native(filename))
-					: path.resolve(posix2native(filename))
-			);
+export const resolve2posix = (dir, filename) => {
+	if (IS_POSIX) {
+		return dir ? path.resolve(dir, filename) : path.resolve(filename);
+	} else {
+		return native2posix(
+			dir
+				? path.resolve(posix2native(dir), posix2native(filename))
+				: path.resolve(posix2native(filename))
+		);
+	}
+};
 
 /**
  *
@@ -126,7 +143,7 @@ export const resolve2posix = IS_POSIX
  */
 export function resolveReferencedTSConfigFiles(result, options) {
 	const dir = path.dirname(result.tsconfigFile);
-	return result.tsconfig.references.map((ref) => {
+	return result.tsconfig.references.map((/** @type {{ path: string }} */ ref) => {
 		const refPath = ref.path.endsWith('.json')
 			? ref.path
 			: path.join(ref.path, options?.configName ?? 'tsconfig.json');
@@ -165,7 +182,9 @@ export function resolveSolutionTSConfig(filename, result) {
  */
 function isIncluded(filename, result) {
 	const dir = native2posix(path.dirname(result.tsconfigFile));
-	const files = (result.tsconfig.files || []).map((file) => resolve2posix(dir, file));
+	const files = (result.tsconfig.files || []).map((/** @type {string} */ file) =>
+		resolve2posix(dir, file)
+	);
 	const absoluteFilename = resolve2posix(null, filename);
 	if (files.includes(filename)) {
 		return true;
@@ -279,6 +298,7 @@ export function isGlobMatch(filename, dir, patterns, allowJs) {
 		}
 		// complex pattern, use regex to check it
 		if (PATTERN_REGEX_CACHE.has(resolvedPattern)) {
+			// @ts-expect-error `.get` will never return undefined
 			return PATTERN_REGEX_CACHE.get(resolvedPattern).test(filename);
 		}
 		const regex = pattern2regex(resolvedPattern, allowJs);

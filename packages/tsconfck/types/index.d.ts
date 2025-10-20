@@ -1,11 +1,11 @@
 declare module 'tsconfck' {
-	export interface TSConfckFindOptions {
+	export interface TSConfckFindOptions<T = TSConfckParseResult | TSConfckParseNativeResult> {
 		/**
 		 * A cache to improve performance for multiple calls in the same project
 		 *
 		 * Warning: You must clear this cache in case tsconfig files are added/removed during it's lifetime
 		 */
-		cache?: TSConfckCache<TSConfckParseResult | TSConfckParseNativeResult>;
+		cache?: TSConfckCache<T>;
 
 		/**
 		 * project root dir, does not continue scanning outside of this directory.
@@ -33,7 +33,7 @@ declare module 'tsconfck' {
 		configName?: string;
 	}
 
-	export interface TSConfckParseOptions extends TSConfckFindOptions {
+	export interface TSConfckParseOptions extends TSConfckFindOptions<TSConfckParseResult> {
 		// same as find options
 	}
 
@@ -81,7 +81,7 @@ declare module 'tsconfck' {
 		extended?: TSConfckParseResult[];
 	}
 
-	export interface TSConfckParseNativeOptions extends TSConfckParseOptions {
+	export interface TSConfckParseNativeOptions extends TSConfckFindOptions<TSConfckParseNativeResult> {
 		/**
 		 * Set this option to true to force typescript to ignore all source files.
 		 *
@@ -198,7 +198,7 @@ declare module 'tsconfck' {
 		 * @param tsconfigFile - path to tsconfig file
 		 * @param cause - cause of this error
 		 */
-		constructor(message: string, code: string, tsconfigFile: string, cause: Error | null);
+		constructor(message: string, code: string, tsconfigFile: string, cause?: Error);
 		/**
 		 * error code
 		 * */
@@ -246,15 +246,12 @@ declare module 'tsconfck' {
 		 * */
 		tsconfigFile: string;
 	}
-	/**
-	 * {
-	 * code: number;
-	 * category: number;
-	 * messageText: string;
-	 * start?: number;
-	 * } TSDiagnosticError
-	 */
-	type TSDiagnosticError = any;
+	type TSDiagnosticError = {
+		code: number;
+		category: number;
+		messageText: string;
+		start?: number;
+	};
 
 	export {};
 }

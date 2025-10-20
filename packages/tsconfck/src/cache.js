@@ -28,8 +28,9 @@ export class TSConfckCache {
 	getConfigPath(dir, configName = 'tsconfig.json') {
 		const key = `${dir}/${configName}`;
 		const value = this.#configPaths.get(key);
+		// @ts-expect-error loosely check string or promise type
 		if (value == null || value.length || value.then) {
-			return value;
+			return value ?? null;
 		} else {
 			throw value;
 		}
@@ -52,7 +53,8 @@ export class TSConfckCache {
 	 */
 	getParseResult(file) {
 		const value = this.#parsed.get(file);
-		if (value.then || value.tsconfig) {
+		// @ts-expect-error loosely check promise or tsconfig type
+		if (value && (value.then || value.tsconfig)) {
 			return value;
 		} else {
 			throw value; // cached error, rethrow
@@ -62,7 +64,7 @@ export class TSConfckCache {
 	/**
 	 * @internal
 	 * @private
-	 * @param file
+	 * @param {string} file
 	 * @param {boolean} isRootFile a flag to check if current file which involking the parse() api, used to distinguish the normal cache which only parsed by parseFile()
 	 * @param {Promise<T>} result
 	 */
@@ -114,7 +116,6 @@ export class TSConfckCache {
 	/**
 	 * map directories to their closest tsconfig.json
 	 * @internal
-	 * @private
 	 * @type{Map<string,(Promise<string|null>|string|null)>}
 	 */
 	#configPaths = new Map();
@@ -122,7 +123,6 @@ export class TSConfckCache {
 	/**
 	 * map files to their parsed tsconfig result
 	 * @internal
-	 * @private
 	 * @type {Map<string,(Promise<T>|T)> }
 	 */
 	#parsed = new Map();
