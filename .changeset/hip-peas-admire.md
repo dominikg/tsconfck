@@ -1,0 +1,5 @@
+---
+'tsconfck': patch
+---
+
+fix types
