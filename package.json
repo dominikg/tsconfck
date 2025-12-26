@@ -25,7 +25,7 @@
 		"@eslint/js": "^9.35.0",
 		"@svitejs/changesets-changelog-github-compact": "^1.2.0",
 		"dts-buddy": "^0.6.2",
-		"esbuild": "^0.25.9",
+		"esbuild": "^0.27.0",
 		"eslint": "^9.35.0",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-markdown": "^5.1.0",
@@ -48,7 +48,7 @@
 		"*": "prettier --cache --ignore-path .prettierignore --ignore-unknown --write",
 		"packages/tsconfck/src/**/*": "pnpm generate:staged"
 	},
-	"packageManager": "pnpm@10.17.1",
+	"packageManager": "pnpm@10.26.2",
 	"engines": {
 		"node": "^20 || ^22 || >=24"
 	}
