@@ -41,7 +41,7 @@
 		"tinybench": "^5.0.0",
 		"tsconfck": "workspace:^",
 		"tsconfck-2": "npm:tsconfck@^2.1.2",
-		"vitest": "^3.2.4"
+		"vitest": "^4.0.0"
 	},
 	"lint-staged": {
 		"*.{js,md}": "eslint --cache --fix",
