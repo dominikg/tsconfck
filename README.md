@@ -1,3 +1,9 @@
+# Important notice - tsconfck is going to be discontinued
+
+See https://github.com/dominikg/tsconfck/issues/240 for details
+
+---
+
 # tsconfck
 
 [![npm version](https://img.shields.io/npm/v/tsconfck)](https://www.npmjs.com/package/tsconfck)
